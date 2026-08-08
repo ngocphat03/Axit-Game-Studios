@@ -1,0 +1,159 @@
+spec_version: axit.skill/v1
+id: story-done
+name: Story Done
+description: Verify a story against implementation evidence and design constraints, then close it only when blocking completion criteria are satisfied.
+
+execution:
+  side_effects: project-write
+  preferred_profile: lead-programmer
+
+inputs:
+  - name: story_path
+    type: path
+    required: true
+  - name: review_mode
+    type: enum
+    required: false
+    values: [full, lean, solo]
+    default: lean
+
+preconditions:
+  - id: story-exists
+    check: input.story_path exists
+    on_failure: block
+  - id: implementation-exists
+    check: story implementation targets can be resolved
+    on_failure: warn
+
+context:
+  required:
+    - source: input
+      ref: story_path
+    - source: project
+      ref: architecture.tr_registry
+    - source: story
+      ref: governing_adrs
+    - source: project
+      ref: architecture.control_manifest
+  optional:
+    - source: story
+      ref: referenced_gdd_section
+    - source: project
+      ref: session.active_state
+    - source: project
+      ref: sprint.current
+    - source: project
+      ref: qa.test_cases
+    - source: project
+      ref: director_gates
+
+capabilities:
+  required:
+    - file.read
+    - file.search
+    - file.write
+    - git.diff
+    - test.run
+    - user.approval
+  optional:
+    - user.question
+    - user.choice
+    - agent.consult
+    - unity.test.run
+    - unity.console.read
+    - artifact.inspect
+
+model_requirements:
+  reasoning: high
+  coding: medium
+  long_context: preferred
+  vision: preferred
+  tool_use: required
+
+procedure:
+  - id: load-story-contract
+    intent: Resolve the current requirement, governing ADRs, manifest version, acceptance criteria, story type, implementation scope, and evidence expectations.
+  - id: verify-criteria
+    intent: Verify each acceptance criterion through deterministic checks when available and bounded manual confirmation when required.
+  - id: trace-evidence
+    intent: Map every acceptance criterion to automated or manual test evidence and identify untested criteria.
+  - id: verify-story-type-evidence
+    intent: Apply story-type-specific evidence gates for Logic, Integration, Visual/Feel, UI, and Config/Data stories.
+  - id: check-deviations
+    intent: Compare implementation against current GDD requirements, ADR decisions, control rules, manifest freshness, and declared scope.
+  - id: optional-quality-gates
+    intent: In configured review modes, request QA and lead-programmer consultation when runtime collaboration is available.
+  - id: decide
+    intent: Produce COMPLETE, COMPLETE WITH NOTES, or BLOCKED from evidence and blocking/advisory findings.
+  - id: present-before-mutation
+    intent: Present the completion report and obtain required approval before changing project story state.
+  - id: close-story
+    intent: If completion is approved and unblocked, persist completion status, evidence notes, and related working-state/sprint updates.
+
+outputs:
+  - id: completion-report
+    type: report
+    required: true
+  - id: completion-verdict
+    type: decision
+    required: true
+  - id: completion-evidence
+    type: evidence
+    required: true
+
+verdicts:
+  - complete
+  - complete_with_notes
+  - blocked
+
+verification:
+  required:
+    - id: acceptance-criteria
+      type: criteria_coverage
+    - id: implementation-scope
+      type: change_scope
+  conditional:
+    - when: story.type == logic
+      check:
+        id: unit-test-evidence
+        type: tests_pass
+    - when: story.type == integration
+      check:
+        id: integration-evidence
+        type: tests_pass
+    - when: story.type in [visual_feel, ui]
+      check:
+        id: manual-evidence
+        type: manual_confirmation
+    - when: runtime supports unity.console.read and story touches Unity
+      check:
+        id: unity-console
+        type: unity_console_clean
+
+state_transitions:
+  - id: mark-story-complete
+    when: verdict in [complete, complete_with_notes] and user.approval == granted
+    target: story.status
+    from: [ready, in_progress]
+    to: complete
+  - id: update-working-state
+    when: verdict in [complete, complete_with_notes] and user.approval == granted
+    target: session.active_state
+    from: active
+    to: story_completed
+
+failure:
+  retry:
+    max_attempts: 1
+  on_blocked: report
+  escalation_target: technical-lead
+
+notes:
+  migration_source: .claude/skills/story-done/SKILL.md
+  status: example-only
+  intentional_changes:
+    - Completion status changes are explicit state_transitions instead of hidden procedural edits.
+    - Claude AskUserQuestion becomes semantic approval/question/choice capabilities.
+    - qa-lead and lead-programmer Task gates become optional consultations controlled by review_mode.
+    - Story-type-specific evidence becomes structural conditional verification.
+    - COMPLETE/COMPLETE WITH NOTES/BLOCKED becomes a canonical verdict contract.
