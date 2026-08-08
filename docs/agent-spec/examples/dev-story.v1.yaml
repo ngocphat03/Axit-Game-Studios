@@ -1,0 +1,123 @@
+spec_version: axit.skill/v1
+id: dev-story
+name: Develop Story
+description: Implement one ready development story within its approved scope and produce verifiable evidence.
+
+inputs:
+  - name: story_path
+    type: path
+    required: true
+
+preconditions:
+  - id: story-exists
+    check: input.story_path exists
+    on_failure: block
+  - id: story-ready
+    check: story.status in [ready, in_progress]
+    on_failure: ask
+  - id: governing-adr-exists
+    check: story.governing_adr exists
+    on_failure: block
+  - id: dependencies-complete
+    check: story.dependencies are complete
+    on_failure: ask
+
+context:
+  required:
+    - source: input
+      ref: story_path
+    - source: project
+      ref: architecture.tr_registry
+    - source: story
+      ref: governing_adr
+    - source: project
+      ref: architecture.control_manifest
+    - source: project
+      ref: technical_preferences
+  optional:
+    - source: project
+      ref: session.active_state
+    - source: project
+      ref: qa.current_plan
+
+capabilities:
+  required:
+    - file.read
+    - file.search
+    - code.edit
+    - test.run
+    - git.diff
+    - user.question
+    - user.approval
+  optional:
+    - agent.delegate
+    - agent.consult
+    - unity.inspect
+    - unity.test.run
+
+model_requirements:
+  reasoning: medium
+  coding: high
+  long_context: preferred
+  vision: none
+  tool_use: required
+
+procedure:
+  - id: inspect-story
+    intent: Read the story, acceptance criteria, dependencies, out-of-scope boundaries, and required test evidence.
+  - id: load-governing-context
+    intent: Load the current requirement, governing ADR, project control rules, and technical preferences before implementation.
+  - id: validate-dependencies
+    intent: Surface incomplete or missing dependencies before making changes.
+  - id: select-owner
+    intent: Select the most appropriate implementation profile from story layer, type, system, and engine context.
+  - id: implement
+    intent: Implement only the story scope and create required automated test evidence alongside the code when applicable.
+  - id: verify
+    intent: Run available deterministic checks and map acceptance criteria to concrete evidence.
+  - id: summarize
+    intent: Report changed files, evidence, deviations, engine risks, blockers, and the recommended next review step.
+  - id: checkpoint-state
+    intent: Persist a compact working-state checkpoint when the runtime supports project state persistence.
+
+outputs:
+  - id: implementation
+    type: change_set
+    required: true
+  - id: test-evidence
+    type: evidence
+    required: false
+  - id: implementation-summary
+    type: report
+    required: true
+
+verification:
+  required:
+    - id: acceptance-criteria
+      type: criteria_coverage
+    - id: scope
+      type: change_scope
+  conditional:
+    - when: story.type in [logic, integration]
+      check:
+        id: automated-tests
+        type: tests_pass
+    - when: story.type in [visual_feel, ui]
+      check:
+        id: manual-evidence-required
+        type: manual_confirmation
+
+failure:
+  retry:
+    max_attempts: 1
+  on_blocked: escalate
+  escalation_target: technical-lead
+
+notes:
+  migration_source: .claude/skills/dev-story/SKILL.md
+  status: example-only
+  intentional_changes:
+    - Claude Task routing is expressed as optional agent.delegate capability.
+    - AskUserQuestion is expressed through user.question/user.approval.
+    - Provider model name is replaced by model requirements.
+    - Verification requirements are structural rather than only procedural prose.
