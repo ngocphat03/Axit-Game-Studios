@@ -1,129 +1,198 @@
-# First Vertical Slice Findings
+# Migration Slice Findings
 
 ## Scope
 
-This note records what was learned by translating the first production workflow slice:
+Three materially different slices were translated from the existing Claude-specific implementation into Axit Agent Spec v1:
 
 ```text
-story-readiness
-  -> dev-story
-  -> code-review
-  -> story-done
+Production
+story-readiness -> dev-story -> code-review -> story-done
+
+Design
+brainstorm -> design-system -> design-review
+
+QA
+qa-plan -> smoke-check -> regression-suite -> test-evidence-review
 ```
 
-The purpose is not to freeze a Workflow Spec yet. It is to pressure-test Skill/Profile/Capability v1 against real legacy behavior.
+The goal was to pressure-test Skill/Profile/Capability contracts before defining Workflow Spec v1.
 
-## Finding 1 — Skills need explicit side-effect classification
+## Finding 1 — Side effects must be explicit
 
-The legacy set contains both strictly read-only skills (`story-readiness`, `code-review`) and mutating skills (`dev-story`, `story-done`). That distinction was previously encoded only in prose and provider tool allowlists.
+Legacy behavior mixes read-only review, project mutation, and potentially external operations. Tool allowlists are not enough to express intent.
 
-Added:
+Canonical Skill now declares:
 
 ```yaml
 execution:
   side_effects: none | project-write | external
 ```
 
-This gives adapters and future Axit-Code Harness logic a provider-neutral signal before model execution.
+QA migration proved side effects can depend on mode:
 
-## Finding 2 — A Skill needs preferred ownership without requiring a subagent
+```yaml
+side_effect_rules:
+  - when: mode == report
+    side_effects: none
+```
 
-`code-review` is conceptually owned by `lead-programmer`, while implementation is routed to a programmer profile. The legacy repo expresses this through Claude agent metadata and Task calls.
+This is important for future Axit-Code Harness policy evaluation.
 
-Added:
+## Finding 2 — Ownership is semantic, not a subagent requirement
+
+Skills often have a natural owner (`lead-programmer`, `qa-lead`, `game-designer`) but do not inherently require separate model sessions.
 
 ```yaml
 execution:
-  preferred_profile: lead-programmer
+  preferred_profile: qa-lead
 ```
 
-This means "this role should own the work" without requiring a separate model instance. A runtime can satisfy the routing through profile switching, a subagent, another model call, or an Axit-Code actor.
+The runtime may implement ownership through profile switching, a subagent, another provider call, or an Axit-Code actor.
 
-## Finding 3 — Gate/review Skills produce semantic verdicts
+## Finding 3 — Verdicts are first-class contracts
 
-The first slice repeatedly relies on finite outcomes:
+Across all slices, downstream behavior depends on finite outcomes:
 
-- story readiness: READY / NEEDS WORK / BLOCKED;
-- code review: APPROVED / APPROVED WITH SUGGESTIONS / CHANGES REQUIRED;
-- story completion: COMPLETE / COMPLETE WITH NOTES / BLOCKED.
+- READY / NEEDS WORK / BLOCKED;
+- APPROVED / NEEDS REVISION;
+- PASS / PASS WITH WARNINGS / FAIL;
+- ADEQUATE / INCOMPLETE / MISSING;
+- COMPLETE / BLOCKED.
 
-Added canonical `verdicts` so downstream logic can depend on normalized outcomes rather than parsing prose.
+Canonical `verdicts` remove the need to parse prose and enable workflow gates.
 
-## Finding 4 — Completion Skills need declarative state transitions
+## Finding 4 — Critical state transitions must be declarative
 
-`story-done` does more than report: after verification and approval, it changes story/session/sprint state.
-
-Added:
+Completion-oriented skills mutate project state after evidence and approval.
 
 ```yaml
 state_transitions:
-  - when: verdict == complete
+  - when: verdict == complete and user.approval == granted
     target: story.status
     from: in_progress
     to: complete
 ```
 
-Critical state mutation should not live only in Markdown guidance.
+State mutation should never be hidden only in prompt prose.
 
-## Finding 5 — Review mode is configuration/input, not provider behavior
+## Finding 5 — Human collaboration needs semantic interaction checkpoints
 
-`full | lean | solo` changes which independent review gates are executed. This is valid product behavior and should survive provider changes.
+Design skills are intentionally collaborative. They require repeated questions, choices, decisions, approvals, and resumable checkpoints.
 
-In v1 this is represented as a normal enum input/config value. The underlying implementation of the optional consultation can vary by runtime.
+The canonical layer therefore distinguishes:
 
-## Finding 6 — Multi-agent consultation is optional execution strategy
+- `question` — missing information;
+- `choice` — bounded alternative selection;
+- `decision` — substantive project/design decision;
+- `approval` — authorization for mutation;
+- `confirmation` — manual evidence/observation.
 
-The legacy implementation uses Claude `Task` to spawn engine specialists, QA, directors, and lead programmers, sometimes in parallel.
+Adapters decide whether this becomes a widget, CLI prompt, chat turn, or another UI.
 
-The canonical translation uses:
+## Finding 6 — Persistent checkpoints matter for long creative work
 
-- `agent.consult`
-- `agent.delegate`
-- `agent.parallel`
+`design-system` writes approved sections incrementally and maintains active state so work survives compaction/session changes.
 
-Correctness should not depend on native Claude subagents unless a Skill explicitly declares the semantic collaboration capability as required. Most first-slice consultation is optional and can degrade to same-model profile switching or sequential model calls.
+Canonical procedure supports checkpoint intent, while the runtime decides storage.
 
-## Finding 7 — Conditional verification is necessary
-
-Evidence requirements depend heavily on story type:
-
-- Logic -> automated unit test;
-- Integration -> integration test/playtest;
-- Visual/Feel -> manual visual/playtest evidence;
-- UI -> walkthrough or interaction evidence;
-- Config/Data -> smoke evidence.
-
-The existing `verification.conditional` concept is therefore validated and should remain in v1.
-
-## Finding 8 — Workflow Spec should remain deferred
-
-The four translations can already express their own semantics using Skill/Profile/Capability contracts. The missing concern is composition/order across Skills, but there is not yet enough evidence to decide whether Workflow Spec needs:
-
-- a simple DAG;
-- phase/gate semantics;
-- artifact-driven transitions;
-- state-machine semantics;
-- all of the above.
-
-Recommendation: migrate at least two more materially different slices before freezing `axit.workflow/v1`.
-
-Suggested next slices:
-
-1. design: `brainstorm -> design-system -> design-review`;
-2. QA: `qa-plan -> smoke-check -> regression-suite -> test-evidence-review`.
-
-## Current conclusion
-
-The provider-neutral direction is holding up under the first real migration.
-
-The strongest emerging separation is:
+This reinforces the Axit-Code split:
 
 ```text
-Skill/Profile/Workflow intent
-        -> Capability requirements
-        -> Provider adapter / Axit-Code runtime
-        -> Policy enforcement
-        -> Verification evidence
+Run Ledger = full audit/history
+Working State = compact resumable current state
 ```
 
-The current Claude implementation remains useful as a reference runtime, but Claude primitives are no longer required to define the canonical behavior.
+## Finding 7 — Multi-agent work is a strategy, not canonical topology
+
+The legacy repo frequently uses Claude `Task`, sometimes in parallel. Across the migrated slices, most of this behavior can be represented as:
+
+- `agent.consult`;
+- `agent.delegate`;
+- `agent.parallel`.
+
+Native subagents are optional unless the semantic capability is explicitly required. A runtime may substitute sequential calls or profile switches when correctness is preserved.
+
+## Finding 8 — Conditional verification is essential
+
+Evidence requirements depend on story type, runtime support, mode, and project phase.
+
+Examples:
+
+- Logic -> unit tests;
+- Integration -> integration/playtest evidence;
+- Visual/Feel -> manual evidence;
+- UI -> walkthrough/interaction evidence;
+- smoke check -> automated tests when runnable plus manual critical paths.
+
+`verification.conditional` is therefore a validated v1 primitive.
+
+## Finding 9 — Workflows need gates and artifacts, not duplicated procedures
+
+The three slices show that Workflow only needs to compose Skills using:
+
+- dependencies;
+- required/optional steps;
+- conditions;
+- repeatability;
+- accepted verdicts;
+- persistent artifact/state checks.
+
+A strict required step with completion rules is sufficient to model a gate; no provider-specific gate primitive is necessary.
+
+## Finding 10 — Repeatability is required but unbounded loops are not
+
+System design/review repeats across systems; production repeats across stories. A finite `repeat.over` collection covers this without introducing an autonomous loop engine.
+
+## Finding 11 — Artifact-driven completion is stronger than conversational state
+
+Existing Game Studios workflows already rely on files/status fields as evidence that a phase is complete. The provider-neutral contract preserves this pattern:
+
+```yaml
+completion:
+  artifacts:
+    - ref: design.game_concept
+      exists: true
+    - ref: story.status
+      equals: complete
+```
+
+This maps cleanly to Axit-Code verification and resume semantics later.
+
+## Finding 12 — Workflow Spec v1 can remain intentionally small
+
+The migration does not justify a general workflow programming language.
+
+`axit.workflow/v1` therefore defines only:
+
+- Skill references;
+- dependency/order;
+- simple conditions;
+- finite repeat/for-each;
+- verdict/artifact completion contracts;
+- workflow run state (`completed`, `paused`, `blocked`, `cancelled`).
+
+Retries, context, tools, model selection, interaction details, and state mutation remain owned by Skills/runtime.
+
+## Final architecture conclusion
+
+The provider-neutral model survived three very different real-world slices:
+
+```text
+Workflow intent
+    -> Skill contract
+        -> Agent Profile
+        -> Capability requirements
+            -> Provider Adapter / Axit-Code Runtime
+                -> Policy / Harness
+                -> Tools
+                -> Verification
+                -> Persistent run state
+```
+
+The current Claude implementation remains a valuable reference runtime and migration source, but Claude primitives are no longer required to define canonical Game Studios behavior.
+
+## Recommended next step
+
+Do not migrate all remaining skills blindly.
+
+Next, build one **Claude adapter/export proof** that consumes a small canonical vertical slice (for example `story-delivery`) and renders/runs equivalent Claude Code artifacts. Once round-trip behavior is proven, add Codex/OpenAI and Gemini adapters against the same canonical source before scaling migration across the remaining skill catalog.
