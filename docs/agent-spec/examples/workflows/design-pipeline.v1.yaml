@@ -1,0 +1,66 @@
+spec_version: axit.workflow/v1
+id: design-pipeline
+name: Design Pipeline
+description: Establish a game concept, author system GDDs, and approve each design before implementation planning.
+
+inputs:
+  - name: review_mode
+    type: enum
+    required: false
+    values: [full, lean, solo]
+    default: lean
+
+steps:
+  concept:
+    skill: brainstorm
+    required: true
+    inputs:
+      review_mode: $workflow.review_mode
+    completion:
+      accepted_verdicts: [completed]
+      artifacts:
+        - ref: design.game_concept
+          exists: true
+      on_unaccepted: block
+
+  system-design:
+    skill: design-system
+    required: true
+    depends_on: [concept]
+    repeat:
+      over: project.systems_to_design
+      as: system
+    inputs:
+      system: $item
+      review_mode: $workflow.review_mode
+    completion:
+      accepted_verdicts: [completed]
+      on_unaccepted: stop
+
+  system-review:
+    skill: design-review
+    required: true
+    depends_on: [system-design]
+    repeat:
+      over: $system-design.items
+      as: design_result
+    inputs:
+      document_path: $item.outputs.system-gdd
+      depth: $workflow.review_mode
+      tracking_updates: true
+    completion:
+      accepted_verdicts: [approved]
+      artifacts:
+        - ref: design.system_status
+          equals: approved
+      on_unaccepted: stop
+
+completion:
+  strategy: all_required_steps
+  artifacts:
+    - ref: design.game_concept
+      exists: true
+    - ref: design.approved_gdds
+      min_count: 1
+
+verdicts: [completed, paused, blocked, cancelled]
