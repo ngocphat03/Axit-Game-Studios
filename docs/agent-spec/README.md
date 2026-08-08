@@ -2,144 +2,154 @@
 
 ## Status
 
-**Draft / experimental.** This specification is introduced in `Axit-Game-Studios` as a provider-neutral design layer before any migration of the existing Claude-specific agents and skills.
+**Draft / experimental.** This provider-neutral specification is being proven inside `Axit-Game-Studios` before replacing the existing Claude-specific implementation.
 
-The current `.claude/` implementation remains untouched and authoritative for the existing workflow until individual artifacts are migrated deliberately.
+The current `.claude/` tree remains untouched and authoritative for existing execution until adapter/export parity is demonstrated.
 
 ## Goal
 
-Axit Agent Spec defines **how an AI-assisted game-development system describes work**, without depending on Claude Code, Codex, Gemini, OpenAI, Anthropic, or any future provider.
-
-The canonical specification must describe:
-
-- what an agent role is responsible for;
-- what a skill knows how to do;
-- what capabilities the runtime must provide;
-- what context must be loaded;
-- what outputs and verification are required;
-- how failures, escalation, and approval are expressed.
-
-Provider-specific runtimes are adapters, not sources of truth.
+Describe AI-assisted game-development work once, then run it through different AI/runtime environments:
 
 ```text
 Canonical Axit Agent Spec
         |
         +--> Claude adapter
-        +--> Codex adapter
+        +--> Codex / OpenAI adapter
         +--> Gemini adapter
         +--> Generic adapter
-        +--> Axit-Code runtime (future)
+        +--> Axit-Code runtime
 ```
 
-## Design principles
+Provider-specific runtimes are adapters, not sources of truth.
 
-### 1. Provider-neutral by default
+## Canonical layers
 
-Canonical artifacts MUST NOT depend on provider-specific primitives such as:
+### Agent Profile
 
-- Claude `Task`;
-- Claude `AskUserQuestion`;
-- Claude `PreToolUse` / `PostToolUse` hooks;
-- hard-coded model names such as `sonnet`, `opus`, or `haiku`;
-- provider-specific tool names when a semantic capability can describe the requirement.
+Defines **who owns the responsibility**: role boundaries, skills, knowledge, capability needs, model requirements, and escalation.
 
-Provider-specific details belong in adapters.
+### Skill
 
-### 2. Capabilities instead of tool names
+Defines **how one reusable unit of work is performed**: inputs, preconditions, context, interactions, procedure, outputs, verification, verdicts, and state transitions.
 
-Skills and profiles request semantic capabilities:
+### Capability
 
-```yaml
-capabilities:
-  required:
-    - file.read
-    - code.edit
-    - test.run
-    - user.approval
-```
-
-An adapter maps those capabilities to the concrete runtime primitives available in that environment.
-
-### 3. Skills are executable specifications, not prompts
-
-A skill is composed of:
+Defines **what the environment must be able to do** using semantic IDs such as:
 
 ```text
-Purpose
-+ Inputs
-+ Preconditions
-+ Context requirements
-+ Capability requirements
-+ Procedure
-+ Outputs
-+ Verification
-+ Failure / recovery behavior
+file.read
+code.edit
+test.run
+user.approval
+agent.consult
+unity.inspect
 ```
 
-Markdown may contain expert guidance, heuristics, and examples, but runtime-significant requirements must be represented structurally.
+Provider adapters map these to concrete tools.
 
-### 4. Agent profiles define responsibility, not identity
+### Workflow
 
-A profile describes a specialized role through:
+Defines **how Skills compose**: dependencies, optional/required steps, simple conditions, finite repeatability, verdict gates, and artifact-driven completion.
 
-- responsibilities;
-- boundaries;
-- skills;
-- capability requirements;
-- model capability requirements;
-- escalation relationships;
-- verification expectations.
+Workflow never duplicates Skill procedure.
 
-A profile does not imply a dedicated model instance and must not hard-code a provider.
+## v1 specifications
 
-### 5. Model selection is capability-based
+1. [`Skill Spec v1`](skill-spec-v1.md)
+2. [`Agent Profile Spec v1`](agent-profile-spec-v1.md)
+3. [`Capability Spec v1`](capability-spec-v1.md)
+4. [`Workflow Spec v1`](workflow-spec-v1.md)
+5. [`Provider Adapter Boundary`](provider-adapters.md)
+6. [`Migration Slice Findings`](vertical-slice-findings.md)
 
-Canonical profiles describe model needs such as:
+## Principles
+
+### Provider-neutral canonical source
+
+Canonical artifacts must not depend on:
+
+- Claude `Task` or `AskUserQuestion`;
+- Claude hooks/permission syntax;
+- concrete Claude/OpenAI/Gemini model IDs;
+- provider-specific tool names when semantic capabilities exist.
+
+### Capability-based model/tool routing
+
+Profiles and Skills describe requirements, for example:
 
 ```yaml
 model_requirements:
-  reasoning: medium
-  coding: high
-  long_context: preferred
+  reasoning: high
+  coding: medium
   tool_use: required
+
+capabilities:
+  required:
+    - file.read
+    - test.run
 ```
 
-The active runtime chooses an appropriate provider/model.
+The runtime/adapter chooses the concrete provider, model, and tool implementation.
 
-### 6. Knowledge is not security
+### Human collaboration is semantic
 
-Rules, profiles, skills, and prompt instructions may constrain behavior, but they are not a security boundary.
+Canonical interactions distinguish:
 
-In Claude Code today, adapters may use permissions and hooks as the best available enforcement mechanism. In Axit-Code later, side effects must be enforced by the Harness / Tool Gateway independently of model compliance.
+- question;
+- choice;
+- decision;
+- approval;
+- confirmation.
 
-### 7. Verification is explicit
+An adapter can render these as chat, CLI prompts, widgets, or another UI.
 
-A skill must describe evidence required for completion. The agent saying "done" is never sufficient when deterministic evidence exists.
+### Knowledge is not security
 
-Examples:
+Prompt/rule/profile content can guide behavior but cannot be the security boundary.
 
-- compilation succeeds;
-- tests pass;
-- acceptance criteria map to evidence;
-- modified files remain in scope;
-- Unity Console contains no new errors;
-- required artifacts exist.
+Claude adapters may use permissions/hooks today. Axit-Code later must enforce side effects through Harness/Tool Gateway policy independently of model compliance.
 
-## Canonical artifact types
+### Verification before completion
 
-The initial v1 specification defines three core artifact types:
+When deterministic evidence exists, it outranks model self-assessment:
 
-1. [`Skill Spec`](skill-spec-v1.md)
-2. [`Agent Profile Spec`](agent-profile-spec-v1.md)
-3. [`Capability Spec`](capability-spec-v1.md)
+- build/compile;
+- automated tests;
+- acceptance-criteria traceability;
+- Git/change scope;
+- Unity Console state;
+- required artifacts;
+- structured manual evidence where deterministic checks are impossible.
 
-Provider adapter rules are described in [`provider-adapters.md`](provider-adapters.md).
+## Migration evidence
 
-Workflow Spec will be defined after these three contracts are tested against real migrated skills. This is intentional: do not create a workflow abstraction until Skill/Profile/Capability boundaries have been validated.
+Three different workflow slices have been translated into v1 examples.
 
-## Proposed canonical layout
+### Production
 
-The future provider-neutral source tree should converge toward:
+```text
+story-readiness -> dev-story -> code-review -> story-done
+```
+
+### Design
+
+```text
+brainstorm -> design-system -> design-review
+```
+
+### QA
+
+```text
+qa-plan -> smoke-check -> regression-suite -> test-evidence-review
+```
+
+These migrations produced the current Skill/Workflow primitives rather than designing them in isolation.
+
+See `docs/agent-spec/examples/` and `docs/agent-spec/examples/workflows/`.
+
+## Proposed canonical repository layout
+
+Once adapter parity is proven, the source tree should converge toward:
 
 ```text
 .agents/
@@ -158,43 +168,42 @@ adapters/
 └── generic/
 ```
 
-Existing `.claude/` content is not moved in this first change.
+The existing `.claude/` tree should not be mass-migrated until an exporter can reproduce a small working slice reliably.
 
 ## Migration strategy
 
-Every existing agent/skill should be audited into one of four categories:
+Audit each legacy artifact as:
 
-- **Keep** — semantics are already strong; translate into the new contract.
-- **Merge** — overlapping artifacts should become one canonical skill/profile.
-- **Redesign** — useful intent, but structure or provider coupling must change.
-- **Delete** — redundant, low-value, or inseparable from a provider-specific behavior.
+- **Keep** — semantics are strong; translate.
+- **Merge** — overlap should become one canonical artifact.
+- **Redesign** — intent is useful but structure/provider coupling is wrong.
+- **Delete** — redundant or low-value.
 
-Migration should happen one vertical slice at a time.
-
-Recommended first slice:
-
-```text
-story-readiness
-    -> dev-story
-    -> code-review
-    -> story-done
-```
-
-`dev-story` and `gameplay-programmer` are included as example translations under `docs/agent-spec/examples/`.
+Migrate vertical slices, not all 73 skills at once.
 
 ## Relationship to Axit-Code
 
-Axit-Game-Studios is the **spec lab and reference implementation** for how AI-assisted game-development work should be described and coordinated.
+`Axit-Game-Studios` is the **spec lab / reference behavior library**.
 
-Axit-Code will later provide the **product runtime** that consumes these concepts and adds stronger enforcement:
+`Axit-Code` becomes the **product runtime and enforcement layer**:
 
 ```text
 Axit Agent Spec
-    -> Agent Runtime
+    -> Workflow / Agent Runtime
+    -> Profile + Skill + Context loader
+    -> Capability resolution
     -> Harness / Tool Gateway
-    -> File / Git / Process / Unity tools
+    -> File / Git / Process / Unity
     -> Verification
-    -> Run Ledger
+    -> Run Ledger + resumable working state
 ```
 
-This separation lets the team validate useful agent behavior before committing to runtime abstractions.
+## Next proof
+
+Before migrating the rest of the catalog, implement one adapter/export proof for the `story-delivery` workflow:
+
+1. canonical v1 artifacts as source;
+2. generate or adapt Claude Code artifacts;
+3. verify behavior against the current legacy workflow;
+4. run the same canonical artifacts through a second provider adapter (Codex/OpenAI or Gemini);
+5. only then scale migration across the remaining skill catalog.
