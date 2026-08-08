@@ -3,6 +3,10 @@ id: dev-story
 name: Develop Story
 description: Implement one ready development story within its approved scope and produce verifiable evidence.
 
+execution:
+  side_effects: project-write
+  preferred_profile: gameplay-programmer
+
 inputs:
   - name: story_path
     type: path
@@ -91,6 +95,10 @@ outputs:
     type: report
     required: true
 
+verdicts:
+  - implemented
+  - blocked
+
 verification:
   required:
     - id: acceptance-criteria
@@ -107,6 +115,13 @@ verification:
         id: manual-evidence-required
         type: manual_confirmation
 
+state_transitions:
+  - id: mark-in-progress
+    when: verdict == implemented
+    target: story.status
+    from: [ready, not_started]
+    to: in_progress
+
 failure:
   retry:
     max_attempts: 1
@@ -121,3 +136,4 @@ notes:
     - AskUserQuestion is expressed through user.question/user.approval.
     - Provider model name is replaced by model requirements.
     - Verification requirements are structural rather than only procedural prose.
+    - Project mutation and preferred ownership are explicit execution metadata.
