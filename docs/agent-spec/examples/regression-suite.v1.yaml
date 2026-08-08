@@ -1,7 +1,7 @@
 spec_version: axit.skill/v1
 id: regression-suite
 name: Regression Suite
-ndescription: Maintain or audit the curated regression-test manifest that covers critical paths, known bugs, and coverage drift.
+description: Maintain or audit the curated regression-test manifest that covers critical paths, known bugs, and coverage drift.
 
 execution:
   side_effects: project-write
