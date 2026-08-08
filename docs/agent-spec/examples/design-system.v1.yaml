@@ -1,0 +1,137 @@
+spec_version: axit.skill/v1
+id: design-system
+name: Design Game System
+description: Collaboratively author or retrofit one system GDD section-by-section while preserving dependencies and approved cross-system facts.
+
+execution:
+  side_effects: project-write
+  preferred_profile: systems-designer
+  interaction: collaborative
+
+inputs:
+  - name: system
+    type: string
+    required: true
+  - name: mode
+    type: enum
+    required: false
+    values: [new, retrofit]
+    default: new
+  - name: review_mode
+    type: enum
+    required: false
+    values: [full, lean, solo]
+    default: lean
+
+preconditions:
+  - id: concept-exists
+    check: design.game_concept exists
+    on_failure: block
+  - id: systems-index-exists
+    check: design.systems_index exists
+    on_failure: block
+
+context:
+  required:
+    - source: project
+      ref: design.game_concept
+    - source: project
+      ref: design.systems_index
+  optional:
+    - source: project
+      ref: design.entity_registry
+    - source: project
+      ref: design.related_gdds
+    - source: project
+      ref: design.dependency_gdds
+    - source: project
+      ref: architecture.relevant_adrs
+    - source: project
+      ref: engine.reference
+    - source: project
+      ref: lessons.consistency_failures
+
+capabilities:
+  required:
+    - file.read
+    - file.search
+    - file.write
+    - code.edit
+    - user.question
+    - user.choice
+    - user.approval
+  optional:
+    - agent.consult
+    - agent.parallel
+
+model_requirements:
+  reasoning: high
+  coding: low
+  long_context: required
+  vision: preferred
+  tool_use: required
+
+procedure:
+  - id: resolve-target
+    intent: Resolve the target system and whether this is new authoring or a retrofit that must preserve existing content.
+  - id: gather-context
+    intent: Load project concept, dependencies, related GDDs, known registry facts, engine constraints, and relevant ADRs before design begins.
+  - id: feasibility-brief
+    intent: Surface engine constraints, knowledge gaps, and provisional assumptions before authoring.
+    interaction:
+      type: confirmation
+      required: true
+  - id: create-or-resume
+    intent: Create an approved skeleton for a new GDD or identify only missing/incomplete sections in retrofit mode.
+    interaction:
+      type: approval
+      required: true
+      subject: target_gdd
+    checkpoint:
+      required: true
+      state_ref: session.active_state
+  - id: author-sections
+    intent: For each required incomplete section, run Context -> Questions -> Options -> Decision -> Draft -> Approval -> Persist.
+    interaction:
+      type: approval
+      required: true
+      subject: current_section
+    checkpoint:
+      required: true
+      state_ref: session.active_state
+  - id: validate-cross-system-facts
+    intent: Detect conflicts against registered entities, formulas, constants, dependency contracts, and previously approved GDD decisions before continuing.
+  - id: finalize
+    intent: Confirm all required sections are complete and surface provisional assumptions or unresolved dependencies.
+
+outputs:
+  - id: system-gdd
+    type: document
+    required: true
+  - id: design-decisions
+    type: decision
+    required: true
+
+verdicts: [completed, blocked]
+
+verification:
+  required:
+    - id: required-sections
+      type: criteria_coverage
+    - id: gdd-artifact
+      type: artifact_exists
+  conditional:
+    - when: mode == retrofit
+      check:
+        id: existing-content-preserved
+        type: change_scope
+
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
+  escalation_target: game-designer
+
+notes:
+  migration_source: .claude/skills/design-system/SKILL.md
+  status: example-only
