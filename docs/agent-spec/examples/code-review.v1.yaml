@@ -1,0 +1,109 @@
+spec_version: axit.skill/v1
+id: code-review
+name: Code Review
+description: Perform a read-only architectural and quality review of implementation files against project standards, ADRs, testability, and game-specific constraints.
+
+execution:
+  side_effects: none
+  preferred_profile: lead-programmer
+
+inputs:
+  - name: targets
+    type: path
+    required: true
+  - name: story_path
+    type: path
+    required: false
+
+preconditions:
+  - id: targets-exist
+    check: all requested review targets exist
+    on_failure: block
+
+context:
+  required:
+    - source: input
+      ref: targets
+    - source: project
+      ref: coding_standards
+    - source: project
+      ref: technical_preferences
+  optional:
+    - source: input
+      ref: story_path
+    - source: project
+      ref: architecture.referenced_adrs
+    - source: project
+      ref: qa.test_cases
+
+capabilities:
+  required:
+    - file.read
+    - file.search
+    - git.history
+  optional:
+    - agent.consult
+    - agent.parallel
+    - user.choice
+
+model_requirements:
+  reasoning: high
+  coding: high
+  long_context: preferred
+  vision: none
+  tool_use: preferred
+
+procedure:
+  - id: load-targets
+    intent: Read target files and governing coding standards in full.
+  - id: resolve-engine-context
+    intent: Determine engine/language/UI/shader specialization needs from technical preferences.
+  - id: check-adr-compliance
+    intent: Resolve governing ADRs and classify implementation deviations by severity.
+  - id: check-standards
+    intent: Evaluate coding standards, architecture boundaries, SOLID principles, testability, and performance-sensitive game concerns.
+  - id: specialist-consultation
+    intent: When collaboration capabilities are available, consult independent engine and QA profiles for applicable files without transferring change ownership.
+  - id: synthesize
+    intent: Merge findings into one review with required changes, suggestions, evidence references, and a normalized verdict.
+
+outputs:
+  - id: review-report
+    type: report
+    required: true
+  - id: review-verdict
+    type: decision
+    required: true
+
+verdicts:
+  - approved
+  - approved_with_suggestions
+  - changes_required
+
+verification:
+  required:
+    - id: all-targets-reviewed
+      type: criteria_coverage
+    - id: no-source-mutation
+      type: change_scope
+  conditional:
+    - when: governing ADRs are available
+      check:
+        id: adr-compliance-reviewed
+        type: review_verdict
+
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
+  escalation_target: technical-director
+
+notes:
+  migration_source: .claude/skills/code-review/SKILL.md
+  status: example-only
+  intentional_changes:
+    - The lead-programmer role is expressed through execution.preferred_profile rather than Claude agent metadata.
+    - Engine/QA Task spawns become semantic consultation capabilities.
+    - Parallel Task behavior is optional agent.parallel and is not required for correctness.
+    - Review result names are normalized as canonical verdicts.
+    - Read-only behavior is explicit and can be enforced by a runtime.
