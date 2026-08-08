@@ -1,0 +1,118 @@
+spec_version: axit.skill/v1
+id: brainstorm
+name: Brainstorm Game Concept
+description: Collaboratively turn an initial game idea or open exploration into an approved game concept document.
+
+execution:
+  side_effects: project-write
+  preferred_profile: game-designer
+  interaction: collaborative
+
+inputs:
+  - name: concept_hint
+    type: string
+    required: false
+  - name: review_mode
+    type: enum
+    required: false
+    values: [full, lean, solo]
+    default: lean
+
+context:
+  required: []
+  optional:
+    - source: project
+      ref: design.game_concept
+    - source: project
+      ref: design.game_pillars
+    - source: project
+      ref: director_gates
+
+capabilities:
+  required:
+    - file.read
+    - file.write
+    - user.question
+    - user.choice
+    - user.approval
+  optional:
+    - agent.consult
+    - agent.parallel
+    - web.research
+
+model_requirements:
+  reasoning: high
+  coding: none
+  long_context: preferred
+  vision: preferred
+  tool_use: preferred
+
+procedure:
+  - id: discover
+    intent: Understand player-emotion goals, taste, constraints, experience level, and development horizon.
+    interaction:
+      type: question
+      required: true
+  - id: generate-concepts
+    intent: Produce multiple materially different concepts using verb-first, mashup, and experience-first design methods.
+  - id: select-direction
+    intent: Record the user's chosen concept or combination without pressuring a choice.
+    interaction:
+      type: decision
+      required: true
+  - id: define-core-loop
+    intent: Define moment-to-moment, session, and progression loops plus player motivation.
+    interaction:
+      type: question
+      required: true
+  - id: define-pillars
+    intent: Establish pillars and anti-pillars that constrain later design decisions.
+    interaction:
+      type: approval
+      required: true
+      subject: game_pillars
+  - id: optional-review
+    intent: In full review mode, consult creative, art, technical, and production profiles on pillars, visual direction, feasibility, and scope.
+  - id: scope
+    intent: Define platform, engine preference, MVP, risks, and scope tiers.
+    interaction:
+      type: decision
+      required: true
+  - id: draft-concept
+    intent: Assemble the approved concept, MDA analysis, motivation model, core loop, pillars, scope, and visual identity anchor.
+  - id: persist
+    intent: Write the approved concept document only after scoped approval.
+    interaction:
+      type: approval
+      required: true
+      subject: design/gdd/game-concept.md
+    checkpoint:
+      required: true
+      state_ref: session.active_state
+
+outputs:
+  - id: game-concept
+    type: document
+    required: true
+  - id: concept-decisions
+    type: decision
+    required: true
+
+verdicts: [completed, blocked]
+
+verification:
+  required:
+    - id: concept-artifact
+      type: artifact_exists
+    - id: user-approved-direction
+      type: manual_confirmation
+
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
+  escalation_target: creative-director
+
+notes:
+  migration_source: .claude/skills/brainstorm/SKILL.md
+  status: example-only
