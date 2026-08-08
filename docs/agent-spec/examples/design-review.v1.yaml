@@ -1,0 +1,131 @@
+spec_version: axit.skill/v1
+id: design-review
+name: Design Review
+description: Review one design document for completeness, consistency, implementability, dependency integrity, and project alignment before implementation.
+
+execution:
+  side_effects: project-write
+  side_effect_rules:
+    - when: tracking_updates == false
+      side_effects: none
+  preferred_profile: creative-director
+  interaction: collaborative
+
+inputs:
+  - name: document_path
+    type: path
+    required: true
+  - name: depth
+    type: enum
+    required: false
+    values: [full, lean, solo]
+    default: full
+  - name: tracking_updates
+    type: boolean
+    required: false
+    default: true
+
+preconditions:
+  - id: document-exists
+    check: input.document_path exists
+    on_failure: block
+
+context:
+  required:
+    - source: input
+      ref: document_path
+    - source: project
+      ref: design.related_documents
+  optional:
+    - source: project
+      ref: design.game_concept
+    - source: project
+      ref: narrative.relevant_documents
+    - source: project
+      ref: design.prior_review_log
+    - source: project
+      ref: technical_preferences
+
+capabilities:
+  required:
+    - file.read
+    - file.search
+  optional:
+    - file.write
+    - code.edit
+    - agent.consult
+    - agent.parallel
+    - user.choice
+    - user.approval
+
+model_requirements:
+  reasoning: high
+  coding: low
+  long_context: required
+  vision: preferred
+  tool_use: preferred
+
+procedure:
+  - id: load-review-context
+    intent: Read the target document, related systems, dependency files, project pillars, narrative constraints, and prior review findings.
+  - id: completeness
+    intent: Check required design sections and broken dependency references.
+  - id: consistency
+    intent: Check formulas, edge cases, cross-system interactions, player fantasy, and implementability for contradictions or ambiguity.
+  - id: adversarial-review
+    intent: In full depth, consult all materially relevant specialist profiles and request adversarial rather than confirmatory review.
+  - id: senior-synthesis
+    intent: Synthesize specialist findings, preserve disagreements, classify blocking vs advisory issues, and estimate rough implementation scope.
+  - id: decide
+    intent: Produce a normalized design-review verdict.
+  - id: optional-revision
+    intent: If the user chooses to revise now, resolve blocking items collaboratively and persist only approved changes.
+    interaction:
+      type: decision
+      required: false
+  - id: update-tracking
+    intent: With approval, update systems index and append review history when tracking updates are enabled.
+    interaction:
+      type: approval
+      required: false
+      subject: design_tracking_records
+
+outputs:
+  - id: review-report
+    type: report
+    required: true
+  - id: review-verdict
+    type: decision
+    required: true
+
+verdicts:
+  - approved
+  - needs_revision
+  - major_revision_needed
+
+verification:
+  required:
+    - id: review-dimensions-covered
+      type: criteria_coverage
+  conditional:
+    - when: depth == full
+      check:
+        id: specialist-synthesis
+        type: review_verdict
+
+state_transitions:
+  - id: mark-approved
+    when: verdict == approved and tracking_updates == true and user.approval == granted
+    target: design.system_status
+    from: [in_design, in_review]
+    to: approved
+
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
+  escalation_target: creative-director
+
+notes:
+  migration_source: .claude/skills/design-review/SKILL.md
+  status: example-only
