@@ -1,0 +1,117 @@
+spec_version: axit.skill/v1
+id: story-readiness
+name: Story Readiness
+description: Validate whether one or more development stories are implementation-ready and report concrete gaps or blockers.
+
+execution:
+  side_effects: none
+  preferred_profile: producer
+
+inputs:
+  - name: scope
+    type: enum
+    required: true
+    values: [single, sprint, all, epic]
+  - name: story_path
+    type: path
+    required: false
+  - name: review_mode
+    type: enum
+    required: false
+    values: [full, lean, solo]
+    default: lean
+
+preconditions:
+  - id: target-resolves
+    check: requested story scope resolves to at least one story
+    on_failure: block
+
+context:
+  required:
+    - source: project
+      ref: design.systems_index
+    - source: project
+      ref: architecture.control_manifest
+    - source: project
+      ref: architecture.tr_registry
+  optional:
+    - source: project
+      ref: sprint.current
+    - source: project
+      ref: architecture.referenced_adrs
+    - source: project
+      ref: director_gates
+
+capabilities:
+  required:
+    - file.read
+    - file.search
+  optional:
+    - user.question
+    - agent.consult
+
+model_requirements:
+  reasoning: medium
+  coding: none
+  long_context: preferred
+  vision: none
+  tool_use: preferred
+
+procedure:
+  - id: resolve-scope
+    intent: Resolve the requested story set and review mode without changing project files.
+  - id: load-shared-context
+    intent: Load shared design, architecture, manifest, registry, sprint, and referenced ADR state once.
+  - id: evaluate-design-readiness
+    intent: Check traceability to approved design requirements and testable acceptance criteria.
+  - id: evaluate-architecture-readiness
+    intent: Check ADR state, requirement registry status, manifest freshness, engine notes, and control rules.
+  - id: evaluate-scope-readiness
+    intent: Check estimates, in-scope/out-of-scope boundaries, dependencies, unresolved questions, asset references, story type, and evidence requirements.
+  - id: classify
+    intent: Produce READY, NEEDS WORK, or BLOCKED using deterministic checklist findings where possible.
+  - id: optional-quality-gate
+    intent: In full review mode, request an independent readiness consultation when runtime collaboration is available.
+  - id: report
+    intent: Report passing checks, gaps, blockers, and sprint-level escalation without editing source stories.
+
+outputs:
+  - id: readiness-report
+    type: report
+    required: true
+  - id: per-story-verdicts
+    type: decision
+    required: true
+
+verdicts:
+  - ready
+  - needs_work
+  - blocked
+
+verification:
+  required:
+    - id: checklist-complete
+      type: criteria_coverage
+    - id: no-source-mutation
+      type: change_scope
+  conditional:
+    - when: scope == sprint
+      check:
+        id: must-have-escalation
+        type: review_verdict
+
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
+  escalation_target: producer
+
+notes:
+  migration_source: .claude/skills/story-readiness/SKILL.md
+  status: example-only
+  intentional_changes:
+    - Read-only behavior is structural through execution.side_effects=none.
+    - Claude AskUserQuestion becomes optional user.question.
+    - Claude Task/qa-lead gate becomes optional agent.consult plus review_mode semantics.
+    - Sonnet is replaced by model requirements.
+    - READY/NEEDS WORK/BLOCKED becomes a canonical verdict contract.
