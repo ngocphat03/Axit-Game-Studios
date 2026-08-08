@@ -1,0 +1,98 @@
+spec_version: axit.skill/v1
+id: qa-plan
+name: QA Plan
+description: Build a test plan for a sprint, feature, or story before implementation by mapping requirements to automated and manual evidence.
+
+execution:
+  side_effects: project-write
+  preferred_profile: qa-lead
+  interaction: approval-gated
+
+inputs:
+  - name: scope
+    type: enum
+    required: true
+    values: [sprint, feature, story, epic]
+  - name: target
+    type: string
+    required: false
+  - name: backfill_story_cases
+    type: boolean
+    required: false
+    default: false
+
+context:
+  required:
+    - source: project
+      ref: production.in_scope_stories
+    - source: project
+      ref: design.systems_index
+  optional:
+    - source: project
+      ref: design.referenced_gdd_sections
+    - source: project
+      ref: architecture.control_manifest
+
+capabilities:
+  required:
+    - file.read
+    - file.search
+    - file.write
+    - user.approval
+  optional:
+    - code.edit
+    - user.question
+
+model_requirements:
+  reasoning: high
+  coding: low
+  long_context: required
+  tool_use: required
+
+procedure:
+  - id: resolve-scope
+    intent: Resolve stories in scope and continue with valid stories even if individual references are missing.
+  - id: extract-requirements
+    intent: Load story types, acceptance criteria, implementation scope, engine notes, dependencies, and only test-relevant GDD sections.
+  - id: classify
+    intent: Respect declared story types; infer and flag missing types conservatively when needed.
+  - id: plan-evidence
+    intent: Define automated tests, manual checks, smoke scope, edge cases, playtest needs, and sprint-level definition of done.
+  - id: approve-output
+    intent: Obtain approval for the QA plan and optional story test-case backfill before any mutation.
+    interaction:
+      type: approval
+      required: true
+      subject: qa_plan_changes
+  - id: persist
+    intent: Write the plan and optionally backfill story QA test-case sections.
+    checkpoint:
+      required: true
+      state_ref: session.active_state
+
+outputs:
+  - id: qa-plan
+    type: document
+    required: true
+  - id: test-requirements
+    type: evidence
+    required: true
+
+verdicts: [completed, blocked]
+
+verification:
+  required:
+    - id: story-coverage
+      type: criteria_coverage
+    - id: qa-plan-artifact
+      type: artifact_exists
+
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
+  escalation_target: qa-lead
+
+notes:
+  migration_source: .claude/skills/qa-plan/SKILL.md
+  status: example-only
