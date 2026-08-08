@@ -1,0 +1,98 @@
+spec_version: axit.skill/v1
+id: regression-suite
+name: Regression Suite
+ndescription: Maintain or audit the curated regression-test manifest that covers critical paths, known bugs, and coverage drift.
+
+execution:
+  side_effects: project-write
+  side_effect_rules:
+    - when: mode == report
+      side_effects: none
+  preferred_profile: qa-lead
+  interaction: approval-gated
+
+inputs:
+  - name: mode
+    type: enum
+    required: true
+    values: [update, audit, report]
+
+context:
+  required:
+    - source: project
+      ref: tests.inventory
+  optional:
+    - source: project
+      ref: tests.regression_manifest
+    - source: project
+      ref: design.systems_index
+    - source: project
+      ref: design.mvp_gdds
+    - source: project
+      ref: qa.closed_bugs
+    - source: project
+      ref: sprint.current
+
+capabilities:
+  required:
+    - file.read
+    - file.search
+  optional:
+    - file.write
+    - code.edit
+    - user.approval
+    - user.choice
+
+model_requirements:
+  reasoning: high
+  coding: medium
+  long_context: preferred
+  tool_use: required
+
+procedure:
+  - id: inventory
+    intent: Load the existing regression manifest, test inventory, relevant critical paths, completed stories, and closed bugs according to mode.
+  - id: map-critical-paths
+    intent: In audit mode, map GDD acceptance criteria, formulas, and edge cases to existing tests.
+  - id: map-bug-regressions
+    intent: Identify fixed bugs that lack a test capable of reproducing the original failure.
+  - id: detect-drift
+    intent: Detect newly added systems, stories, or revised requirements that are not represented in regression coverage.
+  - id: report
+    intent: Produce coverage status, prioritized gaps, and a proposed curated manifest update.
+  - id: persist
+    intent: In update/audit mode, change the regression manifest only after approval; never remove registered tests silently.
+    interaction:
+      type: approval
+      required: false
+      subject: regression_manifest
+
+outputs:
+  - id: regression-report
+    type: report
+    required: true
+  - id: regression-manifest
+    type: document
+    required: false
+
+verdicts: [complete, blocked]
+
+verification:
+  required:
+    - id: coverage-map-produced
+      type: criteria_coverage
+  conditional:
+    - when: mode in [update, audit]
+      check:
+        id: manifest-persisted-if-approved
+        type: artifact_exists
+
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
+  escalation_target: qa-lead
+
+notes:
+  migration_source: .claude/skills/regression-suite/SKILL.md
+  status: example-only
