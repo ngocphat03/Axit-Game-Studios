@@ -1,0 +1,97 @@
+spec_version: axit.skill/v1
+id: test-evidence-review
+name: Test Evidence Review
+description: Review the quality and completeness of automated tests and manual evidence, not merely their existence.
+
+execution:
+  side_effects: project-write
+  side_effect_rules:
+    - when: persist_report == false
+      side_effects: none
+  preferred_profile: qa-lead
+  interaction: approval-gated
+
+inputs:
+  - name: scope
+    type: enum
+    required: true
+    values: [story, sprint, system]
+  - name: target
+    type: string
+    required: false
+  - name: persist_report
+    type: boolean
+    required: false
+    default: false
+
+context:
+  required:
+    - source: project
+      ref: production.in_scope_stories
+  optional:
+    - source: project
+      ref: qa.evidence_files
+    - source: project
+      ref: tests.in_scope_files
+    - source: project
+      ref: sprint.current
+
+capabilities:
+  required:
+    - file.read
+    - file.search
+  optional:
+    - file.write
+    - user.approval
+
+model_requirements:
+  reasoning: high
+  coding: medium
+  long_context: preferred
+  tool_use: required
+
+procedure:
+  - id: resolve-scope
+    intent: Resolve stories and their expected evidence from story type and Test Evidence metadata.
+  - id: locate-evidence
+    intent: Locate the best matching automated tests, playtest records, screenshots, walkthroughs, or smoke reports.
+  - id: review-automated-quality
+    intent: For Logic/Integration stories, evaluate assertion substance, edge cases, naming quality, and formula/criterion traceability.
+  - id: review-manual-quality
+    intent: For Visual/Feel/UI stories, evaluate criterion linkage, sign-offs, referenced artifacts, walkthrough completeness, and freshness.
+  - id: classify
+    intent: Produce ADEQUATE, INCOMPLETE, or MISSING for each story and use the worst story verdict as the aggregate result.
+  - id: optional-persist
+    intent: Persist the evidence-review report only after approval when requested.
+    interaction:
+      type: approval
+      required: false
+      subject: evidence_review_report
+
+outputs:
+  - id: evidence-review
+    type: report
+    required: true
+  - id: evidence-verdicts
+    type: decision
+    required: true
+
+verdicts:
+  - adequate
+  - incomplete
+  - missing
+
+verification:
+  required:
+    - id: all-stories-reviewed
+      type: criteria_coverage
+
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
+  escalation_target: qa-lead
+
+notes:
+  migration_source: .claude/skills/test-evidence-review/SKILL.md
+  status: example-only
