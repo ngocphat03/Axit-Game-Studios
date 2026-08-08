@@ -1,0 +1,81 @@
+spec_version: axit.workflow/v1
+id: qa-handoff
+name: QA Handoff
+description: Prepare, gate, and review test evidence before QA sign-off or release readiness.
+
+inputs:
+  - name: scope
+    type: enum
+    required: false
+    values: [sprint, feature, story, epic]
+    default: sprint
+  - name: target
+    type: string
+    required: false
+  - name: regression_mode
+    type: enum
+    required: false
+    values: [update, audit, report]
+    default: update
+
+steps:
+  plan:
+    skill: qa-plan
+    required: true
+    inputs:
+      scope: $workflow.scope
+      target: $workflow.target
+    completion:
+      accepted_verdicts: [completed]
+      artifacts:
+        - ref: qa.current_plan
+          exists: true
+      on_unaccepted: block
+
+  smoke:
+    skill: smoke-check
+    required: true
+    depends_on: [plan]
+    inputs:
+      mode: sprint
+    completion:
+      accepted_verdicts: [pass, pass_with_warnings]
+      artifacts:
+        - ref: qa.latest_smoke_report
+          exists: true
+      on_unaccepted: block
+
+  regression:
+    skill: regression-suite
+    required: false
+    depends_on: [smoke]
+    inputs:
+      mode: $workflow.regression_mode
+    completion:
+      accepted_verdicts: [complete]
+      on_unaccepted: continue
+
+  evidence-review:
+    skill: test-evidence-review
+    required: true
+    depends_on: [smoke]
+    inputs:
+      scope: sprint
+      target: $workflow.target
+      persist_report: true
+    completion:
+      accepted_verdicts: [adequate]
+      artifacts:
+        - ref: qa.latest_evidence_review
+          exists: true
+      on_unaccepted: stop
+
+completion:
+  strategy: all_required_steps
+  artifacts:
+    - ref: qa.current_plan
+      exists: true
+    - ref: qa.latest_smoke_report
+      exists: true
+
+verdicts: [completed, paused, blocked, cancelled]
