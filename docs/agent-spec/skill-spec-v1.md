@@ -2,139 +2,72 @@
 
 ## Purpose
 
-A Skill describes a reusable unit of AI-assisted work. It is a provider-neutral **execution contract plus expert guidance**, not merely a prompt or slash command.
-
-A runtime should be able to inspect the structured fields before giving the skill to a model.
+A Skill is a provider-neutral **execution contract plus expert guidance** for one reusable unit of AI-assisted work. Runtime-significant behavior must be structural; provider mechanics belong in adapters.
 
 ## Core shape
 
 ```yaml
 spec_version: axit.skill/v1
-id: dev-story
-name: Develop Story
-description: Implement one ready development story and produce verifiable evidence.
+id: example-skill
+name: Example Skill
+description: Describe the outcome, not a provider command.
 
 execution:
   side_effects: project-write
   preferred_profile: gameplay-programmer
+  interaction: collaborative
 
-inputs:
-  - name: story_path
-    type: path
-    required: true
-
-preconditions:
-  - id: story-ready
-    check: story.status == ready
-    on_failure: block
-
+inputs: []
+preconditions: []
 context:
-  required:
-    - source: input
-      ref: story_path
-    - source: project
-      ref: architecture.governing_adr
+  required: []
   optional: []
-
 capabilities:
-  required:
-    - file.read
-    - code.edit
-    - test.run
-  optional:
-    - agent.delegate
-
-model_requirements:
-  reasoning: medium
-  coding: high
-  tool_use: required
-
-procedure:
-  - id: inspect
-    intent: Understand the story, constraints, dependencies, and acceptance criteria.
-  - id: implement
-    intent: Implement only the approved story scope.
-  - id: verify
-    intent: Produce evidence for every machine-verifiable acceptance criterion.
-
-outputs:
-  - id: implementation
-    type: change_set
-    required: true
-  - id: summary
-    type: report
-    required: true
-
-verdicts:
-  - completed
-  - blocked
-
-verification:
-  required:
-    - id: acceptance-criteria
-      type: criteria_coverage
-    - id: tests
-      type: tests_pass
-    - id: scope
-      type: change_scope
-
-state_transitions:
-  - id: mark-complete
-    when: verdict == completed
-    target: story.status
-    from: [ready, in_progress]
-    to: complete
-
-failure:
-  retry:
-    max_attempts: 1
-  on_blocked: escalate
-  escalation_target: technical-lead
+  required: []
+  optional: []
+model_requirements: {}
+procedure: []
+outputs: []
+verdicts: []
+verification: {}
+state_transitions: []
+failure: {}
 ```
 
-Not every Skill needs every optional section. A read-only review skill, for example, may omit `state_transitions` entirely.
+Not every Skill needs every optional section.
 
-A Markdown body may follow the structured header and contain domain guidance, examples, heuristics, trade-offs, and known failure modes.
-
-## Field semantics
-
-### `spec_version`
-
-Required. Must be `axit.skill/v1` for this version.
-
-### `id`
-
-Required. Stable, lowercase kebab-case identifier. Renaming an ID is a migration event.
-
-### `name` and `description`
-
-Human-readable metadata. `description` should state the outcome, not implementation details tied to one provider.
-
-### `execution`
-
-Optional execution metadata that affects routing and safety.
+## `execution`
 
 ```yaml
 execution:
   side_effects: none | project-write | external
   preferred_profile: lead-programmer
+  interaction: autonomous | collaborative | approval-gated
 ```
 
-`side_effects` means:
+- `none`: analyze/report only; no project mutation.
+- `project-write`: may mutate workspace/project state.
+- `external`: may affect remote Git, deployment, publishing, or another external system.
+- `preferred_profile`: semantic owner of the work; does not require a separate model/subagent.
+- `interaction`: expected human collaboration style.
 
-- `none` — read/analyze/report only; no project mutation;
-- `project-write` — may change project/workspace state;
-- `external` — may affect external systems such as remote Git, deployment, publishing, or other services.
+Some skills have **mode-dependent side effects**. Use rules instead of duplicating the skill:
 
-A runtime may always impose stricter policy than the Skill requests.
+```yaml
+execution:
+  side_effects: project-write
+  side_effect_rules:
+    - when: mode == report
+      side_effects: none
+```
 
-`preferred_profile` identifies the canonical role that should own execution when available. It is routing guidance, not a requirement for a separate model or subagent.
+Runtime policy can always be stricter.
 
-### `inputs`
+## `inputs`
 
-Explicit values required to invoke the skill. Inputs should be small references such as paths, IDs, feature names, scopes, modes, or options. Do not serialize whole project documents into input values.
+Inputs are small references/options, not serialized project documents.
 
-Recommended input types for v1:
+Supported v1 types:
 
 - `string`
 - `path`
@@ -143,24 +76,27 @@ Recommended input types for v1:
 - `number`
 - `id`
 
-Modes such as `single | sprint | all` or `full | lean | solo` should be represented as normal enum inputs/config values rather than provider-specific command flags in canonical semantics.
+Modes such as `single|sprint|all`, `full|lean|solo`, or `update|audit|report` are normal enum inputs/configuration, not provider-specific flags.
 
-### `preconditions`
+## `preconditions`
 
-Conditions that must be satisfied before execution. Each precondition declares behavior on failure:
+```yaml
+preconditions:
+  - id: story-ready
+    check: story.status == ready
+    on_failure: block
+```
 
-- `block` — do not execute;
-- `warn` — continue but surface the risk;
-- `ask` — require user decision;
-- `skip` — this skill is not applicable.
+Allowed failure behavior:
 
-Preconditions describe semantics. A provider adapter may implement them through tools, prompts, or runtime checks.
+- `block`
+- `warn`
+- `ask`
+- `skip`
 
-### `context`
+## `context`
 
-Declares information that must or may be loaded.
-
-Context references should point to sources rather than embedding content:
+Declare what must/may be loaded, by reference:
 
 ```yaml
 context:
@@ -168,18 +104,17 @@ context:
     - source: input
       ref: story_path
     - source: project
-      ref: rules.coding
-    - source: project
       ref: architecture.governing_adr
+  optional:
+    - source: project
+      ref: session.active_state
 ```
 
-The goal is to make context selection explicit and auditable while allowing each runtime to optimize retrieval.
+Do not embed large source documents into invocation inputs when a reference can be resolved by the runtime.
 
-### `capabilities`
+## `capabilities`
 
-Semantic runtime capabilities required by the skill. Never use provider tool names here when a neutral capability exists.
-
-Good:
+Use semantic capabilities, not provider tools:
 
 ```yaml
 capabilities:
@@ -188,21 +123,15 @@ capabilities:
     - code.edit
     - test.run
     - user.approval
+  optional:
+    - agent.consult
 ```
 
-Avoid:
+Avoid canonical metadata such as `Read`, `Write`, `Bash`, `Task`, or `AskUserQuestion`.
 
-```yaml
-allowed-tools: Read, Write, Bash, Task, AskUserQuestion
-```
+## `model_requirements`
 
-Capability naming and compatibility rules are defined in `capability-spec-v1.md`.
-
-### `model_requirements`
-
-Describes model capabilities, not model identity.
-
-Initial dimensions:
+Describe capability, not model identity:
 
 ```yaml
 model_requirements:
@@ -213,32 +142,62 @@ model_requirements:
   tool_use: none | preferred | required
 ```
 
-Provider adapters map these requirements to concrete models.
+Adapters/runtime map this to concrete models.
 
-### `procedure`
+## `procedure`
 
-Ordered semantic stages of work. Each stage should express intent and invariants, not provider mechanics.
-
-Good:
+Procedure stages express semantic intent:
 
 ```yaml
-- id: inspect
-  intent: Load the story and governing constraints before implementation.
+procedure:
+  - id: inspect
+    intent: Load requirements and constraints before implementation.
+  - id: implement
+    intent: Implement only approved scope.
 ```
 
-Avoid:
+Provider-specific calls do not belong here.
+
+### Decision and approval checkpoints
+
+Interactive design work proved that canonical skills need explicit collaboration checkpoints. A procedure step may declare:
 
 ```yaml
-- Call Task with subagent_type=gameplay-programmer
+- id: approve-section
+  intent: Confirm the drafted section before persistence.
+  interaction:
+    type: approval
+    required: true
+    subject: current_section
 ```
 
-Provider-specific orchestration belongs in adapters or runtime execution logic.
+Supported v1 interaction types:
 
-Parallelism is an execution optimization. Canonical procedure should state independence/dependency when it matters to correctness, but should not require one provider's parallel-task primitive.
+- `question`: collect missing information;
+- `choice`: select among bounded alternatives;
+- `decision`: record a substantive project/product decision;
+- `approval`: authorize a scoped mutation;
+- `confirmation`: verify a manual observation/evidence item.
 
-### `outputs`
+Adapters may render these as widgets, prompts, CLI input, or another UI. Canonical semantics must not depend on one interaction API.
 
-Declares artifacts produced by execution. Suggested v1 output types:
+### Checkpoints
+
+Long collaborative skills may persist resumable progress:
+
+```yaml
+- id: checkpoint-section
+  intent: Persist the approved section and current progress marker.
+  checkpoint:
+    required: true
+    state_ref: session.active_state
+```
+
+Checkpoint state is compact working state, not conversation history.
+
+## `outputs`
+
+Suggested output types:
 
 - `report`
 - `document`
@@ -247,35 +206,36 @@ Declares artifacts produced by execution. Suggested v1 output types:
 - `decision`
 - `evidence`
 
-### `verdicts`
+## `verdicts`
 
-Optional finite set of semantic outcomes produced by a review/gate/completion Skill.
-
-Examples:
-
-```yaml
-verdicts:
-  - ready
-  - needs_work
-  - blocked
-```
-
-or:
+Finite semantic outcomes used by reviews/gates/workflows:
 
 ```yaml
 verdicts:
   - approved
-  - approved_with_suggestions
-  - changes_required
+  - needs_revision
+  - blocked
 ```
 
-Verdicts are part of the canonical contract and can drive later workflow/state transitions. Provider-specific wording should be normalized by adapters when necessary.
+Downstream behavior should consume verdict IDs rather than parse prose.
 
-### `verification`
+## `verification`
 
-Declares the evidence required before the skill can report success or a completion verdict.
+Verification states required evidence and may be conditional:
 
-Verification types are semantic and may be implemented differently by runtimes:
+```yaml
+verification:
+  required:
+    - id: scope
+      type: change_scope
+  conditional:
+    - when: story.type == logic
+      check:
+        id: tests
+        type: tests_pass
+```
+
+Common v1 verification types:
 
 - `tests_pass`
 - `build_pass`
@@ -286,77 +246,67 @@ Verification types are semantic and may be implemented differently by runtimes:
 - `review_verdict`
 - `unity_console_clean`
 
-Conditional verification is allowed when evidence depends on story/task type:
+Deterministic verification takes precedence over model self-assessment.
 
-```yaml
-verification:
-  conditional:
-    - when: story.type == logic
-      check:
-        id: unit-tests
-        type: tests_pass
-```
+## `state_transitions`
 
-If a deterministic verifier exists, it takes precedence over model self-assessment.
-
-### `state_transitions`
-
-Optional declarative state changes that may occur only after the Skill reaches the required verdict/verification state.
+Critical state mutation must be declarative:
 
 ```yaml
 state_transitions:
   - id: mark-complete
-    when: verdict == completed
+    when: verdict == complete and user.approval == granted
     target: story.status
     from: [ready, in_progress]
     to: complete
 ```
 
-State transitions describe intended semantics. The runtime or adapter performs the actual mutation and must still apply project policy, approval, and side-effect controls.
+The runtime/adapter performs the mutation and still applies policy/approval controls.
 
-Do not hide critical state mutations only in Markdown prose.
+## `failure`
 
-### `failure`
+```yaml
+failure:
+  retry:
+    max_attempts: 1
+  on_blocked: report | escalate
+  escalation_target: technical-lead
+```
 
-Defines bounded retry, blocked behavior, and escalation.
-
-Retries must be finite. A skill should never encode an unbounded autonomous loop.
+Retries are always bounded.
 
 ## Guidance body
 
-The Markdown body after metadata may include:
+Markdown guidance may contain:
 
-- domain-specific implementation rules;
-- examples;
-- quality heuristics;
-- design trade-offs;
+- domain rules;
+- examples and heuristics;
+- trade-offs;
 - debugging playbooks;
-- common mistakes;
+- known failure modes;
 - references to project knowledge.
 
-The body should not contain security assumptions that only work if the model obeys them.
+Guidance must not pretend to be a security boundary.
 
 ## Provider-neutrality rules
 
 A canonical Skill MUST NOT require:
 
-- a named provider;
-- a named provider model;
+- a named provider or model;
 - a provider-specific subagent primitive;
-- a provider-specific approval API;
+- a provider-specific approval/question API;
 - a provider-specific hook system;
-- a provider-specific command syntax.
-
-When such behavior is needed, express the semantic requirement through a capability.
+- provider-specific command syntax when a semantic capability exists.
 
 ## Completion rule
 
-A runtime may report a Skill as completed only when:
+A Skill may reach a successful completion verdict only when:
 
-1. all blocking preconditions were satisfied or explicitly overridden by an allowed user decision;
-2. all required outputs exist;
-3. all required verification checks pass or are explicitly marked manual and confirmed;
-4. any declared state transition preconditions are satisfied before mutation;
-5. no unresolved blocking failure remains.
+1. blocking preconditions are satisfied or validly overridden;
+2. required outputs exist;
+3. required verification passes or required manual confirmation is recorded;
+4. required approvals occur before mutations;
+5. declared state-transition conditions are satisfied;
+6. no unresolved blocking failure remains.
 
-The model's textual statement that work is complete is not evidence by itself.
+A model saying "done" is not evidence by itself.
