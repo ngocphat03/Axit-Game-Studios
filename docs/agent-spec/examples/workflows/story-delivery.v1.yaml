@@ -1,0 +1,69 @@
+spec_version: axit.workflow/v1
+id: story-delivery
+name: Story Delivery
+description: Take one story from readiness through implementation, code review, and verified closure.
+
+inputs:
+  - name: story_path
+    type: path
+    required: true
+  - name: review_mode
+    type: enum
+    required: false
+    values: [full, lean, solo]
+    default: lean
+
+steps:
+  readiness:
+    skill: story-readiness
+    required: true
+    inputs:
+      scope: single
+      story_path: $workflow.story_path
+      review_mode: $workflow.review_mode
+    completion:
+      accepted_verdicts: [ready]
+      on_unaccepted: stop
+
+  implement:
+    skill: dev-story
+    required: true
+    depends_on: [readiness]
+    inputs:
+      story_path: $workflow.story_path
+    completion:
+      accepted_verdicts: [implemented]
+      on_unaccepted: block
+
+  review:
+    skill: code-review
+    required: true
+    depends_on: [implement]
+    inputs:
+      story_path: $workflow.story_path
+      targets: $implement.outputs.implementation
+    completion:
+      accepted_verdicts: [approved, approved_with_suggestions]
+      on_unaccepted: stop
+
+  close:
+    skill: story-done
+    required: true
+    depends_on: [review]
+    inputs:
+      story_path: $workflow.story_path
+      review_mode: $workflow.review_mode
+    completion:
+      accepted_verdicts: [complete, complete_with_notes]
+      artifacts:
+        - ref: story.status
+          equals: complete
+      on_unaccepted: block
+
+completion:
+  strategy: all_required_steps
+  artifacts:
+    - ref: story.status
+      equals: complete
+
+verdicts: [completed, paused, blocked, cancelled]
