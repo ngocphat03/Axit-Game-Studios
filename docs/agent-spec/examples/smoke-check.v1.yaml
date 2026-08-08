@@ -1,0 +1,112 @@
+spec_version: axit.skill/v1
+id: smoke-check
+name: Smoke Check
+description: Gate QA hand-off by combining automated test results, coverage signals, and bounded manual critical-path verification.
+
+execution:
+  side_effects: project-write
+  preferred_profile: qa-lead
+  interaction: collaborative
+
+inputs:
+  - name: mode
+    type: enum
+    required: false
+    values: [sprint, quick]
+    default: sprint
+  - name: platform
+    type: enum
+    required: false
+    values: [pc, console, mobile, all]
+
+preconditions:
+  - id: test-setup-present
+    check: tests directory exists
+    on_failure: block
+
+context:
+  required:
+    - source: project
+      ref: technical_preferences
+  optional:
+    - source: project
+      ref: qa.current_plan
+    - source: project
+      ref: qa.smoke_test_list
+    - source: project
+      ref: sprint.current
+    - source: project
+      ref: ci.test_artifacts
+
+capabilities:
+  required:
+    - file.read
+    - file.search
+    - test.run
+    - user.confirmation
+    - file.write
+    - user.approval
+  optional:
+    - build.run
+    - unity.test.run
+    - artifact.inspect
+
+model_requirements:
+  reasoning: medium
+  coding: low
+  long_context: preferred
+  tool_use: required
+
+procedure:
+  - id: detect-environment
+    intent: Resolve engine, test setup, CI/test artifacts, QA plan, and smoke checklist sources.
+  - id: run-tests
+    intent: Execute or inspect the best available automated test evidence without treating unsupported local execution as an automatic failure.
+  - id: coverage-scan
+    intent: In sprint mode, identify missing test evidence for in-scope stories.
+  - id: manual-critical-paths
+    intent: Collect bounded manual confirmation for core stability, sprint changes, regression, data integrity, performance, and requested platform checks.
+    interaction:
+      type: confirmation
+      required: true
+  - id: decide
+    intent: Produce PASS, PASS WITH WARNINGS, or FAIL using explicit gate rules.
+  - id: persist-report
+    intent: Write the smoke report after approval.
+    interaction:
+      type: approval
+      required: true
+      subject: smoke_report
+
+outputs:
+  - id: smoke-report
+    type: report
+    required: true
+  - id: qa-handoff-verdict
+    type: decision
+    required: true
+
+verdicts:
+  - pass
+  - pass_with_warnings
+  - fail
+
+verification:
+  required:
+    - id: critical-path-verification
+      type: manual_confirmation
+  conditional:
+    - when: automated tests are runnable or test artifacts exist
+      check:
+        id: automated-tests
+        type: tests_pass
+
+failure:
+  retry:
+    max_attempts: 1
+  on_blocked: report
+  escalation_target: qa-lead
+
+notes:
+  migration_source: .claude/skills/smoke-check/SKILL.md
+  status: example-only
