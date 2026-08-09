@@ -1,5 +1,5 @@
 spec_version: axit.core/v1
-status: core-skill-v1
+status: core-skill-v1-validation
 
 profiles:
   - technical-architect
@@ -22,7 +22,9 @@ rules:
   - Add Core Skills only when a repeated procedure is demonstrated across real flows.
 
 next_phase:
-  - test verify-change through Codex discovery on bounded feature and bug examples
+  - rerun verify-change against required-vs-supporting evidence cases in Codex
+  - confirm FAIL takes precedence when a required failure is already demonstrated
+  - confirm missing required implementation and unresolved target names are distinguished
   - observe which additional procedures repeat before accepting Core Skill number 2
   - keep Core Workflows empty until multiple accepted Skills require stable composition
   - do not migrate legacy skill catalogs in bulk
