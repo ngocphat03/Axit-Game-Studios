@@ -4,15 +4,26 @@ system: unity-client
 capability_sets:
   - .axit/capabilities/unity/evidence.yaml
 
-binding_status: unbound
+binding_status: active
+
+runtime_bindings:
+  - .axit/bindings/unity-client/coplaydev-unity-mcp.yaml
+
+unbound_capabilities:
+  - unity.project.inspect
+  - unity.compile
+  - unity.tests.run
+  - unity.scene.inspect
+  - unity.component.inspect
+  - unity.console.inspect
 
 notes:
   - "Capability semantic v1 is stable after live validation on 2026-08-09."
   - "This sidecar declares semantic capabilities relevant to the Unity client; it does not claim a transport is currently available."
   - "Use only capability ids explicitly declared by the referenced active capability sets; do not invent aliases or project-specific capability names."
   - "If no declared capability matches an evidence need, describe the need as ordinary evidence or a capability gap instead of synthesizing an id."
-  - "No concrete Runtime Binding is referenced yet because the repository does not currently identify a verified Unity transport/operation catalog."
-  - "The first intended binding slice is unity.prefab.inspect, unity.serialized-fields.inspect, and unity.playmode.verify after real transport discovery."
+  - "The reviewed CoplayDev unity-mcp definition is active; this does not claim that the transport is currently online."
+  - "Only unity.prefab.inspect, unity.serialized-fields.inspect, and unity.playmode.verify are mapped; every other declared Unity capability remains explicitly unbound."
   - "Runtime bindings may later use Unity MCP, Axit Unity, Unity CLI/editor automation, or another compatible transport without changing capability ids."
   - "Load this file only when the current task requires Unity-specific evidence acquisition."
   - "verify-change still decides REQUIRED versus SUPPORTING evidence and the final verdict."

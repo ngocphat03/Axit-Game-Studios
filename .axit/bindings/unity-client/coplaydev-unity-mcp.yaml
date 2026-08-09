@@ -1,0 +1,501 @@
+spec_version: axit.runtime-binding/v1
+id: coplaydev-unity-mcp
+system: unity-client
+status: active
+
+transport:
+  family: mcp
+  server: unityMCP
+  adapter: CoplayDev unity-mcp
+  adapter_package: com.coplaydev.unity-mcp
+  resource_scheme: mcpforunity
+
+runtime_boundary:
+  availability: resolve-at-runtime
+  authorization: runtime-harness-policy
+  binding_grants_permission: false
+  committed_connection_state: false
+  source_writes_permitted: false
+
+normalization:
+  tool_response_source_priority:
+    - structuredContent
+    - content[0].text parsed only when structuredContent is absent
+  tool_operation_success_path: structuredContent.success
+  resource_payload_path: contents[0].text parsed as JSON
+  outer_isError_is_sufficient: false
+  outcomes:
+    acquired: trustworthy observation of the requested target or scope
+    unavailable: required binding, editor, runtime state, or dependency is unavailable
+    denied: runtime or Harness policy refused the operation
+    transport_error: transport failed before a trustworthy target observation
+  trustworthy_observed_absence_or_failure: Preserve as acquired evidence for verify-change; do not translate it directly into a product verdict.
+  verdict_boundary: Acquisition outcomes and observed values are evidence, never PASS, FAIL, or BLOCKED by themselves.
+  ephemeral_evidence_fields:
+    - componentInstanceId
+    - targetInstanceId
+    - ownerInstanceId
+
+mappings:
+  - capability: unity.prefab.inspect
+    operation_class: inspect
+    side_effects: read-only
+    inputs:
+      prefab_path:
+        type: unity-project-asset-path
+        required: true
+        constraints:
+          - exact caller-supplied project-relative path under Assets/
+          - prefab asset path only
+    operations:
+      - manage_prefabs
+      - manage_prefabs
+    operation_templates:
+      - id: prefab-info
+        operation: manage_prefabs
+        arguments:
+          action: get_info
+          prefab_path: "{{prefab_path}}"
+        success_path: structuredContent.success
+        result_path: structuredContent.data
+        observed_result_fields:
+          - assetPath
+          - guid
+          - prefabType
+          - rootObjectName
+          - rootComponentTypes
+          - childCount
+          - isVariant
+          - parentPrefab
+      - id: prefab-hierarchy
+        operation: manage_prefabs
+        arguments:
+          action: get_hierarchy
+          prefab_path: "{{prefab_path}}"
+        success_path: structuredContent.success
+        result_path: structuredContent.data
+        observed_result_fields:
+          - prefabPath
+          - total
+          - items
+    execution:
+      order:
+        - prefab-info
+        - prefab-hierarchy
+      target_resolution: The acquisition request must supply the exact prefab path; target search is outside this mapping.
+    evidence_boundary:
+      can_establish:
+        - component presence and serialized values/references on the inspected prefab
+        - prefab hierarchy facts relevant to the accepted criterion
+      cannot_establish:
+        - runtime-instantiated behavior
+        - scene overrides not inspected
+        - behavior produced only by runtime code
+
+  - capability: unity.serialized-fields.inspect
+    operation_class: inspect
+    side_effects: read-only
+    inputs:
+      prefab_path:
+        type: unity-project-asset-path
+        required: true
+        render_as: complete escaped C# string literal
+        constraints:
+          - exact caller-supplied project-relative path under Assets/
+          - prefab asset path only
+      component_type:
+        type: fully-qualified-csharp-type-name
+        required: true
+        render_as: complete escaped C# string literal
+        constraints:
+          - exact loaded component FullName
+    operations:
+      - execute_code
+    operation_templates:
+      - id: inspect-serialized-fields
+        operation: execute_code
+        arguments:
+          action: execute
+          compiler: codedom
+          safety_checks: true
+          code_template: |
+            var prefabPath = {{prefab_path}};
+            var root = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(prefabPath);
+            if (root == null)
+            {
+                return new System.Collections.Generic.Dictionary<string, object>
+                {
+                    { "error", "prefab_not_found" },
+                    { "prefabPath", prefabPath }
+                };
+            }
+
+            var result = new System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>>();
+            var components = root.GetComponentsInChildren<UnityEngine.Component>(true);
+            foreach (var component in components)
+            {
+                if (component == null || component.GetType().FullName != {{component_type}})
+                {
+                    continue;
+                }
+
+                var names = new System.Collections.Generic.List<string>();
+                var cursor = component.transform;
+                while (cursor != null)
+                {
+                    names.Add(cursor.name);
+                    if (cursor == root.transform)
+                    {
+                        break;
+                    }
+                    cursor = cursor.parent;
+                }
+                names.Reverse();
+
+                var entry = new System.Collections.Generic.Dictionary<string, object>();
+                entry["prefabPath"] = prefabPath;
+                entry["gameObjectPath"] = string.Join("/", names.ToArray());
+                entry["componentType"] = component.GetType().FullName;
+                entry["componentInstanceId"] = component.GetInstanceID();
+
+                var fields = new System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>>();
+                var serializedObject = new UnityEditor.SerializedObject(component);
+                var property = serializedObject.GetIterator();
+                var enterChildren = true;
+                while (property.NextVisible(enterChildren))
+                {
+                    enterChildren = false;
+                    var field = new System.Collections.Generic.Dictionary<string, object>();
+                    field["propertyPath"] = property.propertyPath;
+                    field["propertyType"] = property.propertyType.ToString();
+
+                    if (property.propertyType == UnityEditor.SerializedPropertyType.Integer)
+                    {
+                        field["value"] = property.longValue;
+                    }
+                    else if (property.propertyType == UnityEditor.SerializedPropertyType.Boolean)
+                    {
+                        field["value"] = property.boolValue;
+                    }
+                    else if (property.propertyType == UnityEditor.SerializedPropertyType.Float)
+                    {
+                        field["value"] = property.doubleValue;
+                    }
+                    else if (property.propertyType == UnityEditor.SerializedPropertyType.String)
+                    {
+                        field["value"] = property.stringValue;
+                    }
+                    else if (property.propertyType == UnityEditor.SerializedPropertyType.Enum)
+                    {
+                        field["value"] = property.enumValueIndex;
+                        field["enumName"] = property.enumDisplayNames.Length > property.enumValueIndex
+                            ? property.enumDisplayNames[property.enumValueIndex]
+                            : null;
+                    }
+                    else if (property.propertyType == UnityEditor.SerializedPropertyType.ObjectReference)
+                    {
+                        var referenced = property.objectReferenceValue;
+                        if (referenced == null)
+                        {
+                            field["value"] = null;
+                        }
+                        else
+                        {
+                            var reference = new System.Collections.Generic.Dictionary<string, object>();
+                            reference["name"] = referenced.name;
+                            reference["type"] = referenced.GetType().FullName;
+                            reference["instanceId"] = referenced.GetInstanceID();
+                            var assetPath = UnityEditor.AssetDatabase.GetAssetPath(referenced);
+                            reference["assetPath"] = assetPath;
+                            reference["assetGuid"] = string.IsNullOrEmpty(assetPath)
+                                ? null
+                                : UnityEditor.AssetDatabase.AssetPathToGUID(assetPath);
+                            field["value"] = reference;
+                        }
+                    }
+                    else
+                    {
+                        field["value"] = property.propertyType.ToString();
+                    }
+
+                    fields.Add(field);
+                }
+
+                entry["fields"] = fields;
+                result.Add(entry);
+            }
+
+            return result;
+        success_path: structuredContent.success
+        compiler_path: structuredContent.data.compiler
+        result_path: structuredContent.data.result
+    template_boundary:
+      caller_supplied_code: forbidden
+      substitutions:
+        - prefab_path as a validated, escaped C# string literal
+        - component_type as a validated, escaped C# string literal
+      forbidden_apis_and_behaviors:
+        - serialized property assignment
+        - ApplyModifiedProperties
+        - asset, prefab, or scene save/import operations
+        - prefab-stage or scene mutation
+        - file, process, or network operations
+        - arbitrary caller code
+      observed_coverage: Top-level visible integer, boolean, float, string, enum, and object-reference properties only.
+    evidence_boundary:
+      can_establish:
+        - current serialized scalar/value/reference state on the inspected target
+        - missing or mismatched serialized references that are directly observable
+      cannot_establish:
+        - runtime-mutated values after execution begins
+        - behavior implied by a value but not actually exercised
+
+  - capability: unity.playmode.verify
+    operation_class: execute
+    side_effects: controlled-runtime
+    inputs:
+      scenario_label:
+        type: string
+        required: true
+        render_as: complete escaped C# string literal
+      target_hierarchy_path:
+        type: unity-hierarchy-path
+        required: true
+        render_as: complete escaped C# string literal
+      base_damage:
+        type: int32
+        required: true
+        render_as: C# integer literal
+        constraints:
+          minimum: 0
+    operations:
+      - resources/read
+      - manage_editor
+      - resources/read
+      - execute_code
+      - execute_code
+      - manage_editor
+      - resources/read
+    operation_templates:
+      - id: read-pre-state
+        operation: resources/read
+        server: unityMCP
+        arguments:
+          uri: mcpforunity://editor/state
+        result_path: contents[0].text
+      - id: enter-play-mode
+        operation: manage_editor
+        arguments:
+          action: play
+        success_path: structuredContent.success
+      - id: poll-play-mode-ready
+        operation: resources/read
+        server: unityMCP
+        arguments:
+          uri: mcpforunity://editor/state
+        completion_condition:
+          - data.editor.play_mode.is_playing == true
+          - data.advice.ready_for_tools == true
+        polling: bounded by the acquisition request or Runtime/Harness; unbounded sleep is forbidden
+      - id: prepare-gameplay-state
+        operation: execute_code
+        arguments:
+          action: execute
+          compiler: codedom
+          safety_checks: true
+          code_template: |
+            var result = new System.Collections.Generic.Dictionary<string, object>();
+            result["applicationIsPlaying"] = UnityEngine.Application.isPlaying;
+            result["stateMachineAvailable"] = QG.GameStateMachine.GameStateMachine.Instance != null;
+            if (!UnityEngine.Application.isPlaying)
+            {
+                result["requested"] = false;
+                result["reason"] = "not_in_play_mode";
+                return result;
+            }
+            if (QG.GameStateMachine.GameStateMachine.Instance == null)
+            {
+                result["requested"] = false;
+                result["reason"] = "state_machine_unavailable";
+                return result;
+            }
+            QG.GameStateMachine.GameStateMachine.Instance.TransitionTo<
+                QG.GameStateMachine.GamePlayState,
+                QG.GameStateMachine.GamePlayStateModel>(
+                    new QG.GameStateMachine.GamePlayStateModel());
+            result["requested"] = true;
+            return result;
+        success_path: structuredContent.success
+        compiler_path: structuredContent.data.compiler
+        result_path: structuredContent.data.result
+        completion_condition:
+          - structuredContent.data.result.applicationIsPlaying == true
+          - structuredContent.data.result.requested == true
+        on_incomplete: Do not run the headshot template; preserve reason as evidence and continue to mandatory cleanup.
+      - id: run-bounded-headshot
+        operation: execute_code
+        arguments:
+          action: execute
+          compiler: codedom
+          safety_checks: true
+          code_template: |
+            var result = new System.Collections.Generic.Dictionary<string, object>();
+            result["applicationIsPlaying"] = UnityEngine.Application.isPlaying;
+            result["scenario"] = {{scenario_label}};
+            result["requestedTargetPath"] = {{target_hierarchy_path}};
+            result["baseDamage"] = {{base_damage}};
+
+            if (!UnityEngine.Application.isPlaying)
+            {
+                result["completed"] = false;
+                result["reason"] = "not_in_play_mode";
+                return result;
+            }
+
+            QG.Entity.DamageableBodyPart target = null;
+            var parts = UnityEngine.Object.FindObjectsByType<QG.Entity.DamageableBodyPart>(
+                UnityEngine.FindObjectsInactive.Include,
+                UnityEngine.FindObjectsSortMode.None);
+            foreach (var part in parts)
+            {
+                var names = new System.Collections.Generic.List<string>();
+                var cursor = part.transform;
+                while (cursor != null)
+                {
+                    names.Add(cursor.name);
+                    cursor = cursor.parent;
+                }
+                names.Reverse();
+                var path = string.Join("/", names.ToArray());
+                if (path == {{target_hierarchy_path}})
+                {
+                    target = part;
+                    result["observedTargetPath"] = path;
+                    break;
+                }
+            }
+
+            if (target == null)
+            {
+                result["completed"] = false;
+                result["reason"] = "target_not_found";
+                return result;
+            }
+            if (target.OwnerEntity == null || target.OwnerEntity.Model == null)
+            {
+                result["completed"] = false;
+                result["reason"] = "target_owner_uninitialized";
+                return result;
+            }
+
+            var beforeHealth = target.OwnerEntity.Model.Health;
+            var multiplier = target.DamageMultiplier;
+            var armor = target.OwnerEntity.Armor;
+            var expectedHitZoneDamage = QG.Combat.DamageCalculator.Calculate({{base_damage}}, multiplier);
+            var expectedFinalDamage = QG.Combat.DamageCalculator.ApplyArmor(expectedHitZoneDamage, armor);
+
+            result["targetInstanceId"] = target.GetInstanceID();
+            result["ownerName"] = target.OwnerEntity.name;
+            result["ownerType"] = target.OwnerEntity.GetType().FullName;
+            result["ownerInstanceId"] = target.OwnerEntity.GetInstanceID();
+            result["damageMultiplier"] = multiplier;
+            result["armor"] = armor;
+            result["beforeHealth"] = beforeHealth;
+            result["expectedHitZoneDamage"] = expectedHitZoneDamage;
+            result["expectedFinalDamage"] = expectedFinalDamage;
+
+            try
+            {
+                target.TakeDamage({{base_damage}});
+                result["callReturned"] = true;
+            }
+            catch (System.Exception exception)
+            {
+                result["callReturned"] = false;
+                result["exceptionType"] = exception.GetType().FullName;
+                result["exceptionMessage"] = exception.Message;
+            }
+
+            var afterHealth = target.OwnerEntity.Model.Health;
+            result["afterHealth"] = afterHealth;
+            result["observedDamage"] = beforeHealth - afterHealth;
+            result["completed"] = true;
+            return result;
+        success_path: structuredContent.success
+        compiler_path: structuredContent.data.compiler
+        result_path: structuredContent.data.result
+        readiness_retry:
+          retry_only_when_reason:
+            - target_not_found
+            - target_owner_uninitialized
+          polling: bounded by the acquisition request or Runtime/Harness; unbounded sleep is forbidden
+      - id: stop-play-mode
+        operation: manage_editor
+        arguments:
+          action: stop
+        success_path: structuredContent.success
+      - id: confirm-play-mode-stopped
+        operation: resources/read
+        server: unityMCP
+        arguments:
+          uri: mcpforunity://editor/state
+        completion_condition:
+          - data.editor.play_mode.is_playing == false
+        polling: bounded by the acquisition request or Runtime/Harness; unbounded sleep is forbidden
+    execution:
+      precondition:
+        - read and retain Play Mode pre-state
+        - if Play Mode is already active, do not mutate or stop that session; report unavailable unless Runtime/Harness supplies another reviewed restoration policy
+      try:
+        - enter-play-mode
+        - poll-play-mode-ready
+        - prepare-gameplay-state
+        - run-bounded-headshot
+      finally:
+        condition: this acquisition entered Play Mode
+        mandatory:
+          - stop-play-mode
+          - confirm-play-mode-stopped
+      operation_completed_when:
+        - structuredContent.success == true
+        - structuredContent.data.compiler == "codedom"
+        - structuredContent.data.result.completed == true
+        - structuredContent.data.result.callReturned == true
+      completion_is_not_verdict: true
+    template_boundary:
+      caller_supplied_code: forbidden
+      substitutions:
+        - scenario_label as a validated, escaped C# string literal
+        - target_hierarchy_path as a validated, escaped C# string literal
+        - base_damage as a validated C# int32 literal
+      allowed_runtime_mutation:
+        - transition the current runtime-only state machine to GamePlayState
+        - call DamageableBodyPart.TakeDamage(base_damage) on the exact runtime target
+      forbidden_apis_and_behaviors:
+        - asset, prefab, scene, project, or source writes
+        - editor save/import operations
+        - file, process, or network operations
+        - arbitrary caller code
+      lifecycle: Runtime mutation is ephemeral and must be discarded by the mandatory Play Mode stop cleanup.
+      diagnostics_boundary: expectedHitZoneDamage and expectedFinalDamage are production-code diagnostics, not an independent oracle.
+    evidence_boundary:
+      can_establish:
+        - runtime behavior directly exercised and observed during the bounded Play Mode scenario
+        - runtime state/log outcomes explicitly captured by the scenario
+      cannot_establish:
+        - unrelated gameplay paths not exercised by the scenario
+        - broad game correctness from one scenario
+        - deterministic source/serialization facts that were not observed
+
+unbound_capabilities:
+  - unity.project.inspect
+  - unity.compile
+  - unity.tests.run
+  - unity.scene.inspect
+  - unity.component.inspect
+  - unity.console.inspect
+
+notes:
+  - This active binding records reviewed operation contracts, not current connectivity.
+  - Only the three mapped capabilities are bound; all other unity-client capabilities remain unbound.
+  - Runtime/Harness policy owns authorization and verify-change owns evidence classification and verdicts.

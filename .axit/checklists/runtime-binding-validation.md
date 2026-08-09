@@ -1,29 +1,14 @@
 # Runtime Binding v1 Validation
 
-Status: awaiting-real-transport
+Status: active
 
 This checklist validates the Runtime Binding layer after Capability semantic v1 has been accepted as stable.
 
 The goal is to prove that transport-specific execution can be introduced without leaking provider/tool semantics back into Core, Workspace/System routing, or canonical Capability ids.
 
-## Current precondition
+## Current binding state
 
-The `unity-client` System is semantically ready but currently unbound.
-
-Repository inspection on 2026-08-09 did not find:
-
-- root `.mcp.json`;
-- root `.codex/config.toml`;
-- a repository-visible Unity package manifest at `src/QuickGun-MVP/Packages/manifest.json`;
-- repository code-search evidence identifying a concrete Unity MCP/adapter.
-
-This does not prove the user's local Codex environment has no globally configured transport. It only means the repository cannot currently justify a concrete binding definition.
-
-Do not fabricate one.
-
-## First live binding scope
-
-Bind only:
+The `unity-client` System references the reviewed active `coplaydev-unity-mcp` binding. The active mapping is limited to exactly:
 
 ```text
 unity.prefab.inspect
@@ -31,7 +16,32 @@ unity.serialized-fields.inspect
 unity.playmode.verify
 ```
 
-Leave all other Unity capabilities unbound until a live task demonstrates need.
+The other six declared Unity capabilities remain explicitly unbound:
+
+```text
+unity.project.inspect
+unity.compile
+unity.tests.run
+unity.scene.inspect
+unity.component.inspect
+unity.console.inspect
+```
+
+`active` records the reviewed source-controlled mapping. It does not claim that the transport is currently connected or available; runtime availability must still be resolved for each acquisition.
+
+The discovery rules below continue to apply to any new or expanded mapping. Do not fabricate a binding or operation name.
+
+## Active first live binding scope
+
+The active binding maps only:
+
+```text
+unity.prefab.inspect
+unity.serialized-fields.inspect
+unity.playmode.verify
+```
+
+Leave all other Unity capabilities unbound until a live task demonstrates need and the same validation criteria are satisfied.
 
 ## Case 1 — real transport discovery before mapping
 
@@ -168,4 +178,4 @@ Runtime Binding v1 is ready to promote when:
 - no secrets or ephemeral machine state are committed;
 - the vertical slice produces traceable evidence and a correct `verify-change` verdict.
 
-Until those conditions are met, keep `unity-client` binding status unbound.
+Apply these criteria to every candidate or expanded binding scope. Until they are met for a Capability, keep that Capability unbound. The current active `unity-client` scope remains limited to the three proven mappings above.

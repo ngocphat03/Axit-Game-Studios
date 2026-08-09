@@ -8,9 +8,26 @@ Canonical form:
 .axit/bindings/<system-id>/<binding-id>.yaml
 ```
 
-This directory intentionally contains **no concrete binding yet**.
+The current `unity-client` System references the reviewed active [`coplaydev-unity-mcp`](unity-client/coplaydev-unity-mcp.yaml) definition. It maps exactly:
 
-The current `unity-client` Capability set is semantically stable but remains unbound because this branch does not contain a verified repository-level Unity transport configuration or concrete transport operation catalog.
+```text
+unity.prefab.inspect
+unity.serialized-fields.inspect
+unity.playmode.verify
+```
+
+The other six declared Unity capabilities remain explicitly unbound:
+
+```text
+unity.project.inspect
+unity.compile
+unity.tests.run
+unity.scene.inspect
+unity.component.inspect
+unity.console.inspect
+```
+
+`active` is the source-controlled binding lifecycle status. It does not claim that the transport is currently connected or available; runtime availability must still be resolved for each acquisition.
 
 Rules:
 
@@ -23,7 +40,7 @@ Rules:
 - Runtime/Harness policy still controls execution permission;
 - acquisition results remain evidence, not PASS/FAIL/BLOCKED.
 
-First intended Unity binding slice after real transport discovery:
+Current active Unity binding slice:
 
 ```text
 unity.prefab.inspect
