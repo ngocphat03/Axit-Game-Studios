@@ -17,9 +17,9 @@ network_access = true
 
 [auto_review]
 policy = """
-Approve routine actions needed to execute the accepted Axit roadmap when they stay inside the trusted repository/workspace or user-local development environment: repository reads/writes, local builds/tests, deterministic validation, Unity project/package setup, downloading the approved CoplayDev unity-mcp package and its documented user-local prerequisites, connecting to localhost Unity MCP, and bounded non-destructive Unity evidence acquisition.
+Approve routine actions needed to execute the accepted Axit roadmap when they stay inside the trusted repository/workspace or user-local development environment: repository reads/writes, local builds/tests, deterministic validation, use of an already user-configured and reachable Unity MCP transport, bounded non-destructive Unity evidence acquisition, and bounded repair work inside the accepted scope.
 
-Do not approve sudo/admin escalation, credential/secret access, production or external-cloud writes, git push/publish/PR creation, destructive deletion/migration outside the accepted bounded task, broad unrelated refactors, changing public contracts/state ownership/architecture without an accepted decision, or overwriting unrelated dirty-worktree changes. Return those to the parent orchestrator as a hard-stop condition.
+Do not approve installing, configuring, upgrading, starting, or repairing Unity MCP/CoplayDev transport setup; changing global/user Codex MCP configuration; changing Unity package configuration solely to install MCP; sudo/admin escalation; credential/secret access; production or external-cloud writes; git push/publish/PR creation; destructive deletion/migration outside the accepted bounded task; broad unrelated refactors; changing public contracts/state ownership/architecture without an accepted decision; or overwriting unrelated dirty-worktree changes. Return those to the parent orchestrator as a hard-stop condition.
 """
 
 [agents]
@@ -29,11 +29,6 @@ default_subagent_model = "gpt-5.6-sol"
 default_subagent_reasoning_effort = "max"
 interrupt_message = true
 
-# CoplayDev MCP for Unity uses Streamable HTTP by default.
-# The server becomes reachable after the Unity package/bridge is installed and running.
-[mcp_servers.unityMCP]
-url = "http://localhost:8080/mcp"
-enabled = true
-required = false
-startup_timeout_sec = 20
-tool_timeout_sec = 120
+# Unity MCP is intentionally NOT configured here.
+# The user configures and starts MCP for Unity manually before running the continuous Axit plan.
+# At runtime, Axit may inspect and use the already-available transport but must not alter its setup.
