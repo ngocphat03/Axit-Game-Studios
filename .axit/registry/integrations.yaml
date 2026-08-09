@@ -1,0 +1,21 @@
+spec_version: axit.integrations/v1
+
+integrations: []
+
+notes:
+  - "Register cross-system provider/consumer relationships here when multiple systems interact."
+  - "Each integration should point to the executable contract source when one exists, such as OpenAPI, protobuf, schema, migrations, generated client contracts, or shared protocol code."
+  - "Do not copy response schemas or DTO bodies into `.axit`; duplicated contracts become stale."
+  - "Contract and integration tests should validate the real provider and consumer boundary whenever practical."
+
+example_shape:
+  id: example-api
+  provider: backend
+  consumers:
+    - unity-client
+    - cms
+  contract:
+    type: openapi
+    source: src/Backend/openapi.json
+  tests:
+    - tests/contracts/example-api
