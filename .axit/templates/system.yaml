@@ -1,0 +1,39 @@
+spec_version: axit.system/v1
+
+system:
+  id: ""
+  name: ""
+  kind: ""
+  source: ""
+  stage: ""
+
+runtime:
+  engine: ""
+  framework: ""
+  version: ""
+  language: ""
+
+context:
+  rules: ""
+  architecture: ""
+  knowledge: []
+
+interfaces:
+  provides: []
+  consumes: []
+
+validation:
+  static_checks: []
+  automated_tests: []
+  runtime_checks: []
+
+extensions:
+  profiles: []
+  skills: []
+  workflows: []
+
+unconfirmed: []
+
+notes:
+  - "Keep system-local context here; keep cross-system contracts in the root registries."
+  - "Do not create system-specific extensions until repeated work demonstrates a real gap."
