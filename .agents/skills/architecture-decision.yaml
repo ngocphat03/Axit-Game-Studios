@@ -1,0 +1,52 @@
+spec_version: axit.skill/v1
+id: architecture-decision
+name: Architecture Decision
+description: Resolve one high-impact technical decision and record its consequences, dependencies, state/interface implications, and verification needs.
+execution:
+  side_effects: project-write
+  preferred_profile: technical-architect
+inputs:
+  - name: decision_topic
+    type: string
+    required: true
+context:
+  required:
+    - source: project
+      ref: project-manifest
+    - source: project
+      ref: architecture-registry
+  optional:
+    - source: project
+      ref: relevant-design-docs
+    - source: project
+      ref: engine-reference
+capabilities:
+  required: [file.read, file.search]
+  optional: [file.write, user.question, user.choice, user.approval, agent.consult]
+model_requirements:
+  reasoning: high
+  coding: medium
+  long_context: preferred
+  tool_use: preferred
+procedure:
+  - id: frame
+    intent: State the concrete problem, constraints, and decision scope.
+  - id: options
+    intent: Compare viable alternatives and their trade-offs without inventing false choices.
+  - id: decide
+    intent: Record the chosen stance or escalate when project authority is required.
+  - id: register
+    intent: Update shared-state ownership, interfaces, API choices, forbidden patterns, or budgets only when cross-system behavior is affected.
+outputs:
+  - id: decision-record
+    type: document
+    required: true
+verdicts: [accepted, needs_decision, blocked]
+verification:
+  required:
+    - id: consequences-explicit
+      type: criteria_coverage
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
