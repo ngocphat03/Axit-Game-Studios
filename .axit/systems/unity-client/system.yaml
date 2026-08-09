@@ -1,0 +1,44 @@
+spec_version: axit.system/v1
+
+system:
+  id: unity-client
+  name: QuickGun-MVP
+  kind: game-client
+  source: src/QuickGun-MVP
+  stage: prototype
+
+runtime:
+  engine: Unity
+  version: ""
+  language: C#
+
+context:
+  rules: .axit/systems/unity-client/rules.md
+  architecture: .axit/systems/unity-client/architecture.yaml
+  knowledge: []
+
+interfaces:
+  provides: []
+  consumes: []
+
+validation:
+  static_checks:
+    - git diff --check
+  automated_tests:
+    - "standalone deterministic C# tests under tests/QuickGun-MVP/"
+  runtime_checks:
+    - "Unity compile/build when the local Unity environment is complete"
+
+extensions:
+  profiles: []
+  skills: []
+  workflows: []
+
+unconfirmed:
+  - exact Unity version
+  - target platforms
+  - player-count range
+
+notes:
+  - "This system uses the shared root Axit Core; do not duplicate Core under the source directory."
+  - "Keep system-specific context here and cross-system contracts in the root registries."
