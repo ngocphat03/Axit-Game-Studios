@@ -1,0 +1,12 @@
+spec_version: axit.architecture-registry/v1
+
+state_ownership: []
+interfaces: []
+api_decisions: []
+performance_budgets: []
+forbidden_patterns: []
+
+notes:
+  - Register only shared or high-risk architecture decisions.
+  - Do not record trivial internal implementation details.
+  - A concrete project owns its decisions; the reusable base does not preselect networking, persistence, or gameplay architecture.
