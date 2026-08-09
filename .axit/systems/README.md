@@ -1,0 +1,21 @@
+# Axit Systems
+
+Each registered System maps one coherent source/runtime boundary under the root product workspace.
+
+Canonical shape:
+
+```text
+.axit/systems/<system-id>/
+├── system.yaml
+├── rules.md
+├── architecture.yaml
+└── knowledge/           # only when needed
+```
+
+System-local Profiles, Skills, or Workflows should be created only after repeated work demonstrates a gap not covered by Core plus Rules/Architecture/Knowledge.
+
+Current registered System:
+
+- `unity-client` -> `src/QuickGun-MVP`
+
+Backend, CMS, and service Systems should be added only when their source roots/boundaries are materialized and understood.
