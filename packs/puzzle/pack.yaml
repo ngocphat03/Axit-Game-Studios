@@ -1,0 +1,28 @@
+spec_version: axit.pack/v1
+id: puzzle
+name: Puzzle Systems
+category: gameplay-system
+status: draft
+description: Reusable puzzle-state, solvability, reset, hint, and verification concerns for puzzle-driven games.
+activation:
+  project_features:
+    - puzzle.enabled == true
+requires: []
+conflicts: []
+contributes:
+  profiles: [puzzle-designer]
+  skills: [validate-puzzle-solvability, verify-puzzle-reset, author-contextual-hints]
+  workflows: []
+  capabilities: []
+  checklist_sections: [puzzle]
+architecture_questions:
+  - What is the canonical puzzle state?
+  - Which actions are valid in each state?
+  - What constitutes success, failure, reset, and soft-lock?
+  - Must puzzle state survive save/reload or multiplayer replication?
+verification_requirements:
+  - transition tests for core puzzle rules
+  - reset-path tests
+  - soft-lock review
+  - save/reload evidence where persistence applies
+knowledge: []
