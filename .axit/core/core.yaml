@@ -1,5 +1,5 @@
 spec_version: axit.core/v1
-status: core-workflow-v1-validation
+status: core-workflow-v1
 
 profiles:
   - technical-architect
@@ -26,11 +26,9 @@ rules:
   - Workflows compose accepted Skills and transitions; they must not duplicate Skill procedures or silently expand scope.
 
 next_phase:
-  - test bounded-change through Codex on one bounded feature or fix requested as end-to-end implementation plus verification
-  - confirm the Workflow completes only on the latest verify-change PASS
-  - confirm verify-change FAIL loops only for a local implementation repair inside accepted scope
-  - confirm verify-change BLOCKED stops without speculative code changes
-  - confirm design or architecture ambiguity exits to the owning Profile before implementation
-  - keep bounded-change in validation until these transitions are observed in live Codex use
-  - do not add Core Skill number 3 or another Workflow until a repeated procedural gap is demonstrated
+  - keep the four Profiles, two Skills, and bounded-change Workflow stable while project specialization is introduced
+  - define the Project Layer contract before adding domain-specific agents, skills, packs, or knowledge
+  - prove how a real game project selects Core behavior plus project-specific context without copying legacy catalogs
+  - add MCP-backed evidence capabilities as execution support without changing verification semantics
+  - do not add Core Skill number 3 or another Core Workflow until a repeated procedural gap is demonstrated
   - do not migrate legacy catalogs in bulk
