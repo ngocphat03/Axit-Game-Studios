@@ -41,7 +41,26 @@ AGENTS.md
     └── ... Codex discovery entries for active Skills only
 ```
 
-The framework repository may keep bootstrap copies under `.axit/templates/`. A concrete game owns the materialized files above.
+The framework repository may keep bootstrap copies under `.axit/templates/`. A concrete game owns the materialized project files above.
+
+### Embedded workspace / monorepo projects
+
+A project nested inside a repository that already owns a reviewed Axit Core does **not** need to copy that Core into the project directory.
+
+It may instead point `axit.core` in `.axit/project.yaml` to the shared Core, for example:
+
+```yaml
+axit:
+  core: ../../.axit/core/core.yaml
+```
+
+Rules for shared Core references:
+
+- the reference must be explicit in the project manifest;
+- the project still owns its own Rules, Registry, State, and project-specific extensions;
+- do not duplicate Core merely to satisfy directory symmetry;
+- ancestor Codex Skill discovery may expose the shared Core Skills without copying them into the nested project;
+- a standalone extracted project may later materialize its own Core copy or dependency without changing Project Layer semantics.
 
 ## Source-of-truth rules
 
@@ -99,7 +118,9 @@ Do not embed API documentation here.
 
 ### Axit paths
 
-Point to the canonical local Rules, architecture Registry, state file, and Project Layer roots.
+Point to the canonical Core reference, local Rules, architecture Registry, state file, and Project Layer roots.
+
+The Core path may be local to the project or an explicit shared workspace path.
 
 ### Active project extensions
 
