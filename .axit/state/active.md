@@ -1,11 +1,17 @@
 # Axit Workspace Active State
 
 Updated: 2026-08-09
-Status: runtime-binding-v1-transport-discovery
+Status: continuous-subagent-runtime-binding-ready
 
 ## Current task
 
-Introduce Runtime Binding v1 after promoting Capability semantic v1 to stable, without inventing a Unity transport that is not actually visible in the repository/runtime evidence.
+Run the Runtime Binding v1 phase continuously from repository root using a GPT-5.6 Sol high-reasoning primary thread as **orchestrator only**, with sub-agents performing setup, implementation, evidence acquisition, repair, and independent verification.
+
+Canonical continuous plan:
+
+```text
+.axit/plans/continuous-runtime-binding-v1.md
+```
 
 ## Stable foundations
 
@@ -14,100 +20,122 @@ Introduce Runtime Binding v1 after promoting Capability semantic v1 to stable, w
 - Profiles: `game-designer`, `technical-architect`, `implementation-engineer`, `quality-verifier`.
 - Skills: `implement-change`, `verify-change`.
 - Workflow: `bounded-change`.
-- Status: frozen/stable unless repeated live use demonstrates another reusable procedural or responsibility gap.
+- Status: stable/frozen unless repeated live evidence demonstrates a reusable gap.
 
-### Workspace/System routing v1
+### Workspace/System v1
 
-- Root-first routing is stable after live cases 1-4 passed.
+- Root-first routing is stable.
 - `src/QuickGun-MVP` resolves to System `unity-client`.
 - Missing cross-System contracts remain explicit unknowns rather than inferred behavior.
-- Live cross-System verification remains deferred until at least two real Systems exist.
 
 ### Capability semantic v1
 
-- Capability Spec: `.axit/specs/capability-spec-v1.md`.
+- Capability semantic v1 is stable after live Cases 1-5 passed.
 - Stable Unity set: `.axit/capabilities/unity/evidence.yaml`.
 - Unity System routing: `.axit/systems/unity-client/capabilities.yaml`.
-- Live Cases 1-5 are now recorded PASS in `.axit/checklists/unity-evidence-capability-validation.md`.
+- Verification semantics remain owned by `verify-change`.
 
-The stable semantic layer preserves:
-
-- criterion-driven capability selection;
-- declared capability-id discipline;
-- ordinary project evidence vs Capability separation;
-- static/serialized/runtime proof boundaries;
-- unavailable acquisition vs demonstrated product failure;
-- Runtime/Harness permission boundary;
-- `verify-change` verdict ownership.
-
-## Runtime Binding v1
+### Runtime Binding v1
 
 - Spec: `.axit/specs/runtime-binding-spec-v1.md`.
-- Binding root: `.axit/bindings/`.
 - Validation checklist: `.axit/checklists/runtime-binding-validation.md`.
-- Current `unity-client` binding status: **unbound**.
+- Current repository binding status before local setup: **unbound**.
+- First intended mapping slice remains:
+  - `unity.prefab.inspect`
+  - `unity.serialized-fields.inspect`
+  - `unity.playmode.verify`
 
-Runtime Binding v1 separates:
+## Codex orchestration configuration
 
-```text
-semantic Capability
-  -> reviewed binding definition
-      -> concrete transport operation(s)
-          -> runtime availability / policy
-              -> acquisition result + evidence
-                  -> verify-change
-```
-
-Binding acquisition outcomes must distinguish:
-
-- `acquired`;
-- `unavailable`;
-- `denied`;
-- `transport_error`.
-
-These are acquisition states, not PASS/FAIL/BLOCKED verdicts.
-
-## Transport discovery result
-
-Repository inspection on 2026-08-09 found no branch-visible evidence sufficient to create a concrete Unity binding:
-
-- `.mcp.json` not present at repository root;
-- `.codex/config.toml` not present at repository root;
-- `src/QuickGun-MVP/Packages/manifest.json` not present on the remote branch;
-- repository search did not identify a concrete Unity MCP/adapter operation catalog.
-
-This does **not** prove the user's local Codex environment lacks a globally configured Unity transport. It means the repository cannot justify concrete transport operation names yet.
-
-Do not guess them.
-
-## First intended binding slice
-
-After real transport discovery, bind only:
+Project runtime configuration now exists at:
 
 ```text
-unity.prefab.inspect
-unity.serialized-fields.inspect
-unity.playmode.verify
+.codex/config.toml
 ```
 
-Leave other Unity capabilities unbound until live use demonstrates need.
+Intended project defaults:
 
-The first vertical slice should combine:
+- primary model: `gpt-5.6-sol`;
+- primary execution reasoning: `max`;
+- Plan Mode reasoning: `xhigh`;
+- sub-agent default model: `gpt-5.6-sol`;
+- sub-agent default reasoning: `max`;
+- multi-agent enabled with a four-sub-agent concurrency ceiling;
+- `on-request` approvals reviewed by the auto-reviewer under the bounded local-development policy;
+- workspace-write sandbox with network access;
+- project MCP client entry `unityMCP` at `http://localhost:8080/mcp`, non-required at startup.
+
+Project-scoped Codex configuration applies only when the repository is trusted by Codex. Runtime/session overrides may still affect effective behavior and must be checked by the baseline sub-agent.
+
+Custom project verifier:
 
 ```text
-ordinary deterministic C# tests
-+ prefab inspection evidence
-+ serialized-field evidence
-+ bounded Play Mode evidence
--> verify-change
+.codex/agents/axit-verifier.toml
 ```
 
-## Next actions
+The verifier is read-only and must not repair its own findings.
 
-1. Inspect the user's actual local Codex/runtime Unity transport configuration and available operation names.
-2. Confirm the transport can reach the intended Unity project/editor.
-3. Materialize one `.axit/bindings/unity-client/<binding-id>.yaml` only from verified operations.
-4. Map only the three intended Capability ids initially.
-5. Run `.axit/checklists/runtime-binding-validation.md`.
-6. Execute the first end-to-end evidence vertical slice and verify acquisition-state semantics plus final `verify-change` behavior.
-7. Do not add Core Skill #3, Workflow #2, or bind the entire Unity capability catalog during this phase.
+## Orchestrator policy
+
+Root `AGENTS.md` now requires the primary thread to coordinate rather than directly perform delegatable work.
+
+Actual setup/exploration/source edits/tests/Unity evidence/repairs/verification are delegated to sub-agents.
+
+If a sub-agent pauses or fails inside the accepted scope, the orchestrator should:
+
+1. capture useful state;
+2. steer/resume when safe;
+3. replace with a fresh distilled-context sub-agent when needed;
+4. allow at most two bounded recovery/replacement attempts for the same lane/failure;
+5. stop only at the declared hard blockers.
+
+Routine phase boundaries do not require user confirmation.
+
+## CoplayDev MCP for Unity authorization
+
+The user explicitly approved local setup of CoplayDev `unity-mcp` for this workspace.
+
+The continuous setup lane may, without another routine confirmation:
+
+- inspect the real local Unity project/package state;
+- add the approved CoplayDev Unity Package Manager Git dependency if missing;
+- install documented user-local prerequisites such as `uv` when needed and possible without sudo/admin;
+- open/reach the QuickGun Unity project/editor;
+- start/configure the Unity-side bridge using the installed package's real interface;
+- connect Codex to the configured localhost MCP endpoint;
+- inspect the real tool/operation inventory.
+
+This authorization does **not** include sudo/admin escalation, secrets, production/cloud writes, broad destructive changes, or overwriting unrelated user work.
+
+The repository-side MCP entry is configuration only. It does not prove the Unity package, bridge, or editor is currently installed/running on the user's machine.
+
+## First continuous run
+
+The next local run should start from a fresh trusted Codex session at repository root and execute:
+
+```text
+.axit/plans/continuous-runtime-binding-v1.md
+```
+
+The run should continue until `DONE` or one declared `HARD_BLOCKER`, not pause for routine phase confirmations.
+
+## Expected phases
+
+1. baseline/multi-agent readiness;
+2. CoplayDev MCP for Unity local setup;
+3. live transport/tool discovery;
+4. narrow Runtime Binding materialization;
+5. acquisition-state regression;
+6. first real Unity evidence vertical slice;
+7. bounded FAIL -> repair -> reacquire -> reverify recovery;
+8. binding promotion when proven;
+9. demonstrated-gap analysis.
+
+## Boundaries kept unchanged
+
+- no Core Skill #3;
+- no Workflow #2;
+- no broad Unity specialist catalog;
+- no invented Capability or transport operation ids;
+- no automatic commit/push/PR;
+- no changes to legacy `.claude/**`.
