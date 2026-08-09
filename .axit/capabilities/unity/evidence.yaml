@@ -1,0 +1,127 @@
+spec_version: axit.capability-set/v1
+id: unity-evidence
+domain: unity
+purpose: evidence-acquisition
+status: validation
+
+capabilities:
+  - id: unity.project.inspect
+    summary: Inspect Unity project identity and configuration relevant to the current task.
+    operation: inspect
+    side_effects: read-only
+    evidence:
+      can_establish:
+        - Unity project/version/configuration facts that are directly observable from the current workspace or editor
+        - package and project-setting facts relevant to routing or verification
+      cannot_establish:
+        - gameplay/runtime behavior
+        - scene or prefab wiring not actually inspected
+        - successful compilation by itself
+
+  - id: unity.compile
+    summary: Run or observe Unity script compilation in the current configured environment.
+    operation: execute
+    side_effects: derived-artifacts
+    evidence:
+      can_establish:
+        - whether the selected Unity project scripts compile in the observed environment
+        - concrete compiler errors and warnings emitted by the observed compile
+      cannot_establish:
+        - gameplay correctness
+        - Play Mode behavior
+        - correctness of uncompiled external/deployment environments
+
+  - id: unity.tests.run
+    summary: Run a bounded selected Unity test suite and return current test evidence.
+    operation: execute
+    side_effects: derived-artifacts
+    evidence:
+      can_establish:
+        - pass/fail results for the selected Unity test scope
+        - observed failures, assertions, and test-run diagnostics
+      cannot_establish:
+        - behavior outside the selected suite
+        - visual/experiential correctness unless the test explicitly observes it
+        - runtime wiring not exercised by the selected tests
+
+  - id: unity.scene.inspect
+    summary: Inspect a Unity scene's serialized hierarchy and relevant configured objects/components.
+    operation: inspect
+    side_effects: read-only
+    evidence:
+      can_establish:
+        - serialized scene object/component presence and configuration that was inspected
+        - directly observable scene references and hierarchy relationships
+      cannot_establish:
+        - runtime lifecycle behavior
+        - dynamically created state not represented by the inspected serialized scene
+        - successful Play Mode execution
+
+  - id: unity.prefab.inspect
+    summary: Inspect a Unity prefab hierarchy, components, and serialized configuration.
+    operation: inspect
+    side_effects: read-only
+    evidence:
+      can_establish:
+        - component presence and serialized values/references on the inspected prefab
+        - prefab hierarchy facts relevant to the accepted criterion
+      cannot_establish:
+        - runtime-instantiated behavior
+        - scene overrides not inspected
+        - behavior produced only by runtime code
+
+  - id: unity.component.inspect
+    summary: Inspect the presence and configuration of a Unity component on a concrete target.
+    operation: inspect
+    side_effects: read-only
+    evidence:
+      can_establish:
+        - whether the inspected target has the expected component
+        - directly observable component configuration and references
+      cannot_establish:
+        - runtime behavior of the component
+        - correctness of targets that were not inspected
+
+  - id: unity.serialized-fields.inspect
+    summary: Inspect serialized field values and object references on a concrete Unity target.
+    operation: inspect
+    side_effects: read-only
+    evidence:
+      can_establish:
+        - current serialized scalar/value/reference state on the inspected target
+        - missing or mismatched serialized references that are directly observable
+      cannot_establish:
+        - runtime-mutated values after execution begins
+        - behavior implied by a value but not actually exercised
+
+  - id: unity.console.inspect
+    summary: Inspect current Unity Console/editor log evidence relevant to the bounded task.
+    operation: inspect
+    side_effects: read-only
+    evidence:
+      can_establish:
+        - observed compiler/runtime/editor log messages from the inspected session
+        - concrete exceptions, warnings, or errors present in the inspected log scope
+      cannot_establish:
+        - absence of failures that were not exercised or logged
+        - successful behavior merely because no relevant log entry exists
+
+  - id: unity.playmode.verify
+    summary: Run a bounded Unity Play Mode observation for an accepted runtime criterion.
+    operation: execute
+    side_effects: controlled-runtime
+    evidence:
+      can_establish:
+        - runtime behavior directly exercised and observed during the bounded Play Mode scenario
+        - runtime state/log outcomes explicitly captured by the scenario
+      cannot_establish:
+        - unrelated gameplay paths not exercised by the scenario
+        - broad game correctness from one scenario
+        - deterministic source/serialization facts that were not observed
+
+notes:
+  - These capabilities are semantic evidence operations, not MCP or CLI commands.
+  - A capability may be declared for a System even when no runtime binding is currently available.
+  - Unavailable acquisition is missing evidence, not automatic proof of product failure.
+  - verify-change remains responsible for REQUIRED/SUPPORTING classification and the final verdict.
+  - Runtime/Harness policy remains responsible for permissions and side-effect authorization.
