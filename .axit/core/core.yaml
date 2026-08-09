@@ -1,5 +1,5 @@
 spec_version: axit.core/v1
-status: core-skill-v1-validation
+status: core-skill-v2-validation
 
 profiles:
   - technical-architect
@@ -8,6 +8,7 @@ profiles:
   - quality-verifier
 
 skills:
+  - implement-change
   - verify-change
 
 workflows: []
@@ -20,11 +21,13 @@ rules:
   - Specialize through Skills and Knowledge before creating additional Profiles.
   - Treat the four current Profiles as the default Core responsibility set until a demonstrated gap requires another.
   - Add Core Skills only when a repeated procedure is demonstrated across real flows.
+  - Implementation readiness and independent verification remain separate responsibilities.
 
 next_phase:
-  - rerun verify-change against required-vs-supporting evidence cases in Codex
-  - confirm FAIL takes precedence when a required failure is already demonstrated
-  - confirm missing required implementation and unresolved target names are distinguished
-  - observe which additional procedures repeat before accepting Core Skill number 2
-  - keep Core Workflows empty until multiple accepted Skills require stable composition
+  - test implement-change through Codex on one bounded bug fix and one bounded feature change
+  - confirm implement-change preserves unrelated working-tree changes and does not expand scope silently
+  - confirm ambiguous product intent hands off before editing
+  - confirm material architecture changes hand off before editing
+  - run verify-change after implementation and confirm the implementer does not issue the final verdict
+  - keep Core Workflows empty until the two accepted Skills demonstrate a stable composition worth encoding
   - do not migrate legacy skill catalogs in bulk
