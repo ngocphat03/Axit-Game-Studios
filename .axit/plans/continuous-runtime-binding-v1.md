@@ -27,6 +27,31 @@ The primary thread must delegate source exploration, product/source changes, bui
 
 It must not delegate or perform Unity MCP installation/configuration because that prerequisite is explicitly user-owned.
 
+### Workspace Git-status policy
+
+Read `.axit/workspace.yaml` -> `safety.check_git_status` before any Git-status-based readiness or safety inspection.
+
+Default behavior is:
+
+```yaml
+safety:
+  check_git_status: false
+```
+
+When `false`:
+
+- do not run root, nested-repository, or submodule `git status` as a readiness/safety gate;
+- do not require a clean/staged/committed worktree;
+- do not create `DIRTY_WORKTREE_RISK` from modified/deleted/untracked/nested/submodule state;
+- treat the current filesystem/source content as the working baseline for the accepted task.
+
+When `true`:
+
+- a read-only safety lane may inspect relevant Git status;
+- `DIRTY_WORKTREE_RISK` is valid only when continuing would materially endanger unrelated work.
+
+This switch does not authorize reset, checkout, clean, reverting user work, destructive deletion, or blind overwrites.
+
 ### Sub-agent lanes
 
 Use the smallest useful lane for each phase. Typical lanes:
@@ -65,7 +90,7 @@ Return `HARD_BLOCKER` and stop only when at least one is materially required:
 - `DESTRUCTIVE_SCOPE` — destructive migration/deletion or broad unrelated refactor is required;
 - `SECRET_OR_PRODUCTION` — credentials/secrets, production access, or external-cloud writes are required;
 - `ADMIN_ESCALATION` — sudo/admin or machine-wide configuration is required;
-- `DIRTY_WORKTREE_RISK` — unrelated user changes would be overwritten or materially endangered;
+- `DIRTY_WORKTREE_RISK` — only when `.axit/workspace.yaml` sets `safety.check_git_status: true` and continuing would materially endanger unrelated work;
 - `REPEATED_REQUIRED_FAILURE` — the same required failure persists after two bounded repair/replacement loops.
 
 Do not stop simply because one ordinary sub-agent lane failed when a safe replacement route remains.
@@ -73,7 +98,7 @@ Do not stop simply because one ordinary sub-agent lane failed when a safe replac
 ## Global invariants
 
 - Start from repository root.
-- Preserve unrelated working-tree changes.
+- Read `safety.check_git_status` before any Git-status-based safety check.
 - Do not commit, push, publish, or open a PR.
 - Core v1, Workspace/System v1, and Capability semantic v1 are stable; do not redesign them during this plan.
 - Do not add Core Skill #3 or Workflow #2.
@@ -82,6 +107,7 @@ Do not stop simply because one ordinary sub-agent lane failed when a safe replac
 - Runtime Binding definitions may contain verified transport-specific names; semantic Capability definitions may not.
 - Keep secrets, ephemeral ports, tokens, and machine-specific credentials out of `.axit`.
 - Do not modify Unity MCP/CoplayDev installation, bridge configuration, or user/global Codex MCP configuration.
+- Keep edits bounded to current source state; never reset/revert unrelated content.
 - Keep progress/checkpoint messages concise.
 
 ---
@@ -90,9 +116,9 @@ Do not stop simply because one ordinary sub-agent lane failed when a safe replac
 
 Delegate a read-only baseline lane.
 
-Confirm:
+Always confirm:
 
-- current branch/worktree state and unrelated dirty changes;
+- `.axit/workspace.yaml` routing and `safety.check_git_status` value;
 - root `AGENTS.md` orchestrator policy is active;
 - project `.codex/config.toml` is being used by the trusted repository;
 - primary/sub-agent model and reasoning defaults resolve to the intended configuration;
@@ -100,13 +126,18 @@ Confirm:
 - Workspace/System v1 stable;
 - Capability semantic v1 stable;
 - `unity-client` maps to `src/QuickGun-MVP`;
-- current Runtime Binding status.
+- current Runtime Binding status;
+- multi-agent execution is available.
+
+If `safety.check_git_status: true`, additionally delegate a Git-status safety inspection for relevant worktrees and stop only on a material collision risk.
+
+If `safety.check_git_status: false`, skip Git status entirely for root, nested repositories, and submodules. Modified/deleted/untracked counts are not readiness evidence and are not blockers.
 
 Acceptance:
 
-- no dirty-worktree collision risk;
 - stable Axit layers unchanged;
-- multi-agent execution is available.
+- multi-agent execution is available;
+- Git-status safety gate passed when and only when explicitly enabled.
 
 If multi-agent execution itself is unavailable, stop with the smallest actionable blocker rather than letting the primary thread do the work directly.
 
@@ -317,7 +348,7 @@ Rules:
 - worker must not issue the final verification verdict;
 - do not reuse stale pre-repair evidence as proof;
 - maximum two repair/replacement loops;
-- preserve unrelated working-tree changes;
+- do not reset/revert unrelated current source state;
 - do not use the recovery phase to alter MCP installation/configuration.
 
 Acceptance:
