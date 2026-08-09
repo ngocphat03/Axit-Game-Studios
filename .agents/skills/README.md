@@ -12,6 +12,7 @@ Canonical Core Skills live at:
 
 Current Codex discovery entries:
 
+- `implement-change` -> canonical `.axit/core/skills/implement-change/SKILL.md`
 - `verify-change` -> canonical `.axit/core/skills/verify-change/SKILL.md`
 
 Until repository symlink handling is standardized in this branch, a discovery entry may be a tiny `SKILL.md` shim that contains only Codex discovery metadata and points Codex to the canonical Axit file. Do not duplicate the full procedure here.
