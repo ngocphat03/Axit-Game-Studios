@@ -1,0 +1,29 @@
+spec_version: axit.pack/v1
+id: mission-quest
+name: Mission and Quest Systems
+category: gameplay-system
+status: draft
+description: Reusable mission/quest definition, runtime instance, progression-scope, transition, reward, and verification guidance.
+activation:
+  project_features:
+    - missions_quests.enabled == true
+requires: []
+conflicts: []
+contributes:
+  profiles: [quest-designer]
+  skills: [author-mission-model, review-mission-state, verify-mission-progression]
+  workflows: []
+  capabilities: []
+  checklist_sections: [mission-quest]
+architecture_questions:
+  - How are mission definitions separated from active instances?
+  - Which progress scopes exist: player, party, session, world?
+  - Who owns authority for each scope?
+  - What persists across reconnect, session end, or account reload?
+  - How are rewards made idempotent where required?
+verification_requirements:
+  - pure transition tests where practical
+  - duplicate-completion/idempotency checks
+  - unreachable or impossible content validation where feasible
+  - persistence/reconnect evidence when enabled
+knowledge: []
