@@ -63,7 +63,7 @@ Foundation remains stable unless later milestones expose a demonstrated flaw. Do
 
 ## M1 — Unity Runtime Binding
 
-Status: current
+Status: promoted
 
 ### Goal
 
@@ -88,20 +88,25 @@ accepted criterion
 
 Include one bounded real `FAIL -> repair -> reacquire -> reverify` path.
 
-### Exit gate
+### Exit result
 
-- reviewed binding promoted only for proven mappings;
-- transport operation names came from live interface, not assumptions;
-- evidence provenance is sufficient;
-- acquisition-state vs verification-verdict semantics remain intact;
-- continuous sub-agent recovery behaves acceptably;
-- milestone report + retrospective reviewed by user + assistant.
+PASS and human-promoted on 2026-08-10.
+
+The active `coplaydev-unity-mcp` binding is limited to the three proven mappings. M1 report/retrospective remain under `.axit/milestones/M1-unity-runtime-binding/`.
+
+Known deferred issue carried into M2 review only: `DEFERRED_PRIMARY_REASONING_CONFIG`.
 
 ---
 
 ## M2 — Autonomous Bounded Development
 
-Status: mockup
+Status: current
+
+Execution plan:
+
+```text
+.axit/milestones/M2-autonomous-bounded-development/plan.md
+```
 
 ### Goal
 
@@ -132,6 +137,10 @@ At least several of:
 ### Exit gate
 
 Axit repeatedly reaches correct completion or correct hard blockers without routine user steering, and observed repeated gaps are hardened into the smallest correct framework layer.
+
+M2 must create report + retrospective, run closure verification, and stop for human promotion review before M3.
+
+The primary reasoning mismatch is an explicitly accepted M2-only deferred issue and must be revisited at M2 closure rather than silently inherited by M3.
 
 ---
 
