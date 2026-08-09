@@ -2,7 +2,7 @@
 spec_version: axit.workflow/v1
 id: bounded-change
 summary: Implement and independently verify one bounded change whose intent and architecture are already sufficiently resolved.
-status: validation
+status: active
 ---
 
 # Entry Conditions
