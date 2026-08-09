@@ -1,0 +1,50 @@
+spec_version: axit.skill/v1
+id: implementation-plan
+name: Implementation Plan
+description: Convert an approved design/architecture scope into the smallest coherent implementation plan with dependencies and verification checkpoints.
+execution:
+  side_effects: none
+  preferred_profile: implementation-engineer
+inputs:
+  - name: change_request
+    type: string
+    required: true
+context:
+  required:
+    - source: project
+      ref: project-manifest
+    - source: project
+      ref: project-rules
+  optional:
+    - source: project
+      ref: relevant-design-docs
+    - source: project
+      ref: architecture-registry
+capabilities:
+  required: [file.read, file.search, repo.search]
+  optional: [user.question, agent.consult]
+model_requirements:
+  reasoning: high
+  coding: high
+  long_context: preferred
+  tool_use: preferred
+procedure:
+  - id: understand
+    intent: Resolve requirements, constraints, current implementation, and non-goals.
+  - id: slice
+    intent: Propose the smallest vertical implementation slice and affected boundaries.
+  - id: verify-plan
+    intent: Attach deterministic/manual verification to each material risk.
+outputs:
+  - id: implementation-plan
+    type: document
+    required: true
+verdicts: [ready, needs_decision, blocked]
+verification:
+  required:
+    - id: scope-and-evidence-covered
+      type: criteria_coverage
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
