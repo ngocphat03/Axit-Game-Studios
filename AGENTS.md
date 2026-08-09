@@ -1,45 +1,32 @@
-# Axit Game Studio Base
+# Axit Workspace
 
-This repository is being redesigned as a Codex-first, reusable game-development base.
+This repository is a Codex-first product workspace. Codex is expected to run from the repository root.
 
-## Canonical source
+## Root routing
 
-- Axit-owned configuration and reusable framework files live under `.axit/`.
-- Read `.axit/README.md` first when working on the Axit framework itself.
-- Do not preload or recursively read the entire `.axit/` tree. Read only files relevant to the current task.
+- `.axit/` is the Axit source of truth; `.agents/skills/` is Codex Skill discovery only.
+- Read `.axit/workspace.yaml` when a task touches product source under `src/` or spans multiple components.
+- Map affected source paths to registered Systems, then read only the relevant `.axit/systems/<system-id>/` context.
+- Read `.axit/registry/architecture.yaml` and `.axit/registry/integrations.yaml` when a change crosses System boundaries, ownership, or public contracts.
+- Do not recursively preload `.axit/`.
 
-## Codex compatibility
+## Core behavior
 
-- `.agents/skills/` exists only for Codex-discoverable Skill entries.
-- Canonical Skill content lives under `.axit/core/skills/` or, in a concrete game, reviewed `.axit/project/skills/` entries.
-- Do not treat `.agents/` as the Axit source of truth.
+- Shared Core lives under `.axit/core/`.
+- When the user requests end-to-end implementation plus independent verification for one bounded change, follow `.axit/core/workflows/bounded-change/WORKFLOW.md`.
+- `implement-change` and `verify-change` remain independently usable when only one job is requested.
+- If product intent or a material architecture decision is unresolved, hand off to the owning Core Profile instead of guessing.
 
-## Workflow routing
+## System discipline
 
-- When the user explicitly requests end-to-end implementation **and** independent verification for one bounded change, read and follow `.axit/core/workflows/bounded-change/WORKFLOW.md`.
-- Do not route to that Workflow when the request is only implementation, only verification, design-only work, or architecture-only work.
-- If product intent or a material architecture decision is unresolved, hand off to the owning Profile instead of using the Workflow to guess.
-
-## Project Layer routing
-
-- A concrete game should use `.axit/project.yaml` as compact routing context.
-- Read project Rules, Registry, Knowledge, State, Profiles, Skills, or Workflows only when the current task requires them.
-- Do not assume every artifact under `.axit/project/` is active; activation should be explicit in the project manifest or current task routing.
-- Do not create project-specific Profiles or Skills merely to reproduce legacy specialist job titles.
-- `src/QuickGun-MVP/` is the first live Project Layer validation target and has its own nested `AGENTS.md` plus `.axit/` project files.
-- QuickGun-MVP reuses the reviewed root Core; do not duplicate Core into the nested project.
+- `src/*` contains interacting Systems such as game client, backend, CMS, and services; they are not separate Axit projects by default.
+- System-local Rules/Architecture belong under `.axit/systems/<system-id>/`.
+- Cross-system relationships belong in root registries.
+- Point Axit metadata to executable contracts such as OpenAPI/protobuf/schema/source files; do not duplicate those contracts in `.axit`.
+- Prefer repository-level contract/integration/e2e tests for behavior that spans Systems.
 
 ## Migration boundary
 
-- The existing `.claude/` tree is legacy/reference material only.
-- Do not copy, migrate, or activate legacy agents/skills unless explicitly selected for review.
-- Do not introduce large agent or skill catalogs by default.
-
-## Current implementation phase
-
-1. keep the reviewed Core stable at four Profiles, two Skills, and one active Workflow;
-2. validate the materialized QuickGun-MVP Project Layer against a real local workspace;
-3. keep QuickGun project-specific Profiles, Skills, Workflows, and Knowledge empty until repeated work demonstrates a real gap;
-4. prefer Rules/Registry/Knowledge before creating a project Skill, and prefer focused Skills before creating additional Profiles;
-5. add MCP-backed evidence capabilities as execution support without changing Core verification semantics;
-6. promote new behavior into Core only after reuse is demonstrated across materially different projects.
+- `.claude/` is legacy/reference material only.
+- Do not bulk-migrate legacy agents, skills, or workflows.
+- Keep the reviewed Core stable unless real usage demonstrates a reusable gap.
