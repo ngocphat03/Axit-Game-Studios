@@ -1,0 +1,33 @@
+spec_version: axit.project/v1
+
+project:
+  id: ""
+  name: ""
+  summary: ""
+  stage: concept
+
+product:
+  core_loop: ""
+  player_count:
+    min: 1
+    max: 1
+  target_platforms: []
+
+engine:
+  name: ""
+  version: ""
+  language: ""
+
+architecture:
+  registry: .axit/registry/architecture.yaml
+
+validation:
+  static_checks: []
+  automated_tests: []
+  editor_checks: []
+  playtest_checks: []
+
+customization:
+  profiles: []
+  skills: []
+  workflows: []
