@@ -8,6 +8,8 @@ binding_status: unbound
 
 notes:
   - "This sidecar declares semantic capabilities relevant to the Unity client; it does not claim a transport is currently available."
+  - "Use only capability ids explicitly declared by the referenced active capability sets; do not invent aliases or project-specific capability names."
+  - "If no declared capability matches an evidence need, describe the need as ordinary evidence or a capability gap instead of synthesizing an id."
   - "Runtime bindings may later use Unity MCP, Axit Unity, Unity CLI/editor automation, or another compatible transport without changing capability ids."
   - "Load this file only when the current task requires Unity-specific evidence acquisition."
   - "verify-change still decides REQUIRED versus SUPPORTING evidence and the final verdict."
