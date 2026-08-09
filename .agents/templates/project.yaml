@@ -1,0 +1,45 @@
+spec_version: axit.project/v1
+project:
+  id: replace-me
+  name: Replace Me
+  summary: ""
+  stage: concept
+product:
+  genres: []
+  core_loop: ""
+  player_count: { min: 1, max: 1 }
+  session_model: single-player
+  target_platforms: [pc]
+engine:
+  name: ""
+  version: ""
+  language: ""
+features:
+  multiplayer: { enabled: false, topology: none, authority: none, transport: none, reconnect: false, late_join: false }
+  missions_quests: { enabled: false, complexity: none, branching: false, scope: [], persistent_progress: false }
+  puzzle: { enabled: false, systemic: false, reset_required: false, hints: false }
+  procedural_generation: { enabled: false, deterministic: false, seed_authority: none }
+  persistence: { enabled: false, scope: local, authority: local, migration_required: false }
+  economy_progression: { enabled: false }
+  combat: { enabled: false }
+  inventory: { enabled: false }
+packs:
+  selected: []
+  proposed: []
+runtime:
+  preferred_ai_providers: []
+  editor_bridge: none
+  axit_code: optional
+project_rules:
+  source: .agents/rules/project-rules.md
+architecture_registry:
+  source: .agents/registry/architecture.yaml
+validation:
+  static_checks: []
+  automated_tests: []
+  editor_checks: []
+  playtest_matrix: []
+customization:
+  custom_profiles: []
+  custom_skills: []
+  custom_workflows: []
