@@ -1,0 +1,17 @@
+spec_version: axit.core/v1
+status: structure-only
+
+profiles: []
+skills: []
+workflows: []
+
+rules:
+  - Core must remain reusable across materially different game projects.
+  - Do not import legacy agents or skills by default.
+  - Review each Profile and Skill before adding it to Core.
+  - Prefer a project/domain extension over Core when reuse is not proven.
+
+next_phase:
+  - review candidate Core Profiles one by one
+  - review candidate Core Skills one by one
+  - add Codex discovery entries only for accepted skills
