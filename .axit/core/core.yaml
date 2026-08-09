@@ -15,21 +15,21 @@ workflows:
   - bounded-change
 
 rules:
-  - Core must remain reusable across materially different game projects.
+  - Core must remain reusable across materially different product workspaces and game projects.
   - Do not import legacy agents or skills by default.
   - Review each Profile, Skill, and Workflow before adding it to Core.
-  - Prefer a project/domain extension over Core when reuse is not proven.
-  - Specialize through Skills and Knowledge before creating additional Profiles.
+  - Prefer workspace/system specialization over Core when reuse is not proven.
+  - Specialize through Rules, Registries, Knowledge, and focused Skills before creating additional Profiles.
   - Treat the four current Profiles as the default Core responsibility set until a demonstrated gap requires another.
   - Add Core Skills only when a repeated procedure is demonstrated across real flows.
   - Implementation readiness and independent verification remain separate responsibilities.
   - Workflows compose accepted Skills and transitions; they must not duplicate Skill procedures or silently expand scope.
 
 next_phase:
-  - keep the four Profiles, two Skills, and bounded-change Workflow stable while Project Layer behavior is validated
-  - use QuickGun-MVP as the first embedded project bootstrap and verify nested routing against the shared Core
-  - observe real QuickGun work before adding any project-specific Knowledge, Skill, Workflow, or Profile
-  - prefer a small Project Rule or Registry decision over a new project extension when sufficient
+  - keep the four Profiles, two Skills, and bounded-change Workflow stable while workspace/system routing is validated
+  - use root-first Codex routing through .axit/workspace.yaml rather than nested project working directories
+  - validate the Unity client as the first System and add backend/CMS/services only when their source boundaries exist
+  - prove cross-system debugging and contract/integration testing against executable API/schema sources before adding new Core behavior
   - add MCP-backed evidence capabilities as execution support without changing verification semantics
   - do not add Core Skill number 3 or another Core Workflow until a repeated procedural gap is demonstrated
   - do not migrate legacy catalogs in bulk
