@@ -11,16 +11,30 @@ The primary thread may read only the minimum Axit routing/state needed to decomp
 Delegate actual work to sub-agents, including:
 
 - repository/source exploration beyond minimal orchestration context;
-- setup and environment discovery;
+- environment and transport readiness inspection;
 - product/source edits;
 - test/build execution;
-- Unity/MCP evidence acquisition;
+- Unity/MCP evidence acquisition through an already configured transport;
 - bounded repair work;
 - independent verification.
 
 For a bounded change, keep implementation and verification in separate sub-agent lanes when practical. The orchestrator must not substitute its own judgment for an independent verifier result.
 
 Parallelize read-heavy independent exploration when useful. Serialize write-heavy lanes that could touch overlapping files or runtime/editor state.
+
+### Manual Unity MCP prerequisite
+
+MCP for Unity setup is user-owned and must be completed **before** the continuous Axit runtime-binding plan begins.
+
+The orchestrator and sub-agents may inspect and use the currently available Unity MCP transport, but they must not:
+
+- install or upgrade CoplayDev/unity-mcp;
+- add/remove Unity packages solely to set up MCP;
+- edit global/user Codex MCP configuration;
+- start/configure/repair the Unity MCP bridge on the user's behalf;
+- invent a missing transport or operation name.
+
+If the expected Unity transport is missing, unreachable, or not connected to the intended QuickGun editor/project at plan start, stop with `HARD_BLOCKER: UNITY_MCP_NOT_READY` and report only the observed missing prerequisite. Do not attempt setup.
 
 ### Sub-agent recovery
 
@@ -35,15 +49,18 @@ If a sub-agent pauses, blocks, times out, or returns an incomplete result, the o
 
 Do not stop merely because one sub-agent is blocked when another safe route or replacement lane can complete the accepted task.
 
+Do not apply the recovery policy to missing/unready Unity MCP setup: that is a manual prerequisite, not an agent-repair lane.
+
 ### Hard-stop conditions
 
 Stop the continuous run and ask the user only when at least one of these becomes materially necessary:
 
+- `UNITY_MCP_NOT_READY` — the manually configured Unity MCP transport is missing, unreachable, lacks the required live operations, or is not connected to the intended QuickGun editor/project;
 - product intent or acceptance behavior is ambiguous and cannot be resolved from accepted project evidence;
 - a material architecture, public-contract, dependency-direction, or state-ownership decision is required outside the accepted plan;
 - destructive deletion/migration or broad unrelated refactoring is required;
 - credentials, secrets, production access, or external-cloud writes are required;
-- sudo/admin escalation or machine-wide configuration outside the pre-authorized user-local setup is required;
+- sudo/admin escalation or machine-wide configuration is required;
 - unrelated dirty-worktree changes would be overwritten or materially endangered;
 - the same required failure remains after two bounded repair/replacement loops.
 
