@@ -23,6 +23,10 @@ Current set:
 Rules:
 
 - capability ids describe semantic intent, not provider/tool command names;
+- use only ids explicitly declared by the affected System's active capability sets;
+- do not invent, alias, rename, abbreviate, or synthesize capability ids during planning;
+- if no declared Capability matches an evidence need, describe the need in ordinary language and report a capability gap unless legitimate non-capability project evidence is sufficient;
+- standalone tests, source inspection, logs, and other project mechanisms remain ordinary evidence unless a declared Capability contract actually represents them;
 - capability output is evidence, not PASS/FAIL/BLOCKED;
 - declaration does not imply a runtime binding is currently available;
 - declaration never grants permission or bypasses Runtime/Harness policy;
