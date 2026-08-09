@@ -14,6 +14,9 @@ axit:
   integration_registry: .axit/registry/integrations.yaml
   active_state: .axit/state/active.md
 
+safety:
+  check_git_status: false
+
 systems: []
 
 workspace_extensions:
@@ -29,5 +32,6 @@ validation:
 
 notes:
   - "Keep this manifest compact; it routes repository-level context and system boundaries."
+  - "Git status checking is opt-in; set safety.check_git_status to true only when the workspace wants clean-worktree/status validation."
   - "Register Systems only when their source roots/boundaries are known."
   - "Do not duplicate executable cross-system contracts into `.axit`."
