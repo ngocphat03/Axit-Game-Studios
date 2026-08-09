@@ -14,6 +14,9 @@ axit:
   integration_registry: .axit/registry/integrations.yaml
   active_state: .axit/state/active.md
 
+safety:
+  check_git_status: false
+
 systems:
   - id: unity-client
     name: QuickGun-MVP
@@ -34,5 +37,7 @@ validation:
 
 notes:
   - "Open Codex from repository root; route tasks through this workspace manifest rather than relying on nested working directories."
+  - "When safety.check_git_status is false, do not use root, nested-repository, or submodule Git status as a readiness gate or blocker."
+  - "Set safety.check_git_status to true in workspaces that explicitly require clean-worktree/status validation."
   - "Add backend, CMS, or service systems here when their source roots exist and their boundaries are understood."
   - "Do not duplicate executable API schemas or DTO contracts into `.axit`; point to their real source of truth instead."
