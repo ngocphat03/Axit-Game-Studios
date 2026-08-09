@@ -1,0 +1,28 @@
+spec_version: axit.pack/v1
+id: online-session
+name: Online Session
+category: network-topology
+status: draft
+description: Reusable session lifecycle, compatibility, join/leave, reconnect, late-join, and network verification concerns independent of a specific authority model.
+activation:
+  project_features:
+    - multiplayer.enabled == true
+requires: []
+conflicts: []
+contributes:
+  profiles: []
+  skills: [review-session-lifecycle, verify-session-matrix]
+  workflows: []
+  capabilities: []
+  checklist_sections: [multiplayer-online]
+architecture_questions:
+  - How are sessions created and discovered?
+  - How are build/protocol incompatibilities handled?
+  - What happens on disconnect, reconnect, late join, and session shutdown?
+  - Which transport/service choices constrain gameplay architecture?
+verification_requirements:
+  - minimum and maximum peer-count session tests
+  - connect/disconnect handling
+  - compatibility rejection behavior
+  - network scene/session lifecycle evidence
+knowledge: []
