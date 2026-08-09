@@ -1,0 +1,29 @@
+spec_version: axit.pack/v1
+id: persistence
+name: Persistence
+category: gameplay-system
+status: draft
+description: Reusable save ownership, schema/versioning, migration, atomicity, authority, and reload verification concerns.
+activation:
+  project_features:
+    - persistence.enabled == true
+requires: []
+conflicts: []
+contributes:
+  profiles: []
+  skills: [define-persistence-boundary, verify-save-reload]
+  workflows: []
+  capabilities: []
+  checklist_sections: [persistence]
+architecture_questions:
+  - What state persists and for how long?
+  - Who owns authoritative writes?
+  - Where is data stored and what failure modes matter?
+  - How are schema/version migrations handled?
+  - How are local settings separated from authoritative progression?
+verification_requirements:
+  - save/reload tests
+  - schema migration tests when versioned data exists
+  - authority tests for multiplayer persistence
+  - interrupted-write/duplicate-apply checks where important
+knowledge: []
