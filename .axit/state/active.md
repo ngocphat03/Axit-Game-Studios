@@ -1,13 +1,11 @@
 # Axit Workspace Active State
 
 Updated: 2026-08-09
-Status: waiting-for-manual-unity-mcp-setup
+Status: ready-after-manual-unity-mcp-setup
 
 ## Current task
 
-Prepare the Runtime Binding v1 continuous multi-agent run while keeping MCP for Unity setup explicitly user-owned.
-
-The user will manually install/configure/start MCP for Unity and open/connect the intended QuickGun Unity project before the continuous plan is executed.
+Run the Runtime Binding v1 continuous multi-agent plan after the user has manually configured MCP for Unity.
 
 Canonical continuous plan:
 
@@ -46,6 +44,25 @@ Canonical continuous plan:
   - `unity.prefab.inspect`
   - `unity.serialized-fields.inspect`
   - `unity.playmode.verify`
+
+## Workspace safety configuration
+
+Current workspace config:
+
+```yaml
+safety:
+  check_git_status: false
+```
+
+Semantics:
+
+- Git-status-based worktree safety checking is opt-in and defaults to disabled.
+- With `false`, continuous Axit runs must not inspect root/nested/submodule `git status` as a readiness gate and must not raise `DIRTY_WORKTREE_RISK` from modified/deleted/untracked/nested/submodule counts.
+- Current filesystem/source content is treated as the working baseline for bounded tasks.
+- This does not authorize reset, checkout, clean, destructive deletion, reverting user work, or blind overwrites.
+- Another workspace may set `safety.check_git_status: true` when strict worktree status validation is desired.
+
+This policy intentionally allows Axit workspaces whose Systems are untracked directories, nested repositories, or later represented as submodules without making Git topology a default execution blocker.
 
 ## Codex orchestration configuration
 
@@ -116,7 +133,7 @@ After the user finishes manual MCP configuration, start a fresh trusted Codex se
 
 Expected phases:
 
-1. baseline/multi-agent readiness;
+1. baseline/multi-agent readiness with Git status skipped because `safety.check_git_status: false`;
 2. manual Unity MCP readiness gate;
 3. live transport/tool discovery;
 4. narrow Runtime Binding materialization;
