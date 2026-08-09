@@ -1,11 +1,13 @@
 # Axit Workspace Active State
 
 Updated: 2026-08-09
-Status: continuous-subagent-runtime-binding-ready
+Status: waiting-for-manual-unity-mcp-setup
 
 ## Current task
 
-Run the Runtime Binding v1 phase continuously from repository root using a GPT-5.6 Sol high-reasoning primary thread as **orchestrator only**, with sub-agents performing setup, implementation, evidence acquisition, repair, and independent verification.
+Prepare the Runtime Binding v1 continuous multi-agent run while keeping MCP for Unity setup explicitly user-owned.
+
+The user will manually install/configure/start MCP for Unity and open/connect the intended QuickGun Unity project before the continuous plan is executed.
 
 Canonical continuous plan:
 
@@ -39,7 +41,7 @@ Canonical continuous plan:
 
 - Spec: `.axit/specs/runtime-binding-spec-v1.md`.
 - Validation checklist: `.axit/checklists/runtime-binding-validation.md`.
-- Current repository binding status before local setup: **unbound**.
+- Current repository binding status: **unbound**.
 - First intended mapping slice remains:
   - `unity.prefab.inspect`
   - `unity.serialized-fields.inspect`
@@ -47,13 +49,13 @@ Canonical continuous plan:
 
 ## Codex orchestration configuration
 
-Project runtime configuration now exists at:
+Project runtime configuration:
 
 ```text
 .codex/config.toml
 ```
 
-Intended project defaults:
+Intended defaults:
 
 - primary model: `gpt-5.6-sol`;
 - primary execution reasoning: `max`;
@@ -62,8 +64,9 @@ Intended project defaults:
 - sub-agent default reasoning: `max`;
 - multi-agent enabled with a four-sub-agent concurrency ceiling;
 - `on-request` approvals reviewed by the auto-reviewer under the bounded local-development policy;
-- workspace-write sandbox with network access;
-- project MCP client entry `unityMCP` at `http://localhost:8080/mcp`, non-required at startup.
+- workspace-write sandbox with network access.
+
+No Unity MCP server/endpoint is configured in project `.codex/config.toml`. MCP configuration is intentionally left to the user's manual local setup.
 
 Project-scoped Codex configuration applies only when the repository is trusted by Codex. Runtime/session overrides may still affect effective behavior and must be checked by the baseline sub-agent.
 
@@ -77,52 +80,44 @@ The verifier is read-only and must not repair its own findings.
 
 ## Orchestrator policy
 
-Root `AGENTS.md` now requires the primary thread to coordinate rather than directly perform delegatable work.
+Root `AGENTS.md` requires the primary thread to coordinate rather than directly perform delegatable work.
 
-Actual setup/exploration/source edits/tests/Unity evidence/repairs/verification are delegated to sub-agents.
+Actual source exploration/edits/tests/Unity evidence/repairs/verification are delegated to sub-agents.
 
-If a sub-agent pauses or fails inside the accepted scope, the orchestrator should:
-
-1. capture useful state;
-2. steer/resume when safe;
-3. replace with a fresh distilled-context sub-agent when needed;
-4. allow at most two bounded recovery/replacement attempts for the same lane/failure;
-5. stop only at the declared hard blockers.
+If an ordinary sub-agent lane pauses or fails inside accepted scope, the orchestrator may steer/resume/replace it for at most two bounded recovery attempts.
 
 Routine phase boundaries do not require user confirmation.
 
-## CoplayDev MCP for Unity authorization
+## Manual Unity MCP prerequisite
 
-The user explicitly approved local setup of CoplayDev `unity-mcp` for this workspace.
+MCP setup is **not** part of the continuous execution envelope.
 
-The continuous setup lane may, without another routine confirmation:
+Before running the continuous plan, the user manually:
 
-- inspect the real local Unity project/package state;
-- add the approved CoplayDev Unity Package Manager Git dependency if missing;
-- install documented user-local prerequisites such as `uv` when needed and possible without sudo/admin;
-- open/reach the QuickGun Unity project/editor;
-- start/configure the Unity-side bridge using the installed package's real interface;
-- connect Codex to the configured localhost MCP endpoint;
-- inspect the real tool/operation inventory.
+- installs/configures the chosen MCP for Unity transport;
+- starts/enables the Unity-side bridge/server as required by that transport;
+- configures Codex MCP access locally as required;
+- opens the intended QuickGun project/editor;
+- confirms the transport is expected to be available to the new Codex session.
 
-This authorization does **not** include sudo/admin escalation, secrets, production/cloud writes, broad destructive changes, or overwriting unrelated user work.
+Axit agents may inspect and use that already-configured transport, but they may not install, configure, upgrade, start, or repair it.
 
-The repository-side MCP entry is configuration only. It does not prove the Unity package, bridge, or editor is currently installed/running on the user's machine.
-
-## First continuous run
-
-The next local run should start from a fresh trusted Codex session at repository root and execute:
+If readiness inspection fails, the run stops with:
 
 ```text
-.axit/plans/continuous-runtime-binding-v1.md
+HARD_BLOCKER: UNITY_MCP_NOT_READY
 ```
 
-The run should continue until `DONE` or one declared `HARD_BLOCKER`, not pause for routine phase confirmations.
+The agent reports the observed missing prerequisite and does not attempt setup.
 
-## Expected phases
+## Next local run
+
+After the user finishes manual MCP configuration, start a fresh trusted Codex session at repository root and execute the continuous plan.
+
+Expected phases:
 
 1. baseline/multi-agent readiness;
-2. CoplayDev MCP for Unity local setup;
+2. manual Unity MCP readiness gate;
 3. live transport/tool discovery;
 4. narrow Runtime Binding materialization;
 5. acquisition-state regression;
@@ -133,6 +128,7 @@ The run should continue until `DONE` or one declared `HARD_BLOCKER`, not pause f
 
 ## Boundaries kept unchanged
 
+- no agent-driven MCP installation/configuration;
 - no Core Skill #3;
 - no Workflow #2;
 - no broad Unity specialist catalog;
