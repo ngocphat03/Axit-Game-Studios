@@ -1,6 +1,6 @@
 # Core Profile Flow Validation
 
-This note validates the four Axit Core Profiles against common development flows before Core Skills or Workflows are expanded.
+This note validates the four Axit Core Profiles against common development flows before Core Workflows are expanded.
 
 ## Scope
 
@@ -16,7 +16,7 @@ Flows under test:
 1. bounded feature delivery;
 2. bounded bug fix.
 
-The goal is not to prescribe one mandatory pipeline. The goal is to identify repeated procedures that deserve a Core Skill.
+The goal is not to prescribe one mandatory pipeline. The goal is to identify repeated procedures that deserve Core Skills.
 
 ## Feature flow
 
@@ -52,9 +52,9 @@ Existing expected behavior / defect report
 
 The bug flow confirms that production coordination, specialist programmer hierarchies, and mandatory multi-agent approval chains are not Core responsibilities.
 
-## Repeated procedure found
+## Core Skill #1 — independent verification
 
-Both flows repeat one procedure regardless of domain, engine, genre, or networking model:
+Both flows repeat one verification procedure regardless of domain, engine, genre, or networking model:
 
 1. establish the bounded verification scope;
 2. identify accepted criteria or observable expected behavior;
@@ -66,14 +66,14 @@ Both flows repeat one procedure regardless of domain, engine, genre, or networki
 8. separate proven facts, demonstrated failures, assumptions, and unavailable evidence;
 9. issue `PASS`, `FAIL`, or `BLOCKED` with traceable evidence.
 
-This repeated procedure is distinct from the `quality-verifier` Profile:
+This procedure is distinct from the `quality-verifier` Profile:
 
 - Profile = responsibility and judgment lens;
 - Skill = repeatable verification procedure.
 
-Therefore the first accepted Core Skill is `verify-change`.
+Therefore Core Skill #1 is `verify-change`.
 
-## Real Codex validation — 2026-08-09
+## Real Codex validation — verify-change — 2026-08-09
 
 The first live use of `verify-change` exposed an important verdict-semantics gap.
 
@@ -128,6 +128,90 @@ Requested target cannot be identified reliably
 => BLOCKED / clarification
 ```
 
+The live Codex retest confirmed these semantics are now acceptable for Core v1.
+
+## Core Skill #2 — bounded implementation
+
+Feature delivery and bug fixing also repeat a second procedure whenever code/project mutation is actually required:
+
+1. bound the requested change and preserve unrelated working-tree state;
+2. confirm product intent and architecture are sufficiently resolved;
+3. inspect only the affected implementation surface and relevant constraints;
+4. choose the minimum coherent change;
+5. implement without silently expanding scope or changing architecture;
+6. add focused implementation-side tests/checks when practical;
+7. inspect the resulting diff for unintended contract or boundary changes;
+8. hand current evidence and unresolved risks to independent verification.
+
+This procedure is distinct from the `implementation-engineer` Profile:
+
+- Profile = implementation responsibility and local engineering judgment;
+- Skill = repeatable bounded-change procedure.
+
+The procedure remains reusable across engines and game types because engine/network/UI specialization can be supplied by project knowledge or domain Skills without changing the Core implementation loop.
+
+Therefore Core Skill #2 is `implement-change`.
+
+## Implementation / verification separation
+
+The two accepted Skills intentionally form a useful pair without yet becoming a mandatory Workflow:
+
+```text
+implement-change
+  -> produces bounded change + implementation-side evidence
+
+verify-change
+  -> independently evaluates the current change + evidence
+```
+
+Do not encode this pair as a Core Workflow yet. Some tasks only need verification; some tasks stop at design/architecture; and a future real project may demonstrate that another step is needed between implementation and verification.
+
+## implement-change Codex regression cases
+
+Before accepting a Core Workflow, test `implement-change` through Codex against at least these cases:
+
+### Case 1 — bounded bug fix
+
+Expected behavior:
+
+- identify or reproduce the defect when practical;
+- apply the smallest coherent fix;
+- add/update a focused test when practical;
+- preserve unrelated working-tree changes;
+- report checks and hand off to `verify-change`;
+- do not issue a final `PASS` verdict itself.
+
+### Case 2 — ambiguous product behavior
+
+Expected behavior:
+
+- detect that intended behavior is unresolved;
+- hand off to Game Designer before editing;
+- do not choose product behavior just to continue implementation.
+
+### Case 3 — architecture boundary change
+
+Expected behavior:
+
+- detect a required public-contract, state-owner, dependency-direction, topology, or project-wide stance change;
+- hand off to Technical Architect before editing that boundary.
+
+### Case 4 — dirty working tree
+
+Expected behavior:
+
+- identify pre-existing unrelated changes;
+- do not reset, overwrite, or claim them as part of the implementation;
+- keep the implementation handoff scoped to files actually changed for the task.
+
+### Case 5 — unavailable engine/runtime tooling
+
+Expected behavior:
+
+- perform implementation and deterministic checks that are available when correctness is still sufficiently grounded;
+- record missing runtime/editor checks explicitly;
+- hand the limitation to `verify-change` rather than claiming final completion.
+
 ## Deferred candidate Skills
 
 Do not add these yet merely because similar commands existed in the legacy repository:
@@ -135,7 +219,6 @@ Do not add these yet merely because similar commands existed in the legacy repos
 - feature design;
 - architecture decision;
 - implementation planning;
-- implementation execution;
 - code review;
 - project discovery;
 - checkpoint/session state;
@@ -147,6 +230,9 @@ Each remains a candidate until repeated use demonstrates that a stable Core proc
 
 The four Profiles cover the tested flows without a fifth Core responsibility.
 
-The first demonstrated procedural gap is independent completion verification, so `verify-change` remains justified as Core Skill #1.
+Two repeated, responsibility-independent procedures are now justified as Core Skills:
 
-The first live Codex tests also confirmed that verdict semantics must explicitly distinguish required evidence from supporting evidence and demonstrated absence from unresolved target discovery. Those semantics are now part of `verify-change` and should be regression-tested before accepting Core Skill #2.
+1. `implement-change` — bounded implementation and evidence handoff;
+2. `verify-change` — independent evidence-based completion judgment.
+
+Core Workflows remain empty until live Codex use demonstrates a stable composition that is valuable enough to encode rather than merely suggested.
