@@ -12,10 +12,19 @@ This repository is a Codex-first product workspace. Codex is expected to run fro
 
 ## Core behavior
 
-- Shared Core lives under `.axit/core/`.
+- Shared Core lives under `.axit/core/` and Core v1 is frozen unless real repeated use demonstrates a reusable gap.
 - When the user requests end-to-end implementation plus independent verification for one bounded change, follow `.axit/core/workflows/bounded-change/WORKFLOW.md`.
 - `implement-change` and `verify-change` remain independently usable when only one job is requested.
 - If product intent or a material architecture decision is unresolved, hand off to the owning Core Profile instead of guessing.
+
+## Capability routing
+
+- Capabilities are semantic evidence/execution operations under `.axit/capabilities/`; they are not Skills, Workflows, or verdict rules.
+- When a System needs editor/runtime evidence, read `.axit/systems/<system-id>/capabilities.yaml` if present, then load only the referenced capability set needed for the criterion.
+- Capability ids must remain transport-neutral. Do not replace semantic ids with MCP, CLI, provider, or editor command names.
+- A declared capability does not mean a runtime binding is currently available and does not grant permission to execute it.
+- Capability output is evidence only. `verify-change` still decides REQUIRED vs SUPPORTING evidence and PASS/FAIL/BLOCKED.
+- Missing/unbound acquisition is not proof that the product failed; distinguish unavailable evidence from an observed product failure.
 
 ## System discipline
 
