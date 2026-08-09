@@ -13,6 +13,9 @@ axit:
   architecture_registry: .axit/registry/architecture.yaml
   integration_registry: .axit/registry/integrations.yaml
   active_state: .axit/state/active.md
+  project_memory: .axit/memory/project-memory.md
+  decision_log: .axit/memory/decision-log.md
+  milestone_map: .axit/roadmap/milestones-mockup.md
 
 safety:
   check_git_status: false
@@ -32,6 +35,7 @@ validation:
 
 notes:
   - "Keep this manifest compact; it routes repository-level context and system boundaries."
+  - "Use memory for durable alignment, active_state for current execution, and milestone_map as a non-executable roadmap alignment artifact."
   - "Git status checking is opt-in; set safety.check_git_status to true only when the workspace wants clean-worktree/status validation."
   - "Register Systems only when their source roots/boundaries are known."
   - "Do not duplicate executable cross-system contracts into `.axit`."
