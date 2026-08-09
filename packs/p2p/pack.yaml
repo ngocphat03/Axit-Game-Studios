@@ -1,0 +1,29 @@
+spec_version: axit.pack/v1
+id: p2p
+name: Peer-to-Peer Networking
+category: network-topology
+status: draft
+description: Reusable peer ownership, conflict resolution, ownership transfer, trust, and desync concerns for projects that explicitly choose a P2P authority model.
+activation:
+  project_features:
+    - multiplayer.topology == p2p
+requires: [online-session]
+conflicts: [host-authoritative]
+contributes:
+  profiles: [p2p-network-architect]
+  skills: [define-peer-ownership, verify-ownership-transfer, test-desync-conflicts]
+  workflows: []
+  capabilities: []
+  checklist_sections: [p2p]
+architecture_questions:
+  - What does P2P mean here: transport-only peers, distributed ownership, host election, lockstep, or hybrid?
+  - Which peer owns each state category?
+  - How are simultaneous writes resolved?
+  - How is ownership transferred when a peer leaves?
+  - What trust and anti-cheat assumptions are accepted?
+verification_requirements:
+  - simultaneous-write conflict tests
+  - ownership transfer tests
+  - disconnect/reconnect tests
+  - relevant desync or split-brain scenarios
+knowledge: []
