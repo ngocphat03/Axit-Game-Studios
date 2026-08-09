@@ -1,0 +1,47 @@
+spec_version: axit.workflow/v1
+id: feature-delivery
+name: Feature Delivery
+description: Plan, implement, independently verify, and checkpoint one scoped feature/change.
+inputs:
+  - name: change_request
+    type: string
+    required: true
+steps:
+  plan:
+    skill: implementation-plan
+    required: true
+    inputs:
+      change_request: $workflow.change_request
+    completion:
+      accepted_verdicts: [ready]
+      on_unaccepted: stop
+  implement:
+    skill: implement-change
+    required: true
+    depends_on: [plan]
+    inputs:
+      implementation_plan: $plan.outputs.implementation-plan
+    completion:
+      accepted_verdicts: [implemented]
+      on_unaccepted: block
+  verify:
+    skill: verify-feature
+    required: true
+    depends_on: [implement]
+    inputs:
+      target: $workflow.change_request
+    completion:
+      accepted_verdicts: [passed, passed_with_notes]
+      on_unaccepted: stop
+  checkpoint:
+    skill: checkpoint-state
+    required: true
+    depends_on: [verify]
+    inputs:
+      state_path: production/session-state/active.md
+    completion:
+      accepted_verdicts: [complete]
+      on_unaccepted: block
+completion:
+  strategy: all_required_steps
+verdicts: [completed, paused, blocked, cancelled]
