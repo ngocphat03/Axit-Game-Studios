@@ -1,70 +1,88 @@
-# .axit — Canonical Axit Game Studio Base
+# .axit — Canonical Axit Workspace
 
-`.axit/` is the source of truth owned by Axit.
+`.axit/` is the Axit-owned source of truth for reusable Core behavior plus workspace/system routing.
 
-It is independent from Codex discovery conventions. Codex integration is a thin compatibility layer outside this directory.
+Codex integration is intentionally thin: root `AGENTS.md` routes context, and `.agents/skills/` exposes active Skills for discovery.
 
 ## Layout
 
 ```text
 .axit/
 ├── README.md
+├── workspace.yaml
 ├── core/
 │   ├── core.yaml
 │   ├── profiles/
 │   ├── skills/
 │   └── workflows/
+├── systems/
+│   └── <system-id>/
+│       ├── system.yaml
+│       ├── rules.md
+│       ├── architecture.yaml
+│       └── knowledge/
+├── registry/
+│   ├── architecture.yaml
+│   └── integrations.yaml
+├── state/
+│   └── active.md
 ├── specs/
 ├── templates/
 ├── checklists/
-├── registry/
-├── knowledge/
-└── state/
+└── knowledge/
 ```
 
 ## Responsibilities
 
+### `workspace.yaml`
+Root routing manifest. Maps source roots under `src/` to registered Systems and points to shared Core, registries, and workspace validation roots.
+
 ### `core/`
-Only reusable capabilities that are genuinely useful across materially different game projects.
+Small reusable behavior proven useful across materially different workspaces/systems. Do not import the legacy Game Studios catalog wholesale.
 
-The Core must remain small. A profile or skill is not Core merely because it existed in the original Game Studios repository.
-
-### `specs/`
-Axit format contracts for Profiles, Skills, Workflows, capabilities, manifests, and other canonical artifacts.
-
-### `templates/`
-Files copied into a concrete game project during bootstrap, such as `project.yaml` and an architecture registry.
-
-### `checklists/`
-Framework-level checklists. The initial checklist contains only universal project concerns. Domain-specific checks are added later only when a reusable domain module is proven.
+### `systems/`
+System-local context for components such as Unity client, backend, CMS, or services. Local Rules/Architecture live here; system-specific extensions remain empty until repeated work proves a gap.
 
 ### `registry/`
-Framework-level registries. Concrete games should maintain their own architecture/state-ownership registry after bootstrap.
-
-### `knowledge/`
-Small, curated reusable knowledge that is useful across projects. Do not use this as a dump for all project documentation.
+Workspace-level and cross-system truth. `architecture.yaml` records shared ownership/boundaries; `integrations.yaml` maps providers, consumers, executable contract sources, and boundary tests.
 
 ### `state/`
-File-backed progress/recovery information for Axit framework development. Concrete games may use the same pattern in their own `.axit/state/`.
+Compact file-backed task state for root Codex sessions. It is a checkpoint, not conversation history.
+
+### `specs/`
+Axit contracts for Profiles, Skills, Workflows, Workspace/System routing, and registries.
+
+### `templates/`
+Bootstrap files for new workspace/system metadata. Templates are not runtime truth after materialization.
+
+### `checklists/`
+Validation notes and framework-level regression evidence.
+
+### `knowledge/`
+Curated reusable Axit knowledge only. System or workspace-specific reference material belongs at the narrowest owning scope.
+
+## Source-of-truth boundary
+
+Axit metadata should route to real executable truth rather than copy it.
+
+Examples that should remain outside `.axit` when they already exist:
+
+- OpenAPI/protobuf/schema files;
+- DTO/shared protocol source;
+- database migrations;
+- generated client contracts;
+- product source and tests.
+
+`.axit` records ownership, relationships, constraints, and verification routes.
 
 ## Codex boundary
 
-Codex automatically discovers repository skills from `.agents/skills/`, not from `.axit/`.
-
-Therefore:
-
 ```text
 .axit/core/skills/<skill>/SKILL.md
-        = canonical Axit skill
+        = canonical Core Skill
 
-.agents/skills/<skill>
-        = Codex discovery/compatibility entry
+.agents/skills/<skill>/SKILL.md
+        = Codex discovery shim/projection
 ```
 
-The compatibility entry may later be implemented as a symlink or generated projection. It must not become a second source of truth.
-
-## Current phase
-
-No legacy Game Studios agents or skills are being migrated in this phase.
-
-The goal is to confirm this directory contract first. Profiles and Skills will be reviewed and introduced one by one afterward.
+Only active Skills should be exposed for discovery. Do not treat `.agents/` as a second Axit source of truth.
