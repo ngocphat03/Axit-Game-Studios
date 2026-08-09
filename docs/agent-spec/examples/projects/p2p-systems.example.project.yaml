@@ -1,0 +1,109 @@
+spec_version: axit.project/v1
+
+project:
+  id: p2p-systems-example
+  name: P2P Systems Example
+  summary: Example of a multiplayer systems game that selects a P2P specialization without assuming host-authoritative gameplay.
+  stage: architecture
+
+product:
+  genres: [systems, multiplayer]
+  core_loop: "form session -> interact with shared simulation -> resolve peer-owned state -> persist selected progression"
+  player_count:
+    min: 2
+    max: 8
+  session_model: peer-session
+  target_platforms: [pc]
+
+engine:
+  name: unity
+  version: "<pin-per-project>"
+  language: csharp
+
+features:
+  multiplayer:
+    enabled: true
+    topology: p2p
+    authority: hybrid
+    transport: "<choose-per-project>"
+    reconnect: true
+    late_join: true
+
+  missions_quests:
+    enabled: false
+    complexity: none
+    branching: false
+    scope: []
+    persistent_progress: false
+
+  puzzle:
+    enabled: false
+    systemic: false
+    reset_required: false
+    hints: false
+
+  procedural_generation:
+    enabled: false
+    deterministic: false
+    seed_authority: none
+
+  persistence:
+    enabled: true
+    scope: player-account-or-local
+    authority: "<decide-per-project>"
+    migration_required: true
+
+  economy_progression:
+    enabled: false
+
+  combat:
+    enabled: false
+
+  inventory:
+    enabled: false
+
+packs:
+  selected:
+    - engine-unity
+    - online-session
+    - p2p
+    - persistence
+  proposed: []
+
+runtime:
+  preferred_ai_providers: []
+  editor_bridge: optional
+  axit_code: optional
+
+project_rules:
+  source: .agents/rules/project-rules.md
+
+architecture_registry:
+  source: .agents/registry/architecture.yaml
+
+validation:
+  static_checks: []
+  automated_tests:
+    - peer-owned state conflict tests
+    - ownership transfer tests
+  editor_checks:
+    - zero compile errors
+  playtest_matrix:
+    - two peers
+    - maximum peers
+    - owner disconnect
+    - reconnect
+    - simultaneous conflicting intents
+
+customization:
+  custom_profiles:
+    - p2p-network-architect
+  custom_skills:
+    - define-peer-ownership
+    - verify-ownership-transfer
+    - test-desync-conflicts
+  custom_workflows: []
+
+notes:
+  status: illustrative-only
+  warning: The P2P Pack must force the concrete project to define ownership/conflict semantics. "P2P" alone is not a complete architecture decision.
