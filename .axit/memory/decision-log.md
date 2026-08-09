@@ -175,3 +175,60 @@ Future Master Roadmap should compose milestone execution plans and require expli
 
 Regression / follow-up:
 Every milestone retrospective must convert recurring pipeline failures into framework/config fixes plus regression protection where appropriate.
+
+## 2026-08-10 — Milestone closure artifacts are mandatory
+Type: incident
+Status: active
+
+Context:
+M1 completed all technical phases and produced a console summary, but it did not persist the Milestone Report or Retrospective required by the later milestone operating contract.
+
+Decision / Root cause:
+The M1 execution plan predated the milestone closure convention, so closure artifacts were never part of its DONE condition.
+
+Why:
+Long autonomous runs need durable handoff artifacts so the user and assistant can review results after conversation/session context has changed.
+
+Framework effect:
+`.axit/roadmap/milestone-closure.md` is now an active contract. Every future milestone plan must persist `.axit/milestones/<id>-<slug>/report.md` and `retrospective.md` before returning `MILESTONE_DONE`, then stop for human promotion review.
+
+Regression / follow-up:
+Use `.axit/templates/milestone-report.md` and `.axit/templates/milestone-retrospective.md`; closure verification must check documentation/state consistency and durable incident hardening.
+
+## 2026-08-10 — Verify effective reasoning, not configured intent
+Type: incident
+Status: active
+
+Context:
+M1 loaded the trusted project config, but the primary session resolved to `gpt-5.6-sol / medium` while `.codex/config.toml` requested `model_reasoning_effort = "max"`. Spawned sub-agents were observed at Sol/max.
+
+Decision / Root cause:
+The project used a primary Codex config value outside the currently documented `model_reasoning_effort` enum, whose strongest documented value is `xhigh`. Configured intent was incorrectly treated as sufficient until the live effective session exposed the mismatch.
+
+Why:
+Long autonomous milestones should not silently run at a materially lower primary reasoning level than intended.
+
+Framework effect:
+Milestone readiness must inspect effective primary/sub-agent model and reasoning levels. For the current Codex config surface, use the strongest supported primary setting rather than assuming the underlying model API's `max` value is accepted by the Codex config key.
+
+Regression / follow-up:
+Before M2, correct the primary project setting to the strongest Codex-supported value and verify the fresh session's effective value. If effective reasoning is below the milestone requirement, treat it as readiness failure rather than non-blocking drift.
+
+## 2026-08-10 — Classify evidence provenance without forcing Git tracking
+Type: decision
+Status: active
+
+Context:
+M1 reported a local deterministic test change and 16/16 PASS, but the test source is not present on the pushed root GitHub branch because workspace Systems/tests may be untracked, nested, submodules, or separately tracked.
+
+Decision / Root cause:
+Remote review must distinguish canonical pushed evidence, separately tracked/untracked local evidence, and ephemeral runtime evidence instead of assuming every verified artifact is present in the root Git repository.
+
+Why:
+The workspace intentionally does not require Git status/tracking as an execution gate, but review still needs honest auditability boundaries.
+
+Framework effect:
+Milestone report/retrospective templates require evidence provenance classification.
+
+Regression / follow-up:
+Do not force Git tracking solely for auditability. Never claim remote source inspection when evidence exists only in the local/separately tracked System; preserve the local run's recorded evidence and state the review limitation explicitly.
