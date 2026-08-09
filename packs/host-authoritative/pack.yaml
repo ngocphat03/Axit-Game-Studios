@@ -1,0 +1,28 @@
+spec_version: axit.pack/v1
+id: host-authoritative
+name: Host Authoritative Networking
+category: network-topology
+status: draft
+description: Reusable host-authority rules for shared gameplay state, intent validation, replication, and anti-double-apply verification.
+activation:
+  project_features:
+    - multiplayer.authority == host
+requires: [online-session]
+conflicts: [p2p]
+contributes:
+  profiles: [network-architect]
+  skills: [define-state-authority, verify-network-authority]
+  workflows: []
+  capabilities: []
+  checklist_sections: [multiplayer-online]
+architecture_questions:
+  - Which shared states are host-owned?
+  - Which client actions are intents versus authoritative mutations?
+  - How are retries, duplicate intents, host loss, and late join handled?
+  - What state is replicated versus reconstructed locally?
+verification_requirements:
+  - one authoritative writer per shared state
+  - duplicate/retry safety for important operations
+  - peer state equality for critical outcomes
+  - host-disconnect behavior explicitly tested or unsupported
+knowledge: []
