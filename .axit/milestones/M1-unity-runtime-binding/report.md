@@ -1,7 +1,7 @@
 # M1 — Unity Runtime Binding Report
 
 Status: DONE
-Review state: assistant-reviewed; human promotion pending
+Review state: HUMAN_PROMOTED
 Date: 2026-08-10
 
 ## Capability proven
@@ -62,7 +62,7 @@ Recovery iterations: 1.
 - Roslyn unavailable; verified CodeDom execution path used instead;
 - stale binding/current-state documentation detected and repaired;
 - primary Codex session resolved to `medium` despite repository intent for strongest reasoning;
-- milestone closure artifacts were not emitted by the execution plan itself.
+- milestone closure artifacts were not emitted by the original execution plan itself.
 
 ## Remote-review scope
 
@@ -77,10 +77,12 @@ This is an auditability limitation, not by itself a Runtime Binding failure.
 - proof covers one synchronous Head-damage path, not projectile delivery, effects, all hit zones, or broad combat correctness;
 - runtime connectivity remains resolve-at-runtime;
 - transport refresh/disconnect behavior was recovered but not exhaustively stress-tested;
-- primary-session reasoning configuration requires a compatibility fix/check before the next long autonomous run.
+- `DEFERRED_PRIMARY_REASONING_CONFIG`: primary-session reasoning compatibility remains unresolved and must be reviewed again after M2 before M3.
 
-## Promotion recommendation
+## Promotion decision
 
-`PROMOTE`, after recording the retrospective/regression fixes below and confirming the next fresh Codex session resolves the intended primary reasoning level.
+`PROMOTE` — human-approved on 2026-08-10.
 
-Do not begin M2 automatically; milestone promotion remains a human review gate.
+The user explicitly chose to proceed to M2 before repairing the known primary reasoning mismatch. That mismatch is accepted as a **temporary M2-only deferred issue**, not as a resolved configuration.
+
+M2 may begin. M3 must not inherit this exception silently; the issue must be revisited at the M2 promotion review.
