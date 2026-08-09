@@ -1,0 +1,28 @@
+spec_version: axit.pack/v1
+id: engine-unity
+name: Unity Engine
+category: engine
+status: draft
+description: Reusable Unity-specific editor, scene, asset, build, test, and verification guidance without assuming gameplay genre or networking.
+activation:
+  project_features:
+    - engine.name == unity
+requires: []
+conflicts: []
+contributes:
+  profiles: []
+  skills: [verify-unity-project, inspect-unity-scene]
+  workflows: []
+  capabilities: [unity.inspect, unity.modify, unity.console.read, unity.test.run, unity.artifact.capture]
+  checklist_sections: [unity]
+architecture_questions:
+  - Which Unity version and package versions are pinned?
+  - Which state belongs in scenes/assets versus runtime generation?
+  - Which repetitive editor operations deserve deterministic high-level tools?
+  - How are EditMode, PlayMode, compile, scene, and cold-load checks divided?
+verification_requirements:
+  - compile and Console state
+  - EditMode/PlayMode tests where applicable
+  - persisted scene/asset validation
+  - cold-load validation for critical artifacts
+knowledge: []
