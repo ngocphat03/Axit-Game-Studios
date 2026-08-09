@@ -1,0 +1,43 @@
+spec_version: axit.architecture-registry/v1
+
+state_ownership: []
+
+interfaces:
+  - id: shared-damage-pipeline
+    status: accepted
+    path:
+      - Bullet
+      - DamageableBodyPart
+      - DamageCalculator
+      - BaseEntity
+    consumers:
+      - Player
+      - Bot
+    rule: "Player and Bot use the same damage calculation path unless an explicit architecture decision changes that contract."
+
+api_decisions:
+  - id: damage-processing-order
+    status: accepted
+    decision: "Apply hit-zone multiplier, then armor reduction, then health reduction."
+  - id: hit-zone-multipliers
+    status: accepted
+    decision: "Head/Hair uses 2x and Body uses 1x in the currently validated QuickGun slice."
+  - id: non-positive-base-damage
+    status: accepted
+    decision: "Non-positive base damage resolves to zero damage; the baseDamage == 0 regression must remain fixed."
+  - id: armor-range
+    status: accepted
+    decision: "Effective armor is clamped to the inclusive range 0.0 through 0.8 before damage reduction is applied."
+
+performance_budgets: []
+
+forbidden_patterns:
+  - id: split-player-bot-damage-logic
+    rule: "Do not introduce separate Player-only and Bot-only damage calculation rules when the behavior is intended to remain shared."
+  - id: bypass-shared-damage-calculation
+    rule: "Do not bypass the registered damage calculation path for ordinary hit damage without an explicit architecture decision."
+
+notes:
+  - "These decisions were recorded from live bounded-change and verify-change validation on 2026-08-09."
+  - "The corresponding QuickGun source changes currently exist in the user's local workspace but are not yet available on this remote branch; re-check this registry against local source when the branch is pulled."
+  - "Register only shared or high-risk decisions here; keep local implementation details in code and tests."
