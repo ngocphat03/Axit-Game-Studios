@@ -212,7 +212,7 @@ Framework effect:
 Milestone readiness must inspect effective primary/sub-agent model and reasoning levels. For the current Codex config surface, use the strongest supported primary setting rather than assuming the underlying model API's `max` value is accepted by the Codex config key.
 
 Regression / follow-up:
-Before M2, correct the primary project setting to the strongest Codex-supported value and verify the fresh session's effective value. If effective reasoning is below the milestone requirement, treat it as readiness failure rather than non-blocking drift.
+The issue remains unresolved. A later explicit decision permits M2 to proceed before repair, but does not mark this incident fixed.
 
 ## 2026-08-10 — Classify evidence provenance without forcing Git tracking
 Type: decision
@@ -232,3 +232,22 @@ Milestone report/retrospective templates require evidence provenance classificat
 
 Regression / follow-up:
 Do not force Git tracking solely for auditability. Never claim remote source inspection when evidence exists only in the local/separately tracked System; preserve the local run's recorded evidence and state the review limitation explicitly.
+
+## 2026-08-10 — Promote M1 and defer primary reasoning repair through M2
+Type: promotion
+Status: active
+
+Context:
+M1 Runtime Binding passed technical review and the user approved moving to M2, while explicitly stating that the primary reasoning mismatch still needs to be repaired later.
+
+Decision / Root cause:
+Promote M1 and authorize M2 now. Treat `DEFERRED_PRIMARY_REASONING_CONFIG` as a known unresolved M2-only exception rather than blocking M2.
+
+Why:
+Current priority is validating autonomous bounded development. The reasoning mismatch is known, observable, and not being mistaken for a resolved state.
+
+Framework effect:
+M2 readiness must record effective primary/sub-agent reasoning but may continue if the same known primary mismatch persists. M2 report/retrospective must carry the issue to the promotion review.
+
+Regression / follow-up:
+The exception expires at the M2 human review gate. M3 must not inherit it silently; the user and assistant must explicitly repair, re-defer, or otherwise decide the issue before M3 promotion.
