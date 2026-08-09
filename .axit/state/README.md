@@ -1,5 +1,7 @@
 # Axit State
 
-This directory is reserved for file-backed progress/recovery notes.
+This directory stores compact file-backed progress/recovery notes for root Codex sessions.
 
-The reusable base defines the pattern but does not preload a large state history. A concrete project may use `.axit/state/active.md` to record the current task, key decisions, touched areas, verification results, and unresolved blockers so a new Codex session can resume without relying on chat history alone.
+`.axit/state/active.md` should record only the current workspace task, affected Systems, accepted decisions needed for continuation, material changes, verification state, blockers, and next action.
+
+It is a resumable checkpoint, not a transcript or long-term architecture document. Durable workspace/system facts belong in registries, Rules, Architecture, or Knowledge instead.
