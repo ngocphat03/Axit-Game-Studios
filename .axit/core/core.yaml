@@ -1,5 +1,5 @@
 spec_version: axit.core/v1
-status: core-workflow-v1
+status: core-v1-stable
 
 profiles:
   - technical-architect
@@ -26,10 +26,11 @@ rules:
   - Workflows compose accepted Skills and transitions; they must not duplicate Skill procedures or silently expand scope.
 
 next_phase:
-  - keep the four Profiles, two Skills, and bounded-change Workflow stable while workspace/system routing is validated
-  - use root-first Codex routing through .axit/workspace.yaml rather than nested project working directories
-  - validate the Unity client as the first System and add backend/CMS/services only when their source boundaries exist
-  - prove cross-system debugging and contract/integration testing against executable API/schema sources before adding new Core behavior
-  - add MCP-backed evidence capabilities as execution support without changing verification semantics
+  - keep the four Profiles, two Skills, and bounded-change Workflow frozen at Core v1 unless a repeated reusable gap is demonstrated
+  - keep root-first Workspace/System routing stable after successful live validation
+  - validate Capability Spec v1 and the Unity evidence capability set without changing Core verification semantics
+  - bind only a small proven subset of semantic Unity capabilities to a real transport after capability-selection regression cases pass
+  - use MCP or Axit Unity as execution transport without leaking provider/tool names into canonical capability ids
+  - prove one Unity vertical slice using deterministic plus editor/runtime evidence before expanding the capability catalog
   - do not add Core Skill number 3 or another Core Workflow until a repeated procedural gap is demonstrated
   - do not migrate legacy catalogs in bulk
