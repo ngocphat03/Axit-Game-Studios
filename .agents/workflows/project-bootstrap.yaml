@@ -1,0 +1,45 @@
+spec_version: axit.workflow/v1
+id: project-bootstrap
+name: Project Bootstrap
+description: Discover a project, map its systems, establish architecture/validation baselines, and prepare project-specific expansion.
+inputs:
+  - name: project_root
+    type: path
+    required: true
+steps:
+  discover:
+    skill: project-discovery
+    required: true
+    inputs:
+      project_root: $workflow.project_root
+    completion:
+      accepted_verdicts: [complete]
+      on_unaccepted: block
+  map:
+    skill: system-map
+    required: true
+    depends_on: [discover]
+    completion:
+      accepted_verdicts: [complete, needs_decision]
+      on_unaccepted: stop
+  architecture:
+    skill: architecture-decision
+    required: false
+    depends_on: [map]
+    inputs:
+      decision_topic: bootstrap-high-risk-decisions
+    completion:
+      accepted_verdicts: [accepted, needs_decision]
+      on_unaccepted: continue
+  checkpoint:
+    skill: checkpoint-state
+    required: true
+    depends_on: [map]
+    inputs:
+      state_path: production/session-state/active.md
+    completion:
+      accepted_verdicts: [complete]
+      on_unaccepted: block
+completion:
+  strategy: all_required_steps
+verdicts: [completed, paused, blocked, cancelled]
