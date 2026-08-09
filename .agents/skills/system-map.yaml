@@ -1,0 +1,50 @@
+spec_version: axit.skill/v1
+id: system-map
+name: System Map
+description: Identify major game systems, dependencies, shared-state boundaries, and unresolved ownership/interface risks.
+execution:
+  side_effects: project-write
+  preferred_profile: technical-architect
+inputs:
+  - name: scope
+    type: string
+    required: false
+context:
+  required:
+    - source: project
+      ref: project-manifest
+  optional:
+    - source: project
+      ref: design-docs
+    - source: project
+      ref: architecture-registry
+capabilities:
+  required: [file.read, file.search]
+  optional: [file.write, user.question, agent.consult]
+model_requirements:
+  reasoning: high
+  coding: low
+  long_context: preferred
+  tool_use: preferred
+procedure:
+  - id: identify-systems
+    intent: List systems required by the current product scope without inventing future systems.
+  - id: map-dependencies
+    intent: Record directional dependencies and integration boundaries.
+  - id: map-shared-state
+    intent: Identify state read/written by multiple systems and flag missing owners.
+  - id: record-risks
+    intent: Surface cycles, ambiguous ownership, and high-risk interfaces.
+outputs:
+  - id: system-map
+    type: document
+    required: true
+verdicts: [complete, needs_decision, blocked]
+verification:
+  required:
+    - id: major-systems-covered
+      type: criteria_coverage
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
