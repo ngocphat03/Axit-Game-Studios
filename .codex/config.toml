@@ -1,0 +1,38 @@
+# Project-scoped Codex defaults for Axit orchestration.
+# Loaded only when this repository is trusted by Codex.
+
+model = "gpt-5.6-sol"
+model_reasoning_effort = "max"
+plan_mode_reasoning_effort = "max"
+
+# Keep normal command approvals, but let Codex auto-review routine requests
+# inside the bounded execution envelope below.
+approval_policy = "on-request"
+approvals_reviewer = "auto_review"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = true
+
+[auto_review]
+policy = """
+Approve routine actions needed to execute the accepted Axit roadmap when they stay inside the trusted repository/workspace or user-local development environment: repository reads/writes, local builds/tests, deterministic validation, Unity project/package setup, downloading the approved CoplayDev unity-mcp package and its documented user-local prerequisites, connecting to localhost Unity MCP, and bounded non-destructive Unity evidence acquisition.
+
+Do not approve sudo/admin escalation, credential/secret access, production or external-cloud writes, git push/publish/PR creation, destructive deletion/migration outside the accepted bounded task, broad unrelated refactors, changing public contracts/state ownership/architecture without an accepted decision, or overwriting unrelated dirty-worktree changes. Return those to the parent orchestrator as a hard-stop condition.
+"""
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 4
+default_subagent_model = "gpt-5.6-sol"
+default_subagent_reasoning_effort = "max"
+interrupt_message = true
+
+# CoplayDev MCP for Unity uses Streamable HTTP by default.
+# The server becomes reachable after the Unity package/bridge is installed and running.
+[mcp_servers.unityMCP]
+url = "http://localhost:8080/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
