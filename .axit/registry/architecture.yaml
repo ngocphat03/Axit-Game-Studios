@@ -1,0 +1,14 @@
+spec_version: axit.workspace-architecture/v1
+
+state_ownership: []
+interfaces: []
+dependency_directions: []
+api_decisions: []
+performance_budgets: []
+forbidden_patterns: []
+
+notes:
+  - "This registry contains workspace-level or cross-system architecture truth only."
+  - "System-local decisions belong under `.axit/systems/<system-id>/architecture.yaml`."
+  - "When backend, CMS, or services are added, record authoritative ownership and cross-system boundaries here only when they are shared or high-risk."
+  - "Do not duplicate executable API schemas, DTO definitions, database migrations, or protobuf/OpenAPI contracts into this registry. Point to their real source through the integration registry."
