@@ -1,0 +1,33 @@
+spec_version: axit.workspace/v1
+
+workspace:
+  id: ""
+  name: ""
+  summary: ""
+
+source:
+  root: src
+
+axit:
+  core: .axit/core/core.yaml
+  architecture_registry: .axit/registry/architecture.yaml
+  integration_registry: .axit/registry/integrations.yaml
+  active_state: .axit/state/active.md
+
+systems: []
+
+workspace_extensions:
+  profiles: []
+  skills: []
+  workflows: []
+  knowledge: []
+
+validation:
+  contract_tests: tests/contracts
+  integration_tests: tests/integration
+  end_to_end_tests: tests/e2e
+
+notes:
+  - "Keep this manifest compact; it routes repository-level context and system boundaries."
+  - "Register Systems only when their source roots/boundaries are known."
+  - "Do not duplicate executable cross-system contracts into `.axit`."
