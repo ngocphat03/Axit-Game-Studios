@@ -7,10 +7,12 @@ Specifications are added only when the first accepted Core artifact exercises th
 Current specs:
 
 - [`Profile Spec v1`](profile-spec-v1.md) — responsibility/decision lens used by Core and future project Profiles.
+- [`Skill Spec v1`](skill-spec-v1.md) — one focused reusable procedure, expressed as a Codex-compatible `SKILL.md`.
 
 Rules:
 
 - Codex compatibility must not dictate the whole Axit architecture.
-- A Core Skill must still be expressible as a valid Codex `SKILL.md` when the Skill contract is introduced.
+- A Core Skill must also be a valid Codex `SKILL.md`.
 - Avoid speculative schema fields that have not been exercised by a real Core artifact.
 - Keep provider/runtime configuration out of canonical Axit Profiles.
+- Keep Skills focused on procedure; move broad responsibility, knowledge, project rules, and workflow composition to their owning layers.
