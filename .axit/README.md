@@ -1,8 +1,8 @@
 # .axit — Canonical Axit Workspace
 
-`.axit/` is the Axit-owned source of truth for reusable Core behavior, root Workspace/System routing, semantic Capabilities, Runtime Bindings, registries, and compact task state.
+`.axit/` is the Axit-owned source of truth for reusable Core behavior, root Workspace/System routing, semantic Capabilities, Runtime Bindings, registries, execution plans, and compact task state.
 
-Codex integration is intentionally thin: root `AGENTS.md` routes context, and `.agents/skills/` exposes active Skills for discovery.
+Codex integration is intentionally thin: root `AGENTS.md` routes context, `.agents/skills/` exposes active Skills for discovery, and root `.codex/` contains Codex runtime/session configuration rather than Axit semantic truth.
 
 ## Layout
 
@@ -31,6 +31,8 @@ Codex integration is intentionally thin: root `AGENTS.md` routes context, and `.
 ├── registry/
 │   ├── architecture.yaml
 │   └── integrations.yaml
+├── plans/
+│   └── <bounded-plan>.md
 ├── state/
 │   └── active.md
 ├── specs/
@@ -63,6 +65,9 @@ System-local context for components such as Unity client, backend, CMS, or servi
 ### `registry/`
 Workspace-level and cross-system truth. `architecture.yaml` records shared ownership/boundaries; `integrations.yaml` maps providers, consumers, executable contract sources, and boundary tests.
 
+### `plans/`
+Bounded execution roadmaps that compose already-accepted Axit behavior over a longer run. A Plan is not automatically a Core Workflow and must not duplicate stable Skill/Workflow procedures. Use Plans for phase sequencing, delegated execution envelopes, checkpoints, and hard-stop conditions.
+
 ### `state/`
 Compact file-backed task state for root Codex sessions. It is a checkpoint, not conversation history.
 
@@ -78,6 +83,12 @@ Validation notes and framework-level regression evidence.
 ### `knowledge/`
 Curated reusable Axit knowledge only. System or workspace-specific reference material belongs at the narrowest owning scope.
 
+## Codex runtime boundary
+
+Root `.codex/` is allowed to contain Codex-specific runtime configuration such as model defaults, sub-agent settings, approval/sandbox behavior, custom sub-agent roles, and MCP client configuration.
+
+That configuration is an adapter/runtime concern. It must not redefine Axit Capability ids, verification semantics, Profile responsibilities, or product architecture. A different runtime should be able to consume the same `.axit/` semantics through a different adapter layer.
+
 ## Evidence boundary
 
 The intended relationship is:
@@ -86,15 +97,12 @@ The intended relationship is:
 accepted criterion
     -> Skill/Workflow selects needed evidence
         -> semantic Capability when editor/runtime execution is needed
-            -> reviewed Runtime Binding
-                -> concrete transport operation(s)
-                    -> acquisition result + evidence
-                        -> verify-change judgment
+            -> runtime binding/transport
+                -> acquired evidence
+                    -> verify-change judgment
 ```
 
-Do not encode PASS/FAIL/BLOCKED into Capability definitions or Runtime Bindings. Do not make a Capability required merely because it exists.
-
-Runtime acquisition must distinguish trustworthy acquired evidence from unavailable transport/environment, denied execution, and transport errors.
+Do not encode PASS/FAIL/BLOCKED into Capability definitions. Do not make a Capability required merely because it exists.
 
 ## Source-of-truth boundary
 
@@ -106,12 +114,11 @@ Examples that should remain outside `.axit` when they already exist:
 - DTO/shared protocol source;
 - database migrations;
 - generated client contracts;
-- product source and tests;
-- secrets, credentials, tokens, and ephemeral machine connection state.
+- product source and tests.
 
-`.axit` records ownership, relationships, constraints, capability semantics, reviewed binding mappings, and verification routes.
+`.axit` records ownership, relationships, constraints, capability semantics, and verification routes.
 
-## Codex boundary
+## Codex Skill boundary
 
 ```text
 .axit/core/skills/<skill>/SKILL.md
@@ -121,4 +128,4 @@ Examples that should remain outside `.axit` when they already exist:
         = Codex discovery shim/projection
 ```
 
-Only active Skills should be exposed for discovery. Capabilities and Runtime Bindings are not projected as Skills. Do not treat `.agents/` as a second Axit source of truth.
+Only active Skills should be exposed for discovery. Capabilities and Plans are not projected as Skills. Do not treat `.agents/` or `.codex/` as a second Axit semantic source of truth.
