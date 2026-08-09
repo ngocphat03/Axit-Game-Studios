@@ -1,57 +1,75 @@
 # Axit Workspace Active State
 
 Updated: 2026-08-09
-Status: root-routing-v1-live-validation
+Status: capability-v1-live-validation
 
 ## Current task
 
-Validate Axit's root-first Workspace/System routing through live Codex use before registering additional Systems or adding specialization.
+Validate Axit Capability Spec v1 and the first reusable Unity evidence capability set while keeping Core v1 and root Workspace/System routing frozen.
 
-## Confirmed workspace facts
+## Stable foundations
 
-- Codex is normally opened from repository root.
-- Systems that need to reason about each other are expected to live under `src/` in the same repository workspace.
-- The current concrete System is `unity-client` at `src/QuickGun-MVP`.
-- The reviewed Axit Core remains four Profiles, two Skills, and one active `bounded-change` Workflow.
-- Unity-client damage behavior has live deterministic validation from prior QuickGun tests.
+### Core v1
 
-## Canonical routing
+- Profiles: `game-designer`, `technical-architect`, `implementation-engineer`, `quality-verifier`.
+- Skills: `implement-change`, `verify-change`.
+- Workflow: `bounded-change`.
+- Status: frozen/stable unless repeated live use demonstrates another reusable procedural or responsibility gap.
 
-- Root `AGENTS.md` is the lightweight Codex router.
-- `.axit/workspace.yaml` maps source roots to Systems.
-- `.axit/systems/<system-id>/` contains system-local routing, rules, architecture, and optional knowledge/extensions.
-- `.axit/registry/architecture.yaml` owns workspace-level/cross-system architecture truth.
-- `.axit/registry/integrations.yaml` maps provider/consumer relationships and points to executable contract sources.
-- `.axit` does not duplicate OpenAPI/protobuf/DTO/schema contracts that already have an executable source of truth.
+### Workspace/System routing v1
 
-## Current systems
+- Codex normally starts from repository root.
+- Root `AGENTS.md` routes through `.axit/workspace.yaml`.
+- `src/QuickGun-MVP` resolves to System `unity-client`.
+- Single-System tasks load only relevant System context.
+- Cross-System requests load root integration/architecture context when needed.
+- Missing backend/CMS contracts remain explicit unknowns instead of inferred provider behavior.
+- Live validation cases 1-4 are recorded as PASS in `.axit/checklists/root-routing-validation.md`.
+- Live cross-System verification remains deferred until at least two real Systems exist.
 
-- `unity-client` -> `src/QuickGun-MVP`
+## Capability v1 direction
 
-No backend, CMS, or service source roots are registered yet because they have not been materialized/confirmed on this branch.
+- Capability Spec: `.axit/specs/capability-spec-v1.md`.
+- Reusable catalog root: `.axit/capabilities/`.
+- First semantic set: `.axit/capabilities/unity/evidence.yaml`.
+- Unity client capability routing: `.axit/systems/unity-client/capabilities.yaml`.
+- Current transport binding status: **unbound**.
 
-## Active extensions
+The semantic layer currently defines:
 
-- Workspace Profiles: none.
-- Workspace Skills: none.
-- Workspace Workflows: none beyond shared Core.
-- Unity-client Profiles/Skills/Workflows/Knowledge: none.
+- `unity.project.inspect`
+- `unity.compile`
+- `unity.tests.run`
+- `unity.scene.inspect`
+- `unity.prefab.inspect`
+- `unity.component.inspect`
+- `unity.serialized-fields.inspect`
+- `unity.console.inspect`
+- `unity.playmode.verify`
 
-## Completed refactor
+## Capability invariants
 
-- Added root workspace manifest and Workspace/System Spec v1.
-- Added Unity-client System metadata at `.axit/systems/unity-client/`.
-- Added workspace architecture and integration registries.
-- Replaced Project Layer bootstrap templates with Workspace/System templates.
-- Removed nested `src/QuickGun-MVP/.axit/` metadata and nested `AGENTS.md` routing.
-- Removed the superseded Project Layer spec/templates.
-- Added `.axit/checklists/root-routing-validation.md` with fixed single-system, cross-system, contract-source, and future integration verification regression cases.
+- Capability ids describe semantic intent, not MCP/CLI/provider command names.
+- Capability output is evidence, not PASS/FAIL/BLOCKED.
+- `verify-change` still owns REQUIRED/SUPPORTING classification and final verdict semantics.
+- Declaring a capability does not grant execution permission.
+- A declared capability may be unavailable because no runtime binding or required environment exists.
+- Unavailable acquisition is missing evidence, not automatic proof of product failure.
+- Core Skills/Workflow were not modified to introduce Capability v1.
+
+## Current System
+
+- `unity-client` -> `src/QuickGun-MVP`.
+- Runtime family: Unity / C#.
+- Exact Unity version, target platforms, and player-count range remain intentionally unconfirmed until read from real local project evidence.
+
+No backend, CMS, or service System is registered yet because no confirmed source boundary exists on this branch.
 
 ## Next actions
 
-1. Pull this branch into the local workspace and start a fresh Codex session from repository root.
-2. Run the currently executable cases in `.axit/checklists/root-routing-validation.md` without adding manual routing hints.
-3. Record any routing mistake before changing instructions so the regression remains reproducible.
-4. Add a backend/CMS/service System only when a real source boundary exists.
-5. Validate the first real cross-system API change with an executable contract plus contract/integration tests.
-6. Do not add Core Skill #3 or another Core Workflow until a repeated gap is demonstrated.
+1. Run `.axit/checklists/unity-evidence-capability-validation.md` from a fresh root Codex session.
+2. Confirm capability selection is criterion-driven rather than catalog-driven.
+3. Confirm explicit Play Mode criteria become BLOCKED when required runtime evidence is unavailable, without turning missing bindings into FAIL.
+4. After semantic cases pass, bind only a small subset of Unity capabilities to one real transport.
+5. Use the first binding for a live vertical slice combining deterministic evidence with prefab/serialized/runtime evidence.
+6. Do not add Core Skill #3, Workflow #2, or a broad Unity specialist catalog during this phase.
