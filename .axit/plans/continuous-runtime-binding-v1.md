@@ -1,12 +1,14 @@
 # Continuous Runtime Binding v1
 
-Status: ready-for-local-execution
+Status: ready-after-manual-unity-mcp-setup
 
 ## Purpose
 
 Run the next Axit phase continuously from the repository root with one high-reasoning primary thread acting only as orchestrator and sub-agents performing the actual work.
 
-The run should continue across phase boundaries without asking for routine confirmations. Stop only at a declared hard blocker or when the plan reaches `DONE`.
+**Manual prerequisite:** the user configures and starts MCP for Unity before this plan is executed. This plan does not install, configure, start, repair, or upgrade the Unity MCP transport.
+
+After the prerequisite is satisfied, the run should continue across phase boundaries without asking for routine confirmations. Stop only at a declared hard blocker or when the plan reaches `DONE`.
 
 ## Operating contract
 
@@ -21,16 +23,18 @@ The primary thread is coordinator only. It may:
 - decide which already-approved phase comes next;
 - surface only hard blockers to the user.
 
-The primary thread must delegate product/source changes, environment setup, build/test execution, Unity/MCP operations, evidence acquisition, bounded repairs, and independent verification.
+The primary thread must delegate source exploration, product/source changes, build/test execution, Unity/MCP evidence acquisition, bounded repairs, and independent verification.
+
+It must not delegate or perform Unity MCP installation/configuration because that prerequisite is explicitly user-owned.
 
 ### Sub-agent lanes
 
 Use the smallest useful lane for each phase. Typical lanes:
 
-- `exploration/setup` — inspect environment, transport, package state, operation inventory;
-- `worker` — perform one bounded setup or implementation change;
+- `exploration` — inspect source/environment/transport readiness without changing MCP setup;
+- `worker` — perform one bounded project or Axit change;
 - `verifier` — independently inspect current state/evidence and issue verification results;
-- `recovery` — take over a stuck lane from distilled context when steering/resume is insufficient.
+- `recovery` — take over a stuck in-scope lane from distilled context when steering/resume is insufficient.
 
 Do not let a worker self-certify a change when independent verification is practical.
 
@@ -38,7 +42,7 @@ Read-only lanes may run in parallel. Write-heavy lanes and Unity editor/runtime 
 
 ## Recovery policy
 
-For a sub-agent that pauses, blocks, or returns incomplete work:
+For a sub-agent that pauses, blocks, or returns incomplete work **after Unity MCP readiness has passed**:
 
 1. record its useful findings, changed files, command/runtime state, and explicit blocker;
 2. send one focused recovery/steering instruction to the same lane when safe;
@@ -49,20 +53,22 @@ For a sub-agent that pauses, blocks, or returns incomplete work:
 
 A sub-agent asking a routine clarification that can be answered from accepted Axit/source evidence should be answered by the orchestrator, not escalated to the user.
 
+Missing or broken Unity MCP setup is not a recovery lane. It is a manual prerequisite failure and must stop the run.
+
 ## Hard blockers
 
 Return `HARD_BLOCKER` and stop only when at least one is materially required:
 
+- `UNITY_MCP_NOT_READY` — the user-configured Unity MCP transport is missing, unreachable, exposes no usable live operations, or is not connected to the intended QuickGun editor/project;
 - `PRODUCT_INTENT` — material desired behavior is ambiguous and cannot be resolved from accepted evidence;
 - `ARCHITECTURE_DECISION` — a material public contract, dependency direction, state ownership, or architecture stance must change outside the accepted plan;
 - `DESTRUCTIVE_SCOPE` — destructive migration/deletion or broad unrelated refactor is required;
 - `SECRET_OR_PRODUCTION` — credentials/secrets, production access, or external-cloud writes are required;
-- `ADMIN_ESCALATION` — sudo/admin or machine-wide configuration outside user-local pre-authorization is required;
+- `ADMIN_ESCALATION` — sudo/admin or machine-wide configuration is required;
 - `DIRTY_WORKTREE_RISK` — unrelated user changes would be overwritten or materially endangered;
-- `REPEATED_REQUIRED_FAILURE` — the same required failure persists after two bounded repair/replacement loops;
-- `MANUAL_UNITY_BRIDGE_STEP` — one unavoidable Unity GUI action remains that cannot safely be automated; report exactly the single manual action needed, then stop.
+- `REPEATED_REQUIRED_FAILURE` — the same required failure persists after two bounded repair/replacement loops.
 
-Do not stop simply because one sub-agent or one transport attempt failed when a safe recovery/replacement route remains.
+Do not stop simply because one ordinary sub-agent lane failed when a safe replacement route remains.
 
 ## Global invariants
 
@@ -75,6 +81,7 @@ Do not stop simply because one sub-agent or one transport attempt failed when a 
 - Do not invent transport/server/operation names.
 - Runtime Binding definitions may contain verified transport-specific names; semantic Capability definitions may not.
 - Keep secrets, ephemeral ports, tokens, and machine-specific credentials out of `.axit`.
+- Do not modify Unity MCP/CoplayDev installation, bridge configuration, or user/global Codex MCP configuration.
 - Keep progress/checkpoint messages concise.
 
 ---
@@ -93,7 +100,7 @@ Confirm:
 - Workspace/System v1 stable;
 - Capability semantic v1 stable;
 - `unity-client` maps to `src/QuickGun-MVP`;
-- current Runtime Binding status before setup.
+- current Runtime Binding status.
 
 Acceptance:
 
@@ -107,72 +114,45 @@ Checkpoint and continue.
 
 ---
 
-# Phase 1 — CoplayDev MCP for Unity setup
+# Phase 1 — Manual Unity MCP readiness gate
 
-Use a dedicated setup sub-agent. This setup is pre-authorized only for the local development environment and this QuickGun workspace. Do not use sudo/admin unless separately approved.
+Use one read-only transport-readiness sub-agent.
 
-## 1A. Inspect local prerequisites
+The user is responsible for installing/configuring/starting MCP for Unity and opening the intended QuickGun Unity project/editor before this run.
 
-Inspect actual local state before changing it:
+The sub-agent may inspect only current live state:
 
-- `src/QuickGun-MVP/ProjectSettings/ProjectVersion.txt` or equivalent project version evidence;
-- `src/QuickGun-MVP/Packages/manifest.json` and existing Unity packages;
-- whether the QuickGun Unity Editor is already running;
-- Python version;
-- whether `uv` is available;
-- current Codex MCP configuration and live MCP inventory;
-- whether localhost `http://localhost:8080/mcp` is reachable.
+- current Codex/MCP tool inventory;
+- actual Unity MCP server/adapter identity;
+- exact live operation names exposed by the configured transport;
+- whether the intended QuickGun project/editor is reachable;
+- whether the active Unity instance is the expected project;
+- any observed connection/runtime error.
 
-Do not infer installation state from Axit metadata alone.
+The sub-agent must not:
 
-## 1B. Install Unity package if missing
-
-If CoplayDev MCP for Unity is not already installed, add the official Unity Package Manager Git dependency while preserving all existing manifest entries:
-
-```text
-https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#main
-```
-
-Prefer a normal Unity Package Manager/package-manifest installation. Do not copy random package source into the project.
-
-After the package is resolved, verify its actual installed package identity/version from local Unity/package evidence.
-
-## 1C. Install user-local prerequisite if missing
-
-If Python or `uv` required by the installed MCP package is missing:
-
-- prefer user-local installation documented by the actual package;
-- do not use sudo/admin;
-- verify the resulting executable/version;
-- if the only viable route requires admin/machine-wide changes, stop with `HARD_BLOCKER: ADMIN_ESCALATION`.
-
-## 1D. Open/connect Unity
-
-Ensure QuickGun is opened in its recorded Unity version when practical.
-
-Start/enable the MCP for Unity bridge/server using the installed package's real documented integration. The project Codex config already declares a Streamable HTTP client endpoint at:
-
-```text
-http://localhost:8080/mcp
-```
-
-Do not assume that declaring the endpoint starts the Unity-side bridge.
-
-If the installed package requires one unavoidable Unity UI action that cannot be automated safely, stop only with:
-
-```text
-HARD_BLOCKER: MANUAL_UNITY_BRIDGE_STEP
-Action: <one exact action>
-```
-
-Do not request a broad manual setup checklist.
+- install or upgrade CoplayDev/unity-mcp;
+- edit `Packages/manifest.json` for MCP setup;
+- install `uv`, Python, or other MCP prerequisites;
+- edit global/user/project MCP server configuration;
+- start/configure/repair the Unity MCP bridge;
+- guess the expected endpoint or operation names.
 
 Acceptance:
 
-- package/prerequisites are locally installed or already present;
-- Unity Editor can open/reach QuickGun;
-- Unity-side MCP bridge is running or the one unavoidable manual action is precisely identified;
-- Codex can see a real Unity MCP server/tool inventory.
+- one real Unity MCP transport is visible in the live tool inventory;
+- the intended QuickGun editor/project is reachable;
+- real concrete operations are inspectable from the live interface.
+
+If any acceptance item is missing, stop immediately with:
+
+```text
+HARD_BLOCKER: UNITY_MCP_NOT_READY
+Observed: <short concrete missing state>
+Action: Configure/start MCP for Unity manually, then rerun the continuous plan.
+```
+
+Do not attempt to repair the prerequisite.
 
 Checkpoint and continue when accepted.
 
@@ -182,7 +162,7 @@ Checkpoint and continue when accepted.
 
 Use a fresh read-only transport-discovery sub-agent after Phase 1.
 
-Inspect the live MCP tool/operation inventory and the current Unity editor/project connection.
+Inspect the live MCP tool/operation inventory and current Unity editor/project connection.
 
 Determine exact concrete operation names and input/output behavior that can implement only the initial semantic slice:
 
@@ -205,7 +185,7 @@ Acceptance:
 - current QuickGun editor reachability demonstrated;
 - enough information exists to create a narrow reviewed binding.
 
-If no valid operation exists for one of the three capabilities, keep that capability unbound and report the specific binding gap. Do not invent an operation.
+If one of the three semantic capabilities has no compatible live operation, keep it unbound and stop only if that gap makes the vertical slice impossible. Never reconfigure MCP to manufacture missing support.
 
 Checkpoint and continue if the vertical slice remains possible.
 
@@ -238,7 +218,7 @@ Update `.axit/systems/unity-client/capabilities.yaml` only as needed to referenc
 Have a separate verifier sub-agent inspect:
 
 - every mapped Capability id exists in the stable active set;
-- every concrete operation name was verified;
+- every concrete operation name was verified live;
 - no mapping exceeds Capability evidence/side-effect boundaries;
 - no secrets/ephemeral credentials were committed;
 - unbound capabilities remain explicitly unbound.
@@ -259,31 +239,18 @@ Use sub-agents to exercise the Runtime Binding v1 acquisition-state boundary.
 
 Demonstrate where practical:
 
-## `acquired`
+- `acquired` — mapped operation observes the intended QuickGun target and returns trustworthy evidence/provenance;
+- `unavailable` — an observed runtime state is represented as missing evidence, not product failure;
+- `denied` — Runtime/Harness denial remains distinct from target failure;
+- `transport_error` — transport failure before trustworthy target observation remains acquisition error.
 
-A mapped operation successfully observes the intended QuickGun target and returns trustworthy evidence/provenance.
-
-## `unavailable`
-
-A controlled test or observed state demonstrates that required editor/bridge/dependency absence is represented as unavailable evidence, not product failure.
-
-Do not destabilize the user's normal environment merely to manufacture this state if a trustworthy prior/current observation already proves the behavior.
-
-## `denied`
-
-Confirm Runtime/Harness policy denial remains distinct from target failure. Do not weaken policy just to force a denial case.
-
-## `transport_error`
-
-Confirm a transport failure before trustworthy target observation remains an acquisition error, not a product failure.
-
-Do not intentionally corrupt global/user configuration to create this case.
+Do not intentionally break or reconfigure the user's MCP setup merely to manufacture unavailable/error states. Use naturally observed states or safe bounded simulations when sufficient.
 
 A verifier sub-agent checks that none of these acquisition states is itself presented as `PASS`, `FAIL`, or `BLOCKED` without `verify-change` criterion reasoning.
 
 Acceptance:
 
-- the binding/runtime evidence path preserves acquisition-state semantics sufficiently for the first vertical slice.
+- binding/runtime evidence path preserves acquisition-state semantics sufficiently for the first vertical slice.
 
 Checkpoint and continue.
 
@@ -293,11 +260,7 @@ Checkpoint and continue.
 
 Goal: prove Axit can move from accepted criterion to semantic Capability to real transport evidence to independent verification.
 
-Use QuickGun's current damage pipeline and the configured Player prefab.
-
-## Evidence composition
-
-Use ordinary project validation evidence for deterministic damage arithmetic where appropriate, plus real Unity evidence for the serialized/runtime claims.
+Use QuickGun's current damage pipeline and configured Player prefab.
 
 Target evidence layers:
 
@@ -305,27 +268,27 @@ Target evidence layers:
 2. concrete Player prefab inspection;
 3. serialized `DamageableBodyPart` references/values relevant to the criterion;
 4. bounded Play Mode headshot scenario;
-5. observed runtime health result and enough target identity to distinguish the intended hit-zone behavior.
+5. observed runtime health result and enough target identity to distinguish intended hit-zone behavior.
 
 Do not run unrelated capabilities merely because they are available.
 
-## Lane separation
+Lane separation:
 
-- worker/setup lane prepares only the bounded test state if preparation is needed;
+- worker lane prepares only bounded project test state if preparation is needed;
 - evidence lane uses the reviewed binding to acquire current Unity evidence;
-- verifier lane independently runs/follows `verify-change` against the accepted criterion and current evidence.
+- verifier lane independently follows `verify-change` against accepted criteria and current evidence.
 
 The verifier must classify REQUIRED vs SUPPORTING evidence independently.
 
 Acceptance:
 
-- the real binding produces current evidence for the mapped capabilities;
+- real binding produces current evidence for mapped capabilities;
 - verifier reaches the correct verdict without overclaiming beyond observed evidence;
 - runtime evidence is traceable to the intended QuickGun target/session.
 
-If verifier returns `FAIL`, continue to Phase 6 recovery rather than asking for routine confirmation.
+If verifier returns `FAIL`, continue to Phase 6 recovery without routine confirmation.
 
-If verifier returns `BLOCKED` due a recoverable local transport/editor state, apply sub-agent recovery policy first.
+If verifier returns `BLOCKED` because the manually configured MCP transport itself became unavailable, stop with `HARD_BLOCKER: UNITY_MCP_NOT_READY`; do not repair MCP setup.
 
 Checkpoint and continue.
 
@@ -333,11 +296,9 @@ Checkpoint and continue.
 
 # Phase 6 — Bounded failure/recovery validation
 
-Validate that the continuous multi-agent system can recover from one demonstrated required failure without user micromanagement.
+Validate that the continuous multi-agent system can recover from one demonstrated required project failure without user micromanagement.
 
 Use one safe bounded failure in the current vertical-slice domain. Prefer a reversible project-local mismatch whose expected behavior is already accepted, such as a serialized value/reference mismatch or similarly narrow defect.
-
-Do not create an artificial failure that requires destructive migration, architecture change, or unrelated code churn.
 
 Required flow:
 
@@ -345,7 +306,7 @@ Required flow:
 current evidence
   -> independent verifier: FAIL
       -> orchestrator assigns bounded repair worker
-          -> repair only demonstrated defect
+          -> repair only demonstrated project defect
               -> reacquire current evidence
                   -> fresh verifier pass
 ```
@@ -356,12 +317,13 @@ Rules:
 - worker must not issue the final verification verdict;
 - do not reuse stale pre-repair evidence as proof;
 - maximum two repair/replacement loops;
-- preserve unrelated working-tree changes.
+- preserve unrelated working-tree changes;
+- do not use the recovery phase to alter MCP installation/configuration.
 
 Acceptance:
 
 - one real `FAIL -> repair -> reacquire -> reverify` path completes correctly;
-- or a hard blocker is surfaced under the declared stop rules.
+- or a declared hard blocker is surfaced.
 
 Checkpoint and continue.
 
