@@ -26,6 +26,8 @@ This repository is being redesigned as a Codex-first, reusable game-development 
 - Read project Rules, Registry, Knowledge, State, Profiles, Skills, or Workflows only when the current task requires them.
 - Do not assume every artifact under `.axit/project/` is active; activation should be explicit in the project manifest or current task routing.
 - Do not create project-specific Profiles or Skills merely to reproduce legacy specialist job titles.
+- `src/QuickGun-MVP/` is the first live Project Layer validation target and has its own nested `AGENTS.md` plus `.axit/` project files.
+- QuickGun-MVP reuses the reviewed root Core; do not duplicate Core into the nested project.
 
 ## Migration boundary
 
@@ -36,8 +38,8 @@ This repository is being redesigned as a Codex-first, reusable game-development 
 ## Current implementation phase
 
 1. keep the reviewed Core stable at four Profiles, two Skills, and one active Workflow;
-2. define and validate the Project Layer contract without adding speculative project-specific catalogs;
-3. bootstrap a real project from `.axit/templates/` and observe which local Rules, Knowledge, or extensions are actually needed;
-4. prefer Rules/Knowledge before creating project Skills, and prefer focused Skills before creating additional Profiles;
+2. validate the materialized QuickGun-MVP Project Layer against a real local workspace;
+3. keep QuickGun project-specific Profiles, Skills, Workflows, and Knowledge empty until repeated work demonstrates a real gap;
+4. prefer Rules/Registry/Knowledge before creating a project Skill, and prefer focused Skills before creating additional Profiles;
 5. add MCP-backed evidence capabilities as execution support without changing Core verification semantics;
 6. promote new behavior into Core only after reuse is demonstrated across materially different projects.
