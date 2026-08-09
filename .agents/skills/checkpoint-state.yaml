@@ -1,0 +1,39 @@
+spec_version: axit.skill/v1
+id: checkpoint-state
+name: Checkpoint Project Progress
+description: Write a compact project progress note containing current task, decisions, progress, changed files, blockers, checks, and next action.
+execution:
+  side_effects: project-write
+  preferred_profile: project-coordinator
+inputs:
+  - name: state_path
+    type: path
+    required: true
+context:
+  required:
+    - source: project
+      ref: current-work
+capabilities:
+  required: [file.read, file.write]
+model_requirements:
+  reasoning: low
+  coding: none
+  tool_use: required
+procedure:
+  - id: summarize
+    intent: Summarize current project work into a compact progress record.
+  - id: write
+    intent: Write the progress record to the configured project file.
+outputs:
+  - id: progress-note
+    type: document
+    required: true
+verdicts: [complete, blocked]
+verification:
+  required:
+    - id: note-exists
+      type: artifact_exists
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
