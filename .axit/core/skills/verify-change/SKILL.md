@@ -43,9 +43,12 @@ For each criterion, classify it as one of:
 
 If a material criterion is unresolved because product intent is ambiguous, stop and hand the question to the Game Designer responsibility.
 
-## 3. Identify evidence needed
+## 3. Classify evidence requirements
 
-For each material criterion, choose the smallest useful evidence type.
+For each material criterion, choose the smallest useful evidence type and classify each proposed check as either:
+
+- `REQUIRED` — without this evidence, the criterion cannot be concluded from current project evidence, or project rules explicitly require this check;
+- `SUPPORTING` — useful additional confidence, but the criterion can already be concluded from stronger or sufficient evidence.
 
 Prefer, when applicable:
 
@@ -55,11 +58,27 @@ Prefer, when applicable:
 4. runtime/editor observations;
 5. screenshots, walkthroughs, playtests, or human judgment for genuinely visual or experiential behavior.
 
+Do not promote a check to `REQUIRED` merely because it would be nice to run or because a tool exists for it.
+
+Examples:
+
+- If the accepted criterion is specifically "works in Unity Play Mode", runtime evidence is `REQUIRED`.
+- If deterministic tests prove the rule and current project evidence proves the relevant wiring, an unavailable Play Mode check may be `SUPPORTING`; record it as residual risk instead of blocking automatically.
+- If project rules explicitly require a compile, build, integration test, screenshot, or approval for this change type, that evidence is `REQUIRED` even when other evidence looks convincing.
+
 Do not require manual evidence when deterministic evidence can prove the criterion more reliably.
 
-## 4. Inspect the current change
+## 4. Inspect the current change and resolve the target
 
 Review the relevant diff and affected boundaries.
+
+Confirm that the requested system, feature, or artifact maps to an identifiable target in the current workspace before evaluating behavior.
+
+Distinguish these cases:
+
+- The target is identifiable and the requirement says an implementation/artifact must exist, but current repository evidence shows it is absent -> criterion `FAILED`.
+- The user's term cannot be mapped reliably to a project target, or there is credible reason the relevant implementation is outside the current workspace -> criterion `UNRESOLVED`; clarify or return `BLOCKED` if material.
+- The implementation exists but contradicts an accepted criterion -> criterion `FAILED`.
 
 Check for material concerns such as:
 
@@ -78,6 +97,8 @@ Execute or inspect the selected checks using the project's available mechanisms.
 Start with targeted checks. Expand to broader regression coverage only when the affected surface or failure risk justifies it.
 
 Record failures, warnings, skipped checks, flaky behavior, environment limitations, and assumptions. Do not hide them behind a summary.
+
+For every skipped or unavailable check, record whether it was `REQUIRED` or `SUPPORTING`.
 
 ## 6. Check affected regressions
 
@@ -98,7 +119,7 @@ A feature should demonstrate both:
 Produce a compact mapping:
 
 ```text
-Criterion -> Evidence -> Result
+Criterion -> Evidence -> Requirement -> Result
 ```
 
 Each material criterion must be one of:
@@ -109,24 +130,33 @@ Each material criterion must be one of:
 
 Do not count an implementation plan, diff description, code review comment, or model assertion as behavioral proof by itself.
 
+Treat absence as evidence when absence itself is observable and contradicts an accepted requirement. Do not label a known-missing required implementation as `UNRESOLVED` merely because runtime execution is unavailable.
+
 ## 8. Issue the verdict
 
 Use exactly one final verdict:
 
-- `PASS` — current evidence supports all required criteria for the bounded scope.
-- `FAIL` — current evidence shows a required criterion is not satisfied or a material regression exists.
-- `BLOCKED` — a required conclusion cannot be reached because essential intent, evidence, tooling, or environment capability is unavailable.
+- `PASS` — all required criteria are `PROVEN`. Missing `SUPPORTING` checks may remain as skipped checks or residual risk and do not block PASS by themselves.
+- `FAIL` — at least one required criterion is `FAILED`, including a required implementation/artifact that is demonstrably absent or a material regression that is demonstrated.
+- `BLOCKED` — no required criterion is known to have failed, but at least one required conclusion cannot be reached because essential intent, target resolution, evidence, tooling, or environment capability is unavailable.
 
-Do not convert missing required evidence into PASS.
+Verdict precedence:
+
+1. A demonstrated required failure -> `FAIL`, even if other supporting checks are unavailable.
+2. Otherwise, missing essential required evidence -> `BLOCKED`.
+3. Otherwise, when all required criteria are proven -> `PASS`.
+
+Do not convert missing required evidence into PASS. Do not convert missing supporting evidence into BLOCKED automatically.
 
 # Stop / Handoff Conditions
 
 Stop or hand off instead of guessing when:
 
 - intended behavior is materially ambiguous -> Game Designer;
+- the requested target cannot be reliably identified -> clarify or return `BLOCKED` if the target is essential;
 - verification reveals a public-contract, state-ownership, dependency-direction, or architecture conflict -> Technical Architect;
 - evidence shows an implementation defect requiring code/data changes -> Implementation Engineer;
-- required evidence cannot be produced in the current environment -> return `BLOCKED`;
+- required evidence cannot be produced in the current environment -> return `BLOCKED` unless a required failure is already demonstrated;
 - the requested scope expands materially beyond the original change -> surface the scope change before continuing.
 
 If a fix is made after a `FAIL`, run verification again against the new current change state. Do not reuse the old verdict.
@@ -142,13 +172,13 @@ Scope:
 - what was verified
 
 Evidence:
-- criterion -> evidence -> result
+- criterion -> evidence -> REQUIRED|SUPPORTING -> result
 
 Findings:
 - failures, blockers, regressions, or none
 
 Skipped / unavailable checks:
-- explicit list or none
+- check -> REQUIRED|SUPPORTING -> impact on verdict
 
 Residual risk:
 - remaining uncertainty or none
