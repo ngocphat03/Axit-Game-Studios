@@ -90,6 +90,40 @@ coplay.get_prefab
 
 Provider/tool names belong in runtime bindings, not canonical capability ids.
 
+## Capability ID resolution
+
+When planning, requesting, or reporting a Capability, use **only ids explicitly declared by the affected System's active capability sets**.
+
+Do not invent, alias, rename, abbreviate, or synthesize capability ids, including friendly or project-specific names that merely sound appropriate.
+
+For example, if the active set declares:
+
+```text
+unity.prefab.inspect
+unity.component.inspect
+unity.serialized-fields.inspect
+```
+
+then names such as these are invalid unless they are separately declared in an active set:
+
+```text
+player_prefab.resolve_asset
+prefab.inspect_serialized_component
+configuration.compare_to_accepted_contract
+```
+
+A natural-language evidence need is not automatically a Capability.
+
+If required evidence has no matching declared Capability:
+
+1. state that no matching Axit Capability is currently declared;
+2. describe the missing evidence need in ordinary language;
+3. use legitimate non-capability project evidence or validation routes when they can satisfy the criterion;
+4. otherwise surface a **capability gap** or unavailable evidence need;
+5. do not fabricate an id to make the evidence plan look complete.
+
+Project mechanisms remain ordinary evidence until they are deliberately accepted into a Capability set. For example, a standalone deterministic C# test command is not `unity.tests.run` merely because it tests Unity-project code; `unity.tests.run` applies only when the selected evidence is actually a Unity test suite represented by that Capability contract.
+
 ## Operation classes
 
 v1 uses two operation classes:
@@ -227,10 +261,11 @@ When a Skill/Workflow needs evidence:
 1. identify the accepted criterion;
 2. choose the smallest evidence type that can establish it;
 3. inspect the affected System's declared capability sets when execution/editor evidence is relevant;
-4. choose the narrowest semantic Capability that can acquire the evidence;
-5. let runtime/Harness resolve availability, permissions, and transport binding;
-6. return acquired evidence to the owning Skill/Workflow;
-7. keep verdict semantics in `verify-change`.
+4. choose the narrowest **declared** semantic Capability that can acquire the evidence;
+5. if no declared Capability matches, use legitimate non-capability evidence when sufficient or report the evidence need as a capability gap without inventing an id;
+6. let runtime/Harness resolve availability, permissions, and transport binding;
+7. return acquired evidence to the owning Skill/Workflow;
+8. keep verdict semantics in `verify-change`.
 
 Do not call broader runtime checks when narrower deterministic evidence is sufficient.
 
@@ -263,5 +298,6 @@ Before accepting a capability into a reusable set, ask:
 5. Does `cannot_establish` prevent common overclaims?
 6. Is it reusable across materially different projects in the same domain?
 7. Can system/project specifics stay outside the capability definition?
+8. Is the id explicitly declared rather than synthesized during task planning?
 
-If not, keep the behavior in the owning Skill, System context, runtime binding, or tool layer instead.
+If not, keep the behavior in the owning Skill, System context, runtime binding, ordinary project validation route, or tool layer instead.
