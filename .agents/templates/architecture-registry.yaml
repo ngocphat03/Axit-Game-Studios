@@ -1,0 +1,16 @@
+spec_version: axit.architecture-registry/v1
+last_updated: ""
+
+state_ownership: []
+
+interfaces: []
+
+api_decisions: []
+
+performance_budgets: []
+
+forbidden_patterns: []
+
+# Add an entry only when the decision constrains more than one system or future implementation.
+# Do not register trivial internal details.
+# Prefer superseding historical decisions over silently deleting them.
