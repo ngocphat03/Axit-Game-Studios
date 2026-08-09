@@ -1,0 +1,11 @@
+spec_version: axit.system-architecture/v1
+system: ""
+
+interfaces: []
+local_decisions: []
+forbidden_patterns: []
+
+notes:
+  - "Keep only system-local architecture here."
+  - "Move authoritative cross-system ownership, public boundaries, and integration contracts to the root registries."
+  - "Do not duplicate executable API/schema contracts."
