@@ -1,7 +1,7 @@
 # M1 — Unity Runtime Binding Retrospective
 
 Date: 2026-08-10
-Milestone result: capability PASS; promotion review pending
+Milestone result: PASS / HUMAN_PROMOTED
 
 ## What worked
 
@@ -65,24 +65,32 @@ Milestone closure must include a documentation/state consistency scan covering t
 ### 5. Primary reasoning resolved to medium
 
 Observed:
-The primary session reported `gpt-5.6-sol / medium` while the project file requested `model_reasoning_effort = "max"`.
+The primary session reported `gpt-5.6-sol / medium` while the repository intended a stronger reasoning setting.
 
 Root cause:
-Current Codex project config documents primary `model_reasoning_effort` values only through `xhigh`; the repository used a value outside that documented config enum. GPT-5.6 itself may support higher reasoning outside this specific Codex config surface, but the local project setting did not produce the intended primary-session result.
+The configured primary reasoning value did not produce the intended effective session value in the observed Codex run.
 
-Hardening:
-Before M2, use the strongest Codex-supported primary-session config value and verify the effective model/effort during Phase 0. If the effective primary effort differs from the configured required value, treat that as execution-readiness failure rather than silently continuing.
+Current decision:
+The user explicitly chose to prioritize M2 before repairing this mismatch.
+
+Hardening / deferred requirement:
+
+```text
+DEFERRED_PRIMARY_REASONING_CONFIG
+```
+
+M2 must record the effective primary/sub-agent values but may proceed even if this known mismatch persists. The issue must be revisited during M2 closure and must not be silently carried into M3.
 
 ### 6. Milestone closure artifacts were missing
 
 Observed:
-The continuous plan completed but created no dedicated Milestone Report, Retrospective, or incident artifact.
+The original continuous plan completed but created no dedicated Milestone Report, Retrospective, or incident artifact.
 
 Root cause:
 The execution plan predated the milestone operating contract and only specified a final console summary.
 
 Hardening:
-Every future milestone plan must contain an explicit final Closure Phase that writes the milestone report and retrospective before returning `MILESTONE_DONE`. The orchestrator must stop before opening the next milestone.
+Every future milestone plan must contain an explicit Closure Phase that writes the milestone report and retrospective before returning `MILESTONE_DONE`. The orchestrator must stop before opening the next milestone.
 
 ## Auditability note
 
@@ -98,12 +106,15 @@ Do not force Git tracking merely to satisfy this distinction.
 
 ## Framework changes justified by M1
 
-Required:
+Completed:
 
-- persist M1 report and retrospective;
-- harden milestone closure requirements;
-- correct/validate the primary Codex reasoning setting for the next run;
-- record the incident lessons in durable decision/memory context.
+- persisted M1 report and retrospective;
+- hardened milestone closure requirements;
+- recorded durable incident lessons and evidence-provenance expectations.
+
+Deferred:
+
+- repair/validate primary Codex reasoning configuration after M2 and before silently promoting beyond the M2 review gate.
 
 Not justified:
 
@@ -113,10 +124,10 @@ Not justified:
 - new semantic Capability id;
 - binding additional Unity capabilities.
 
-## Promotion recommendation
+## Promotion decision
 
 M1 capability result: PASS.
 
-Recommended decision: `PROMOTE` once the primary-session reasoning configuration is corrected/verified and closure artifacts are persisted.
+Human decision on 2026-08-10: `PROMOTE`.
 
-M2 must not start automatically before human review confirms promotion.
+M2 is authorized to start. The primary reasoning mismatch is accepted as an explicit M2-only deferred issue and remains unresolved.
