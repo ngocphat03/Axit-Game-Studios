@@ -1,12 +1,13 @@
-spec_version: axit.architecture-registry/v1
+spec_version: axit.workspace-architecture/v1
 
 state_ownership: []
 interfaces: []
+dependency_directions: []
 api_decisions: []
 performance_budgets: []
 forbidden_patterns: []
 
 notes:
-  - Register only shared or high-risk architecture decisions.
-  - Do not record trivial internal implementation details.
-  - A concrete project owns its decisions; the reusable base does not preselect networking, persistence, or gameplay architecture.
+  - "Register only workspace-level or cross-system architecture decisions here."
+  - "Keep system-local architecture in `.axit/systems/<system-id>/architecture.yaml`."
+  - "Do not duplicate executable API/schema contracts into this registry."
