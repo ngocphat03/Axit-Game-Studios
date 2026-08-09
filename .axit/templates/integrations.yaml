@@ -1,0 +1,9 @@
+spec_version: axit.integrations/v1
+
+integrations: []
+
+notes:
+  - "Map provider/consumer relationships only when a real cross-system boundary exists."
+  - "Point `contract.source` to the executable contract when available."
+  - "Do not copy OpenAPI/protobuf/DTO/schema bodies into `.axit`."
+  - "Add repository-level contract/integration test paths when they verify the boundary."
