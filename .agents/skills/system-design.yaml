@@ -1,0 +1,50 @@
+spec_version: axit.skill/v1
+id: system-design
+name: System Design
+description: Define one game system's player-facing behavior, constraints, interfaces, acceptance criteria, and unresolved decisions without prescribing provider-specific execution.
+execution:
+  side_effects: project-write
+  preferred_profile: game-designer
+inputs:
+  - name: system_id
+    type: id
+    required: true
+context:
+  required:
+    - source: project
+      ref: project-manifest
+    - source: project
+      ref: system-map
+  optional:
+    - source: project
+      ref: related-design-docs
+    - source: project
+      ref: architecture-registry
+capabilities:
+  required: [file.read, file.search]
+  optional: [file.write, user.question, user.choice, user.approval, agent.consult]
+model_requirements:
+  reasoning: high
+  coding: low
+  long_context: preferred
+  tool_use: preferred
+procedure:
+  - id: frame
+    intent: Define system purpose, player experience, scope, non-goals, and dependencies.
+  - id: rules
+    intent: Define rules, state, inputs/outputs, edge cases, tuning knobs, and cross-system interactions.
+  - id: criteria
+    intent: Produce testable acceptance criteria and identify unresolved project decisions.
+outputs:
+  - id: system-design
+    type: document
+    required: true
+verdicts: [complete, needs_decision, blocked]
+verification:
+  required:
+    - id: design-sections-covered
+      type: criteria_coverage
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
