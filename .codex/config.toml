@@ -3,7 +3,8 @@
 
 model = "gpt-5.6-sol"
 model_reasoning_effort = "max"
-plan_mode_reasoning_effort = "max"
+# Plan mode currently uses the strongest documented config enum; execution remains max.
+plan_mode_reasoning_effort = "xhigh"
 
 # Keep normal command approvals, but let Codex auto-review routine requests
 # inside the bounded execution envelope below.
