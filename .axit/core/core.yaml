@@ -26,9 +26,10 @@ rules:
   - Workflows compose accepted Skills and transitions; they must not duplicate Skill procedures or silently expand scope.
 
 next_phase:
-  - keep the four Profiles, two Skills, and bounded-change Workflow stable while project specialization is introduced
-  - define the Project Layer contract before adding domain-specific agents, skills, packs, or knowledge
-  - prove how a real game project selects Core behavior plus project-specific context without copying legacy catalogs
+  - keep the four Profiles, two Skills, and bounded-change Workflow stable while Project Layer behavior is validated
+  - use QuickGun-MVP as the first embedded project bootstrap and verify nested routing against the shared Core
+  - observe real QuickGun work before adding any project-specific Knowledge, Skill, Workflow, or Profile
+  - prefer a small Project Rule or Registry decision over a new project extension when sufficient
   - add MCP-backed evidence capabilities as execution support without changing verification semantics
   - do not add Core Skill number 3 or another Core Workflow until a repeated procedural gap is demonstrated
   - do not migrate legacy catalogs in bulk
