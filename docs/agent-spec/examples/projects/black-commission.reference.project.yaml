@@ -1,0 +1,116 @@
+spec_version: axit.project/v1
+
+project:
+  id: black-commission-reference
+  name: Black Commission
+  summary: Reference project for a 1-4 player Unity co-op commission/scavenging game.
+  stage: production
+
+product:
+  genres: [co-op, extraction, scavenging]
+  core_loop: "HQ -> choose commission -> board van -> mission site -> scavenge/objectives -> return -> settlement"
+  player_count:
+    min: 1
+    max: 4
+  session_model: session-based-coop
+  target_platforms: [pc]
+
+engine:
+  name: unity
+  version: "6000.4.7f1"
+  language: csharp
+
+features:
+  multiplayer:
+    enabled: true
+    topology: host-client
+    authority: host
+    transport: unity-relay
+    reconnect: false
+    late_join: partial
+
+  missions_quests:
+    enabled: true
+    complexity: medium
+    branching: false
+    scope: [party, session]
+    persistent_progress: true
+
+  puzzle:
+    enabled: false
+    systemic: false
+    reset_required: false
+    hints: false
+
+  procedural_generation:
+    enabled: true
+    deterministic: true
+    seed_authority: host
+
+  persistence:
+    enabled: true
+    scope: local-host-company
+    authority: host
+    migration_required: true
+
+  economy_progression:
+    enabled: true
+
+  combat:
+    enabled: true
+
+  inventory:
+    enabled: true
+
+packs:
+  selected:
+    - engine-unity
+    - online-session
+    - host-authoritative
+    - mission-quest
+    - procedural-generation
+    - persistence
+    - economy-progression
+    - inventory
+    - ui-ux
+  proposed: []
+
+runtime:
+  preferred_ai_providers:
+    - codex
+    - claude
+  editor_bridge: mcp-for-unity
+  axit_code: optional
+
+project_rules:
+  source: AGENTS.md
+
+architecture_registry:
+  source: docs/registry/architecture.yaml
+
+validation:
+  static_checks:
+    - git diff --check
+  automated_tests:
+    - Unity EditMode tests
+  editor_checks:
+    - zero compile errors
+    - project-specific Unity MVP validators
+  playtest_matrix:
+    - solo
+    - host + 1 client
+    - host + 3 clients
+
+customization:
+  custom_profiles:
+    - multiplayer-technical-agent
+    - ui-ux-agent
+    - art-pipeline-agent
+  custom_skills:
+    - project-specific mission/map finalization
+    - multiplayer authority verification
+  custom_workflows: []
+
+notes:
+  status: reference-only
+  warning: This file demonstrates how the reusable base classifies Black Commission. It is not a recommendation to copy this architecture into other projects.
