@@ -1,11 +1,11 @@
 # Axit Workspace Active State
 
 Updated: 2026-08-09
-Status: workspace-system-v1-validation
+Status: root-routing-v1-live-validation
 
 ## Current task
 
-Validate Axit's root-first Workspace/System routing after replacing the superseded nested Project Layer model.
+Validate Axit's root-first Workspace/System routing through live Codex use before registering additional Systems or adding specialization.
 
 ## Confirmed workspace facts
 
@@ -45,11 +45,13 @@ No backend, CMS, or service source roots are registered yet because they have no
 - Replaced Project Layer bootstrap templates with Workspace/System templates.
 - Removed nested `src/QuickGun-MVP/.axit/` metadata and nested `AGENTS.md` routing.
 - Removed the superseded Project Layer spec/templates.
+- Added `.axit/checklists/root-routing-validation.md` with fixed single-system, cross-system, contract-source, and future integration verification regression cases.
 
 ## Next actions
 
-1. Pull this branch into the local workspace and start Codex from repository root.
-2. Validate a QuickGun task maps `src/QuickGun-MVP` -> `unity-client` without requiring a nested CWD.
-3. Add a backend/CMS/service System only when a real source boundary exists.
-4. Validate the first real cross-system API change with an executable contract plus contract/integration tests.
-5. Do not add Core Skill #3 or another Core Workflow until a repeated gap is demonstrated.
+1. Pull this branch into the local workspace and start a fresh Codex session from repository root.
+2. Run the currently executable cases in `.axit/checklists/root-routing-validation.md` without adding manual routing hints.
+3. Record any routing mistake before changing instructions so the regression remains reproducible.
+4. Add a backend/CMS/service System only when a real source boundary exists.
+5. Validate the first real cross-system API change with an executable contract plus contract/integration tests.
+6. Do not add Core Skill #3 or another Core Workflow until a repeated gap is demonstrated.
