@@ -4,6 +4,7 @@ status: core-profiles-in-progress
 profiles:
   - technical-architect
   - game-designer
+  - implementation-engineer
 
 skills: []
 workflows: []
@@ -16,7 +17,7 @@ rules:
   - Specialize through Skills and Knowledge before creating additional Profiles.
 
 next_phase:
-  - review implementation-engineer as the next candidate Core Profile
-  - review quality-verifier after implementation responsibility is stable
+  - review quality-verifier as the next candidate Core Profile
+  - validate whether four Profiles are sufficient before creating any additional Core Profile
   - keep Core Skills and Workflows empty until their contracts are reviewed
   - add Codex discovery entries only for accepted Skills
