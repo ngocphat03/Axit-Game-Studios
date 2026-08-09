@@ -2,9 +2,13 @@
 
 Reviewed Axit Core Workflows live here.
 
-Current Core Workflow under validation:
+Current active Core Workflow:
 
 - [`bounded-change`](bounded-change/WORKFLOW.md) — composes bounded implementation with independent evidence-based verification when both jobs are explicitly needed.
+
+Live validation evidence:
+
+- [`bounded-change live validation`](../../checklists/bounded-change-live-validation.md) — medium QuickGun armor vertical slice used to promote the Workflow to active.
 
 Canonical form:
 
