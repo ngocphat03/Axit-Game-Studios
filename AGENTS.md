@@ -21,6 +21,9 @@ This repository is a Codex-first product workspace. Codex is expected to run fro
 
 - Capabilities are semantic evidence/execution operations under `.axit/capabilities/`; they are not Skills, Workflows, or verdict rules.
 - When a System needs editor/runtime evidence, read `.axit/systems/<system-id>/capabilities.yaml` if present, then load only the referenced capability set needed for the criterion.
+- Use only capability ids explicitly declared in the active capability sets. Do not invent, alias, rename, abbreviate, or synthesize capability ids.
+- If no declared capability matches an evidence need, describe that need in ordinary language and use legitimate project validation evidence when sufficient; otherwise report a capability gap. Do not fabricate an id.
+- Ordinary project evidence such as standalone tests or source inspection is not automatically an Axit Capability and must not be relabeled as one unless a declared capability actually covers that mechanism.
 - Capability ids must remain transport-neutral. Do not replace semantic ids with MCP, CLI, provider, or editor command names.
 - A declared capability does not mean a runtime binding is currently available and does not grant permission to execute it.
 - Capability output is evidence only. `verify-change` still decides REQUIRED vs SUPPORTING evidence and PASS/FAIL/BLOCKED.
