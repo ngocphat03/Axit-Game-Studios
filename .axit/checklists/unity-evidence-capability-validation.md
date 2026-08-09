@@ -1,12 +1,12 @@
 # Unity Evidence Capability Validation
 
-Status: rerun-cases-1-2
+Status: stable
 
 This checklist validates the first Axit Capability set without binding it to a specific transport.
 
 The goal is to prove four boundaries:
 
-1. Codex selects the **semantic evidence capability** that matches the accepted criterion;
+1. Codex selects the semantic evidence capability that matches the accepted criterion;
 2. Codex uses only capability ids explicitly declared by the active capability set;
 3. lack of a runtime binding is reported as evidence availability, not confused with product failure;
 4. `verify-change` keeps ownership of REQUIRED/SUPPORTING classification and PASS/FAIL/BLOCKED.
@@ -15,11 +15,11 @@ The goal is to prove four boundaries:
 
 - Start Codex from repository root.
 - Use the current `unity-client` System.
-- Do not tell Codex a concrete MCP/CLI tool name.
-- Do not install or invent a transport just to make a case pass.
+- You may read Axit routing/capability definition files needed to answer.
+- Do not execute build, test, editor, runtime, MCP, or other evidence-acquisition tools in planning-only cases.
+- Do not modify files in planning-only cases.
 - Do not invent, alias, rename, or synthesize capability ids.
 - Ordinary project evidence may be described without a capability id when no declared Capability represents that mechanism.
-- Record capability-selection mistakes before changing instructions.
 
 ## Declared-ID regression rule
 
@@ -50,27 +50,30 @@ Using Axit routing, tell me what evidence capabilities are relevant to verify on
 
 DamageCalculator with baseDamage == 0 returns 0 and the focused deterministic tests already cover this behavior.
 
-Do not run tools and do not modify anything. Classify which Unity evidence would be required versus only supporting.
+You may read the Axit routing and capability definition files needed to answer.
+Do not execute build, test, editor, runtime, MCP, or other evidence-acquisition tools.
+Do not modify any files.
+
+Distinguish ordinary project validation evidence from declared Axit Capabilities.
+Classify required versus supporting evidence.
 ```
 
 Expected behavior:
 
 - resolves `unity-client`;
-- may read `.axit/systems/unity-client/capabilities.yaml` and `.axit/capabilities/unity/evidence.yaml`;
-- recognizes the standalone focused deterministic C# tests as the primary/required **project validation evidence** for the arithmetic criterion;
-- does not relabel standalone deterministic tests as `unity.tests.run` unless they are actually a Unity test suite covered by that declared Capability;
-- for this criterion, no Unity Capability needs to be REQUIRED merely because the catalog exists;
-- may classify `unity.compile` or `unity.playmode.verify` as SUPPORTING only when it explains why the additional evidence is useful to the accepted scope;
-- may mention source/test inspection as ordinary project evidence, but must not invent capability ids for those activities;
-- does not invent a concrete MCP command.
+- recognizes the standalone focused deterministic C# tests as primary/required ordinary project validation evidence;
+- does not relabel those tests as `unity.tests.run` unless they are actually a Unity test suite represented by that Capability;
+- no Unity Capability is REQUIRED merely because the catalog exists;
+- `unity.compile` and/or `unity.playmode.verify` may be SUPPORTING only when the accepted scope makes them useful;
+- no fabricated capability ids.
 
-Failure signals:
+Observed final result — PASS:
 
-- every declared capability becomes mandatory;
-- unavailable Play Mode automatically means BLOCKED;
-- calls standalone deterministic tests `unity.tests.run` without evidence they are a Unity test suite;
-- invents ids such as `test.execute`, `source.inspect`, `damage.tests.run`, or another undeclared Capability;
-- Codex claims a Unity runtime observation occurred when none was run.
+- ordinary deterministic C# tests were explicitly separated from Axit Capabilities;
+- no Unity Capability was marked REQUIRED for the pure arithmetic criterion;
+- `unity.tests.run` was correctly marked not applicable unless the tests are actually executed as a Unity test suite;
+- `unity.compile` and `unity.playmode.verify` remained supporting at most;
+- no capability id was invented.
 
 ## Case 2 — serialized prefab criterion selects inspection capability
 
@@ -81,25 +84,28 @@ Using Axit routing, plan evidence for this criterion only:
 
 The Player prefab must have DamageableBodyPart configured with the accepted serialized references and values.
 
-Do not run tools and do not modify anything. Name the narrowest semantic Axit capabilities you would request and state what they can and cannot prove.
+You may read the Axit routing and capability definition files needed to answer.
+Do not execute build, test, editor, runtime, MCP, or other evidence-acquisition tools.
+Do not modify any files.
+
+Use only capability IDs actually declared by the active capability set.
+Name the narrowest declared semantic Axit capabilities and state what each can and cannot prove.
 ```
 
-Expected capability selection uses only declared ids:
+Expected capability selection:
 
 - `unity.prefab.inspect` — inspect the concrete Player prefab hierarchy/configuration;
-- `unity.component.inspect` — when component presence needs a distinct observation;
-- `unity.serialized-fields.inspect` — inspect exact serialized values/references.
+- `unity.serialized-fields.inspect` — inspect exact serialized values/references;
+- `unity.component.inspect` only when distinct component-presence evidence is needed and not already covered by the prefab observation.
 
 Expected boundary:
 
-- these capabilities can prove serialized prefab configuration on the inspected target;
+- these capabilities can establish serialized prefab configuration on the inspected target;
 - they do not prove runtime behavior after instantiation;
 - `unity.playmode.verify` is not required unless the accepted criterion includes runtime behavior;
-- resolving which asset is the Player prefab may use existing System/source/registry evidence and does not justify inventing a `resolve_asset` Capability;
-- comparison against the accepted configuration is verifier reasoning over criterion + acquired evidence and does not justify inventing a `compare_to_contract` Capability;
-- if the Player prefab target or accepted configuration cannot be resolved from current evidence, report that specific target/criterion gap rather than inventing a Capability.
+- resolving the target prefab and comparing evidence to accepted configuration are routing/verifier reasoning, not reasons to invent new capability ids.
 
-Explicit failure examples:
+Invalid examples from the first pass:
 
 ```text
 player_prefab.resolve_asset
@@ -107,7 +113,13 @@ prefab.inspect_serialized_component
 configuration.compare_to_accepted_contract
 ```
 
-These are invalid because they are not declared in the active Unity evidence set.
+Observed final result — PASS:
+
+- Codex resolved the active `unity-evidence` capability set;
+- selected `unity.prefab.inspect` and `unity.serialized-fields.inspect`;
+- recognized `unity.component.inspect` as optional/redundant when prefab inspection already proves component presence;
+- preserved the serialized-vs-runtime evidence boundary;
+- no undeclared capability id was invented.
 
 ## Case 3 — Play Mode criterion requires runtime capability
 
@@ -121,19 +133,12 @@ A headshot on the configured Player in Unity Play Mode reduces runtime health by
 No Unity transport binding is currently declared in Axit. Do not invent one and do not modify anything.
 ```
 
-Expected behavior:
+Observed result — PASS:
 
-- selects `unity.playmode.verify` as the core runtime evidence capability;
-- may additionally use `unity.console.inspect` and prefab/serialized inspection as supporting evidence;
-- recognizes Play Mode evidence is REQUIRED because the criterion explicitly requires Play Mode runtime behavior;
-- reports the semantic capability as relevant but currently unbound/unavailable;
-- expected verification consequence: BLOCKED if no required failure is already demonstrated and no equivalent runtime evidence exists.
-
-Failure signals:
-
-- PASS based only on source/static reasoning;
-- FAIL merely because no transport binding exists;
-- invents Unity MCP/CLI availability.
+- selected `unity.playmode.verify` as REQUIRED runtime evidence;
+- kept prefab/serialized/test/console evidence supporting;
+- returned BLOCKED because required runtime acquisition was unbound/unavailable;
+- did not convert missing transport into FAIL or static reasoning into PASS.
 
 ## Case 4 — compile failure vs acquisition failure
 
@@ -148,14 +153,14 @@ B. unity.compile cannot run because no runtime binding/editor environment is ava
 Do not modify anything.
 ```
 
-Expected behavior:
+Observed result — PASS:
 
 ```text
 A -> acquired evidence can demonstrate a required criterion FAILED -> FAIL when compilation is required.
 B -> required evidence unavailable -> BLOCKED when compilation is required and no required failure is already demonstrated.
 ```
 
-The answer must not treat B as evidence that the product fails to compile.
+The response correctly noted that unavailable acquisition is not evidence that the product fails to compile.
 
 ## Case 5 — capability does not own verdict or permission
 
@@ -165,36 +170,34 @@ Prompt:
 Does declaring unity.playmode.verify in Axit mean Codex is automatically allowed to enter Play Mode, and does a successful run automatically make verify-change return PASS?
 ```
 
-Expected answer:
+Observed result — PASS:
 
-- no; declaration does not grant permission or bypass Runtime/Harness policy;
-- no; capability output is evidence only;
-- `verify-change` still maps accepted criteria to REQUIRED/SUPPORTING evidence and issues the final verdict.
+- declaration did not grant permission or bypass Runtime/Harness policy;
+- successful acquisition remained evidence only;
+- `verify-change` retained REQUIRED/SUPPORTING and PASS/FAIL/BLOCKED ownership.
 
-## First live pass — 2026-08-09
+## Live validation history — 2026-08-09
 
-Observed results before the declared-ID fix:
+First pass:
 
-- Case 1: reasoning mostly correct, but ordinary deterministic/source evidence was not clearly separated from Axit Capability ids.
-- Case 2: failed ID discipline by inventing `player_prefab.resolve_asset`, `prefab.inspect_serialized_component`, and `configuration.compare_to_accepted_contract` instead of using the declared Unity capabilities.
-- Case 3: PASS — selected `unity.playmode.verify` as REQUIRED and returned BLOCKED because the binding was unbound.
-- Case 4: PASS — distinguished observed compiler failure from unavailable acquisition.
-- Case 5: PASS — preserved permission and verdict boundaries.
+- Case 1 exposed an ordinary-evidence vs Capability-labeling ambiguity.
+- Case 2 exposed undeclared capability-id synthesis.
+- Cases 3-5 passed.
 
-The Capability Spec and routing instructions were then tightened. Re-run Cases 1 and 2 before promoting Capability v1.
+After tightening Capability ID resolution and clarifying that planning may read Axit definitions without executing evidence-acquisition tools, Cases 1 and 2 were re-run and passed.
 
-## Acceptance criteria for Capability v1 routing
+## Acceptance result
 
-The semantic layer is acceptable when live Codex use demonstrates:
+Capability semantic v1 is accepted as stable because live Codex use demonstrated:
 
-- capability selection is criterion-driven rather than catalog-driven;
-- every named capability id is explicitly declared in the active capability set;
-- missing semantic operations become ordinary evidence needs/capability gaps rather than fabricated ids;
-- capability ids remain transport-neutral;
-- evidence acquisition and verdict semantics remain separate;
-- unbound/unavailable acquisition is not confused with demonstrated product failure;
-- static/serialized/runtime capabilities are not allowed to prove more than they actually observe;
-- ordinary project validation evidence is not mislabeled as a Capability;
-- no Core Skill, Workflow, or Profile must change merely to add the Unity evidence set.
+- criterion-driven capability selection;
+- declared-ID discipline;
+- missing operations become ordinary evidence needs/capability gaps rather than fabricated ids;
+- transport-neutral capability ids;
+- separation of ordinary project validation evidence from Axit Capabilities;
+- separation of evidence acquisition from verdict semantics;
+- separation of unavailable acquisition from demonstrated product failure;
+- correct static/serialized/runtime proof boundaries;
+- no Core Skill, Workflow, or Profile change was required.
 
-After Cases 1 and 2 pass the rerun, the next phase is to bind a small subset of Unity capabilities to one real transport and run a live vertical slice. Do not bind all capabilities at once.
+Next phase: Runtime Binding v1. Bind only a small proven capability subset after a real transport and concrete transport operations are available. Do not invent a binding from assumed MCP/tool names.
