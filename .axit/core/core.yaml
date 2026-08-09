@@ -1,10 +1,11 @@
 spec_version: axit.core/v1
-status: core-profiles-in-progress
+status: core-profiles-v1
 
 profiles:
   - technical-architect
   - game-designer
   - implementation-engineer
+  - quality-verifier
 
 skills: []
 workflows: []
@@ -15,9 +16,10 @@ rules:
   - Review each Profile and Skill before adding it to Core.
   - Prefer a project/domain extension over Core when reuse is not proven.
   - Specialize through Skills and Knowledge before creating additional Profiles.
+  - Treat the four current Profiles as the default Core responsibility set until a demonstrated gap requires another.
 
 next_phase:
-  - review quality-verifier as the next candidate Core Profile
-  - validate whether four Profiles are sufficient before creating any additional Core Profile
-  - keep Core Skills and Workflows empty until their contracts are reviewed
+  - validate the four-Profile Core against real feature and bug workflows
+  - define Skill Spec v1 from the first accepted Core Skill
+  - keep Core Workflows empty until Skill responsibilities are stable
   - add Codex discovery entries only for accepted Skills
