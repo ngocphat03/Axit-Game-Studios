@@ -18,8 +18,18 @@ engine:
   version: ""
   language: ""
 
-architecture:
-  registry: .axit/registry/architecture.yaml
+axit:
+  core: .axit/core/core.yaml
+  project_rules: .axit/project/rules.md
+  architecture_registry: .axit/registry/architecture.yaml
+  active_state: .axit/state/active.md
+
+project_layer:
+  root: .axit/project
+  profiles: []
+  skills: []
+  workflows: []
+  knowledge: []
 
 validation:
   static_checks: []
@@ -27,7 +37,7 @@ validation:
   editor_checks: []
   playtest_checks: []
 
-customization:
-  profiles: []
-  skills: []
-  workflows: []
+notes:
+  - Keep this manifest compact; it routes context and does not replace design or architecture documents.
+  - Leave project-layer lists empty until a project-specific extension is demonstrated and reviewed.
+  - Only active Skills should be projected into `.agents/skills/` for Codex discovery.
