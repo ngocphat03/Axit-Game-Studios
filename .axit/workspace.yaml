@@ -1,0 +1,38 @@
+spec_version: axit.workspace/v1
+
+workspace:
+  id: quickgun
+  name: QuickGun Workspace
+  summary: "Root product workspace for the game client and surrounding backend, CMS, services, and shared tests."
+
+source:
+  root: src
+
+axit:
+  core: .axit/core/core.yaml
+  architecture_registry: .axit/registry/architecture.yaml
+  integration_registry: .axit/registry/integrations.yaml
+  active_state: .axit/state/active.md
+
+systems:
+  - id: unity-client
+    name: QuickGun-MVP
+    kind: game-client
+    source: src/QuickGun-MVP
+    context: .axit/systems/unity-client/system.yaml
+
+workspace_extensions:
+  profiles: []
+  skills: []
+  workflows: []
+  knowledge: []
+
+validation:
+  contract_tests: tests/contracts
+  integration_tests: tests/integration
+  end_to_end_tests: tests/e2e
+
+notes:
+  - "Open Codex from repository root; route tasks through this workspace manifest rather than relying on nested working directories."
+  - "Add backend, CMS, or service systems here when their source roots exist and their boundaries are understood."
+  - "Do not duplicate executable API schemas or DTO contracts into `.axit`; point to their real source of truth instead."
