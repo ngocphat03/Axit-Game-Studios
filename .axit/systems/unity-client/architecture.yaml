@@ -1,0 +1,39 @@
+spec_version: axit.system-architecture/v1
+system: unity-client
+
+interfaces:
+  - id: shared-damage-pipeline
+    status: accepted
+    path:
+      - Bullet
+      - DamageableBodyPart
+      - DamageCalculator
+      - BaseEntity
+    consumers:
+      - Player
+      - Bot
+    rule: "Player and Bot use the same damage calculation path unless an explicit architecture decision changes that contract."
+
+local_decisions:
+  - id: damage-processing-order
+    status: accepted
+    decision: "Apply hit-zone multiplier, then armor reduction, then health reduction."
+  - id: hit-zone-multipliers
+    status: accepted
+    decision: "Head/Hair uses 2x and Body uses 1x in the currently validated QuickGun slice."
+  - id: non-positive-base-damage
+    status: accepted
+    decision: "Non-positive base damage resolves to zero damage; the baseDamage == 0 regression must remain fixed."
+  - id: armor-range
+    status: accepted
+    decision: "Effective armor is clamped to the inclusive range 0.0 through 0.8 before damage reduction is applied."
+
+forbidden_patterns:
+  - id: split-player-bot-damage-logic
+    rule: "Do not introduce separate Player-only and Bot-only damage calculation rules when behavior is intended to remain shared."
+  - id: bypass-shared-damage-calculation
+    rule: "Do not bypass the registered damage calculation path for ordinary hit damage without an explicit architecture decision."
+
+notes:
+  - "These are Unity-client-local architecture facts validated by live bounded-change and verify-change runs on 2026-08-09."
+  - "Cross-system ownership and contracts belong in the root workspace registries instead of this file."
