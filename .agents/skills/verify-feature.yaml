@@ -1,0 +1,53 @@
+spec_version: axit.skill/v1
+id: verify-feature
+name: Verify Feature
+description: Independently verify one feature/change against acceptance criteria using deterministic evidence where available and bounded manual confirmation otherwise.
+execution:
+  side_effects: none
+  preferred_profile: qa-verifier
+inputs:
+  - name: target
+    type: string
+    required: true
+context:
+  required:
+    - source: project
+      ref: validation-baseline
+  optional:
+    - source: project
+      ref: acceptance-criteria
+    - source: project
+      ref: implementation-report
+capabilities:
+  required: [file.read, file.search]
+  optional: [git.diff, test.run, test.inspect, build.run, artifact.inspect, unity.console.read, unity.test.run, user.confirmation]
+model_requirements:
+  reasoning: high
+  coding: medium
+  long_context: preferred
+  tool_use: preferred
+procedure:
+  - id: criteria
+    intent: Resolve acceptance criteria and required evidence.
+  - id: deterministic
+    intent: Run or inspect deterministic checks first.
+  - id: manual
+    intent: Request bounded manual evidence only where deterministic verification is not possible.
+  - id: verdict
+    intent: Produce a normalized evidence-backed verdict and list remaining risks.
+outputs:
+  - id: verification-report
+    type: report
+    required: true
+  - id: evidence
+    type: evidence
+    required: true
+verdicts: [passed, passed_with_notes, failed, blocked]
+verification:
+  required:
+    - id: criteria-covered
+      type: criteria_coverage
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
