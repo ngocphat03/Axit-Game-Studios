@@ -1,0 +1,46 @@
+spec_version: axit.skill/v1
+id: project-discovery
+name: Project Discovery
+description: Inspect a game project and establish confirmed facts, likely inferences, unknowns, and current technical/product boundaries.
+execution:
+  side_effects: none
+  preferred_profile: project-coordinator
+inputs:
+  - name: project_root
+    type: path
+    required: true
+context:
+  required:
+    - source: input
+      ref: project_root
+  optional:
+    - source: project
+      ref: existing_docs
+capabilities:
+  required: [file.read, file.search, repo.search]
+  optional: [agent.consult]
+model_requirements:
+  reasoning: high
+  coding: medium
+  long_context: preferred
+  tool_use: preferred
+procedure:
+  - id: inspect
+    intent: Inspect project metadata, code/docs structure, engine/runtime, systems, validation, and current working state.
+  - id: classify
+    intent: Separate confirmed facts, likely inference, and unknown decisions.
+  - id: summarize
+    intent: Produce a concise discovery report suitable for project manifest/checklist input.
+outputs:
+  - id: discovery-report
+    type: report
+    required: true
+verdicts: [complete, blocked]
+verification:
+  required:
+    - id: evidence-linked
+      type: criteria_coverage
+failure:
+  retry:
+    max_attempts: 0
+  on_blocked: report
