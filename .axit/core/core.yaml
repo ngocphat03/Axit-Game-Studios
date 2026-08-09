@@ -1,5 +1,5 @@
 spec_version: axit.core/v1
-status: core-skill-v2-validation
+status: core-workflow-v1-validation
 
 profiles:
   - technical-architect
@@ -11,23 +11,26 @@ skills:
   - implement-change
   - verify-change
 
-workflows: []
+workflows:
+  - bounded-change
 
 rules:
   - Core must remain reusable across materially different game projects.
   - Do not import legacy agents or skills by default.
-  - Review each Profile and Skill before adding it to Core.
+  - Review each Profile, Skill, and Workflow before adding it to Core.
   - Prefer a project/domain extension over Core when reuse is not proven.
   - Specialize through Skills and Knowledge before creating additional Profiles.
   - Treat the four current Profiles as the default Core responsibility set until a demonstrated gap requires another.
   - Add Core Skills only when a repeated procedure is demonstrated across real flows.
   - Implementation readiness and independent verification remain separate responsibilities.
+  - Workflows compose accepted Skills and transitions; they must not duplicate Skill procedures or silently expand scope.
 
 next_phase:
-  - test implement-change through Codex on one bounded bug fix and one bounded feature change
-  - confirm implement-change preserves unrelated working-tree changes and does not expand scope silently
-  - confirm ambiguous product intent hands off before editing
-  - confirm material architecture changes hand off before editing
-  - run verify-change after implementation and confirm the implementer does not issue the final verdict
-  - keep Core Workflows empty until the two accepted Skills demonstrate a stable composition worth encoding
-  - do not migrate legacy skill catalogs in bulk
+  - test bounded-change through Codex on one bounded feature or fix requested as end-to-end implementation plus verification
+  - confirm the Workflow completes only on the latest verify-change PASS
+  - confirm verify-change FAIL loops only for a local implementation repair inside accepted scope
+  - confirm verify-change BLOCKED stops without speculative code changes
+  - confirm design or architecture ambiguity exits to the owning Profile before implementation
+  - keep bounded-change in validation until these transitions are observed in live Codex use
+  - do not add Core Skill number 3 or another Workflow until a repeated procedural gap is demonstrated
+  - do not migrate legacy catalogs in bulk
