@@ -1,0 +1,52 @@
+spec_version: axit.skill/v1
+id: implement-change
+name: Implement Change
+description: Apply one approved scoped project change and report the resulting diff and validation evidence.
+execution:
+  side_effects: project-write
+  preferred_profile: implementation-engineer
+inputs:
+  - name: implementation_plan
+    type: path
+    required: true
+context:
+  required:
+    - source: input
+      ref: implementation_plan
+    - source: project
+      ref: project-rules
+    - source: project
+      ref: architecture-registry
+capabilities:
+  required: [file.read, file.search, code.edit, git.diff]
+  optional: [file.write, build.run, test.run, unity.inspect, unity.modify, user.question]
+model_requirements:
+  reasoning: medium
+  coding: high
+  long_context: preferred
+  tool_use: required
+procedure:
+  - id: inspect
+    intent: Read the plan and affected project boundaries.
+  - id: implement
+    intent: Apply the smallest coherent change within approved scope.
+  - id: validate
+    intent: Run available checks and inspect the resulting diff.
+  - id: report
+    intent: Record changed files, checks, deviations, and unresolved risks.
+outputs:
+  - id: change-set
+    type: change_set
+    required: true
+  - id: implementation-report
+    type: report
+    required: true
+verdicts: [implemented, blocked]
+verification:
+  required:
+    - id: scope
+      type: change_scope
+failure:
+  retry:
+    max_attempts: 1
+  on_blocked: report
