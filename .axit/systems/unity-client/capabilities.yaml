@@ -1,0 +1,13 @@
+spec_version: axit.system-capabilities/v1
+system: unity-client
+
+capability_sets:
+  - .axit/capabilities/unity/evidence.yaml
+
+binding_status: unbound
+
+notes:
+  - "This sidecar declares semantic capabilities relevant to the Unity client; it does not claim a transport is currently available."
+  - "Runtime bindings may later use Unity MCP, Axit Unity, Unity CLI/editor automation, or another compatible transport without changing capability ids."
+  - "Load this file only when the current task requires Unity-specific evidence acquisition."
+  - "verify-change still decides REQUIRED versus SUPPORTING evidence and the final verdict."
