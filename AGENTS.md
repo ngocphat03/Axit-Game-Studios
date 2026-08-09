@@ -2,6 +2,59 @@
 
 This repository is a Codex-first product workspace. Codex is expected to run from the repository root.
 
+## Orchestrator-only execution
+
+When the current primary model supports sub-agents, the primary thread acts as the **orchestrator only**.
+
+The primary thread may read only the minimum Axit routing/state needed to decompose work, assign lanes, monitor progress, resolve handoffs, and synthesize results. It must not directly perform the implementation or evidence-producing work that can be delegated.
+
+Delegate actual work to sub-agents, including:
+
+- repository/source exploration beyond minimal orchestration context;
+- setup and environment discovery;
+- product/source edits;
+- test/build execution;
+- Unity/MCP evidence acquisition;
+- bounded repair work;
+- independent verification.
+
+For a bounded change, keep implementation and verification in separate sub-agent lanes when practical. The orchestrator must not substitute its own judgment for an independent verifier result.
+
+Parallelize read-heavy independent exploration when useful. Serialize write-heavy lanes that could touch overlapping files or runtime/editor state.
+
+### Sub-agent recovery
+
+If a sub-agent pauses, blocks, times out, or returns an incomplete result, the orchestrator should recover without asking the user when the issue remains inside the accepted execution envelope:
+
+1. capture the sub-agent's last useful result, blocker, changed files, and current workspace/runtime state;
+2. steer or resume the same sub-agent with a focused recovery instruction when recovery is safe;
+3. if the lane remains stuck, close/replace it with a fresh sub-agent using distilled context rather than replaying the full conversation;
+4. allow at most two bounded recovery/replacement attempts for the same lane or required failure;
+5. after recovery, reacquire current evidence rather than reusing stale results;
+6. checkpoint meaningful progress in `.axit/state/active.md` through a delegated write lane and continue automatically.
+
+Do not stop merely because one sub-agent is blocked when another safe route or replacement lane can complete the accepted task.
+
+### Hard-stop conditions
+
+Stop the continuous run and ask the user only when at least one of these becomes materially necessary:
+
+- product intent or acceptance behavior is ambiguous and cannot be resolved from accepted project evidence;
+- a material architecture, public-contract, dependency-direction, or state-ownership decision is required outside the accepted plan;
+- destructive deletion/migration or broad unrelated refactoring is required;
+- credentials, secrets, production access, or external-cloud writes are required;
+- sudo/admin escalation or machine-wide configuration outside the pre-authorized user-local setup is required;
+- unrelated dirty-worktree changes would be overwritten or materially endangered;
+- the same required failure remains after two bounded repair/replacement loops.
+
+Routine phase completion is not a reason to ask for confirmation.
+
+### Continuous roadmap
+
+When the user asks to continue the Axit roadmap, run the active continuous plan at `.axit/plans/continuous-runtime-binding-v1.md` until it reaches `DONE` or a declared `HARD_BLOCKER`.
+
+Keep user-facing progress concise. Do not emit long phase-by-phase essays unless asked.
+
 ## Root routing
 
 - `.axit/` is the Axit source of truth; `.agents/skills/` is Codex Skill discovery only.
