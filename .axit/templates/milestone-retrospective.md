@@ -38,11 +38,14 @@ Regression protection:
 
 Distinguish:
 
-- evidence reproducible from the canonical pushed branch;
-- evidence acquired from separately tracked/untracked local Systems;
-- ephemeral runtime/editor evidence.
+- `workspace-canonical-pushed` evidence reproducible from the canonical Workspace repository/ref;
+- `system-canonical-pushed` evidence reproducible from a System's canonical repository/ref/commit;
+- `local-or-separately-tracked` evidence not yet proven canonical in either repository boundary;
+- `ephemeral-runtime` editor/runtime/command evidence.
 
-Do not force Git tracking solely for auditability classification.
+When using `system-canonical-pushed`, record System id + repository + ref + commit when known.
+
+Do not force Git tracking or repository-topology changes solely for auditability classification.
 
 ## Framework changes justified
 
