@@ -100,7 +100,7 @@ Known deferred issue carried into M2 review only: `DEFERRED_PRIMARY_REASONING_CO
 
 ## M2 — Autonomous Bounded Development
 
-Status: current
+Status: done-pending-human-review; closure PASS; recommendation PROMOTE
 
 Execution plan:
 
@@ -146,7 +146,7 @@ The primary reasoning mismatch is an explicitly accepted M2-only deferred issue 
 
 ## M3 — Unity Execution Coverage
 
-Status: mockup
+Status: mockup / prohibited / not started until human M2 promotion and reasoning-config repair or explicit re-decision
 
 ### Goal
 
