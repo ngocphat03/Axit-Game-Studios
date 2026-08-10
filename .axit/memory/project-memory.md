@@ -4,227 +4,234 @@ Updated: 2026-08-11
 
 ## North star
 
-Build Axit into a trustworthy coding agent/runtime for game development that can work across a product workspace, use external models for reasoning, control side effects through policy/runtime boundaries, acquire real evidence, independently verify outcomes, recover from bounded failures, and preserve enough run state to resume and audit work.
+Build Axit into a trustworthy coding agent/runtime for game development that can understand a product workspace, use external models for reasoning, control side effects through runtime/policy boundaries, acquire real evidence, independently verify outcomes, recover from bounded failures, and preserve enough state for audit/resume.
 
-Axit-Game-Studios is the **spec/reference/validation lab** for how the agent should work. Proven contracts should later migrate into Axit-Code rather than turning this repository into the final runtime product.
-
-## Product split
+Product split:
 
 ```text
-Axit-Game-Studios
-  = Knowledge/spec/benchmark lab
-
-Axit-Code
-  = product runtime/orchestration/safety/verification
-
-future axitcode-unity
-  = Unity execution host when appropriate
+Axit-Game-Studios = spec / reference / validation lab
+Axit-Code         = canonical product runtime/orchestration/safety/verification
+future axitcode-unity = Unity execution host
 ```
 
-Do not make Axit-Game-Studios the runtime foundation for Axit-Code.
+Do not turn Game-Studios into the final Axit-Code runtime. Productize proven semantics into Axit-Code-native contracts.
 
-## Stable architecture currently accepted
+## Stable Game-Studios foundation
 
-### Core v1
+Core v1 remains intentionally small:
 
-Four responsibility Profiles:
+```text
+Profiles: game-designer, technical-architect, implementation-engineer, quality-verifier
+Skills: implement-change, verify-change
+Workflow: bounded-change
+```
 
-- `game-designer`
-- `technical-architect`
-- `implementation-engineer`
-- `quality-verifier`
+No new Core Profile/Skill/Workflow without repeated demonstrated need.
 
-Two Core Skills:
-
-- `implement-change`
-- `verify-change`
-
-One Core Workflow:
-
-- `bounded-change`
-
-Core remains small. Add another Profile, Skill, or Workflow only when repeated live evidence demonstrates a durable gap.
-
-### Workspace/System v1
-
-Codex is normally opened from repository root.
+Workspace/System v1:
 
 ```text
 repository root = product workspace
 src/*           = interacting Systems
 ```
 
-A System may have its own canonical Git repository even when mounted under the Workspace source tree. Git topology does not redefine the Axit Workspace/System boundary.
+A System may have an independent canonical Git repository without changing the Axit Workspace/System boundary.
 
-Current promoted Unity System metadata:
+QuickGun Unity System canonical repository:
 
 ```text
-system: unity-client
-repository: ngocphat03/QuickGun-MVP
-canonical ref: release
+ngocphat03/QuickGun-MVP @ release
 ```
 
-Resolve moving repository heads at evidence time. Do not duplicate executable contracts such as OpenAPI/protobuf/schema/DTO truth inside `.axit`; point to the real source.
+Resolve moving branch heads at evidence time.
 
-### Capability v1
+## Unity Capability / Runtime Binding state
 
-Current reviewed active Unity binding maps exactly:
+Promoted active Unity mappings are exactly:
 
-- `unity.prefab.inspect`
-- `unity.serialized-fields.inspect`
-- `unity.playmode.verify`
-- `unity.compile`
+```text
+unity.prefab.inspect
+unity.serialized-fields.inspect
+unity.playmode.verify
+unity.compile
+```
 
-The five other declared Unity capabilities remain unbound:
+Still unbound until demonstrated need:
 
-- `unity.project.inspect`
-- `unity.tests.run`
-- `unity.scene.inspect`
-- `unity.component.inspect`
-- `unity.console.inspect`
+```text
+unity.project.inspect
+unity.tests.run
+unity.scene.inspect
+unity.component.inspect
+unity.console.inspect
+```
 
-Capability output is evidence only. `verify-change` owns REQUIRED/SUPPORTING classification and PASS/FAIL/BLOCKED.
+Capability semantics are provider-neutral. Runtime Binding maps them to reviewed transport operations. Capability output is evidence; `verify-change` owns REQUIRED/SUPPORTING and PASS/FAIL/BLOCKED.
 
-### Runtime Binding v1
+MCP for Unity setup remains manual/user-owned.
 
-Bindings map stable semantic Capability ids to verified concrete transport operations. Transport availability is runtime state, not proof encoded by the binding definition.
+Runtime full paths must be resolved from current runtime context, not inferred from prefab-relative hierarchy. Unity 6 compile success requires fresh-cycle correlation, a distinct later terminal observation, exact target re-resolution, and complete diagnostics paging.
 
-MCP for Unity setup is user-owned/manual. Axit may inspect/use an already configured transport but must not install/configure/repair it during continuous milestones.
+## Model / cost policy
 
-Path-addressed runtime operations must resolve current full runtime identity before use. Prefab/source hierarchy is not sufficient proof of the full live scene hierarchy.
-
-Unity 6 compile request acceptance is not terminal compile evidence. A trustworthy `unity.compile` acquisition clears the diagnostic window before the request, establishes `fresh_cycle_correlated`, establishes `terminal_state_observed` from a distinct later snapshot, re-resolves exact editor/project identity after reload, and pages diagnostics to completion.
-
-## Execution operating model
-
-Canonical model/cost policy:
+Canonical policy:
 
 ```text
 .axit/policies/model-routing.md
 ```
 
-Default allocation:
+Current hierarchy:
 
 ```text
-primary orchestrator = gpt-5.6-sol / xhigh
-all child lanes       = gpt-5.6-luna / medium
+primary = gpt-5.6-sol / xhigh
+child preferred = gpt-5.6-luna / medium when supported
+child compatibility fallback = gpt-5.6-terra / medium when Luna is unavailable
+child Sol = forbidden without explicit current human override
 ```
 
-All child roles are covered. Do not silently escalate a child to Terra/Sol or above `medium`. Only an explicit current human instruction may authorize a bounded override.
+The current Codex runtime observed during M5 did not expose Luna children, so `COMPAT_TERRA` / medium is accepted. This is a compatibility route, not a human model override and not a permanent preference change.
 
-Child underperformance is handled by:
+Child underperformance response:
 
 ```text
-distill/sharpen context
-  -> steer/resume Luna/medium
-  -> replace with fresh Luna/medium
-  -> decompose into smaller checkable lanes
-  -> reacquire current evidence
+sharpen context
+  -> steer/resume allowed medium-tier child
+  -> replace with fresh allowed medium-tier child
+  -> decompose
+  -> reacquire evidence
 ```
 
-The primary thread acts as **orchestrator only** when sub-agents are available. Parallelize materially independent read-heavy work; serialize overlapping writes and editor/runtime mutations. The thread limit is a ceiling, not a target.
+Never silently buy a child Sol as recovery.
 
-Maximum bounded recovery/replacement budget for the same required lane/failure remains two attempts before escalation through the milestone's existing failure/blocker semantics.
+Primary is orchestration-only when delegation is available. Parallelize materially independent read-heavy work; serialize overlapping writes/editor mutations. Thread limits are ceilings, not targets.
 
-## Human control model
+M5 showed that lane count itself can become overhead: 19 child lanes for a small product diff with peak useful parallelism 4. Do not create a new child merely for every phase/checkpoint. Keep fresh lanes when independence materially matters, especially verification.
 
-Automation is high **inside one accepted milestone** and stops for human promotion review between milestones.
+## Human control and milestone closure
 
-Expected loop:
+Automation is high inside one accepted milestone. Every milestone stops for human promotion review before the next slice.
+
+Closure sequence must be:
 
 ```text
-start milestone
-  -> autonomous execution
-  -> bounded recovery/reverification
-  -> report + retrospective
-  -> persist final closure verdict
+draft closure artifacts
+  -> independent closure verifier returns actual verdict
+  -> persist actual verdict
+  -> fresh read-only consistency audit
+  -> MILESTONE_DONE
   -> STOP
-  -> user + assistant review
 ```
 
-Hard decisions remain human-owned when they materially change product intent, public contracts, state ownership, architecture, destructive scope, secrets/production access, or other irreversible/high-impact boundaries.
+Do not pre-write a predicted PASS and call that persisted verifier evidence.
 
-M1, M2, and M3 are human-promoted.
+For long-run performance accounting retain both when available:
 
-## Roadmap alignment after M3
+```text
+execution_to_preclosure
+terminal_end_to_end
+```
 
-M4 — Cross-System Workspace is **deferred**, not cancelled.
+Use terminal end-to-end duration for milestone latency comparisons.
 
-Reason: the current QuickGun Workspace has one real registered System. Do not invent a backend/CMS/service or synthetic second System simply to exercise M4. Resume M4 when a genuine second interacting System and executable boundary exist.
+## Promoted milestone state
 
-M5 — Project Bootstrap & Knowledge Plane is the current designed milestone.
+```text
+M1 — Unity Runtime Binding: HUMAN_PROMOTED
+M2 — Autonomous Bounded Development: HUMAN_PROMOTED
+M3 — Unity Execution Coverage: HUMAN_PROMOTED
+M4 — Cross-System Workspace: DEFERRED_WAITING_REAL_SECOND_SYSTEM
+M5 — Project Bootstrap & Knowledge Plane: HUMAN_PROMOTED
+```
+
+M4 remains deferred because no real accepted second interacting QuickGun System exists. Do not manufacture a cross-system benchmark.
+
+## M5 promoted result
 
 Target:
 
 ```text
-repository: ngocphat03/Axit-Code
-canonical ref: release
+ngocphat03/Axit-Code
+execution/audit branch: feature/m5
 ```
 
-M5 control artifacts:
+M5 proved:
+
+- pointer-first bootstrap in a materially different real repository;
+- `docs/PLAN.md` remained target-owned canonical product/roadmap truth;
+- bootstrap review PASS;
+- fresh-context continuity PASS without chat replay;
+- one frozen REAL Axit-Code task PASS;
+- focused agent tests reported 10/10 PASS;
+- root `npm run verify` reported PASS;
+- medium-tier delegated execution via `COMPAT_TERRA` with 0 human model overrides;
+- final independent closure PASS.
+
+Timing sample:
 
 ```text
-.axit/milestones/M5-project-bootstrap-knowledge-plane/plan.md
-.axit/milestones/M5-project-bootstrap-knowledge-plane/target-bootstrap.md
-.axit/milestones/M5-project-bootstrap-knowledge-plane/selection-review.md
+execution_to_preclosure = 22m 12s
+terminal_end_to_end     = 26m 02s
+child lanes             = 19
+peak useful parallelism = 4
+replacements            = 0
+REAL repair loops       = 0
 ```
 
-M5 tests whether Axit can bootstrap a materially different real repository with minimal pointer-first durable context, recover that context in a fresh Luna/medium child without chat replay, and complete one frozen REAL target task with target-native verification.
+M5 initially repeated the closure-persistence defect: artifacts predicted terminal PASS before the final verifier returned. Post-run review repaired metadata only and persisted the actual verifier PASS. No product/runtime rerun was necessary.
 
-Important boundary: Axit-Code product work must execute from a trusted writable local Axit-Code checkout. Do not guess its filesystem path and do not use cloud/GitHub writes as a substitute for a local target workspace.
+M5 audit metadata may remain on `feature/m5`; human promotion does not require merging all `.codex/m5/**` into `release`. The valid test-only product diff can be integrated separately.
 
-M5 is **not M6 productization**. Do not migrate Game-Studios contracts into Axit-Code runtime architecture merely because Axit-Code is the M5 target.
+## M6 decomposition
 
-## M3 promoted result
+M6 is Axit-Code Productization and must proceed by bounded slices, not one giant run.
 
-M3 proved:
-
-- live-discovered and reviewed `unity.compile` Runtime Binding;
-- fresh full QuickGun baseline Unity compile PASS;
-- compile acquisition success/error boundaries;
-- REAL duplicate-release fix with 3/3 deterministic tests and fresh post-change full Unity compile PASS;
-- exact four-mapped/five-unbound Unity capability partition;
-- final closure PASS and human promotion.
-
-Canonical QuickGun product fix:
+Current designed slice:
 
 ```text
-repository: ngocphat03/QuickGun-MVP
-ref: release
-commit: e2e1b1b6f3b0720d91e51def6b610f5714e17c52
+M6-A — Profile / Rule / Workflow / Knowledge Loader Foundation
 ```
 
-Historical M3 used Sol/max children and took roughly 3h15m. That historical fact motivated the later Luna/medium child policy and must not be rewritten as if M3 itself used the cheaper routing.
+Artifacts:
 
-## Git-status policy
+```text
+.axit/milestones/M6A-loader-foundation/plan.md
+.axit/milestones/M6A-loader-foundation/selection-review.md
+```
 
-Workspace config owns whether Git status is used as a safety gate:
+M6-A only proves deterministic declarative loading/validation, normalized records, source identity/provenance, deterministic ordering, and explicit conflict/error behavior.
+
+It explicitly excludes Context Builder, Harness/Tool Gateway, Run Ledger, provider integration, CLI orchestration, Unity integration, Capability/Binding runtime, and M6-B.
+
+### Current M6-A dependency
+
+At 2026-08-11, Axit-Code PR #5 `docs: establish AxitCode and Game Design rules` is open, draft, and unmerged. Its own stated sequence places rule/catalog foundation before Profile/Rule/Workflow/Knowledge loader implementation.
+
+Do not automatically merge/rebase/close or treat draft PR #5 as canonical. Human review must accept, revise, or supersede that foundation.
+
+Until an accepted loader-input foundation exists on the chosen Axit-Code baseline:
+
+```text
+HARD_BLOCKER: KNOWLEDGE_FOUNDATION_NOT_ACCEPTED
+```
+
+Context Builder becomes M6-B only after M6-A is promoted.
+
+## Git/status and provenance
+
+Game-Studios workspace default:
 
 ```yaml
 safety:
   check_git_status: false
 ```
 
-When false, root/nested/submodule modified/deleted/untracked state must not by itself block execution. This does not authorize reset, clean, reverting user work, destructive deletion, or blind overwrite.
+Dirty/untracked/nested Git state is not itself a readiness blocker when this flag is false. This never authorizes reset/clean/revert/destructive overwrite.
 
-## Evidence provenance
+Evidence provenance remains Workspace/System-aware. Do not change Git topology solely for auditability.
 
-Use the narrowest truthful class:
+For target-repository bootstrap/productization work, distinguish canonical target truth from execution metadata; execution metadata must not masquerade as product roadmap or architecture authority.
 
-```text
-workspace-canonical-pushed
-system-canonical-pushed
-local-or-separately-tracked
-ephemeral-runtime
-```
-
-For `system-canonical-pushed`, record System id + repository + ref + commit when known. Do not force Git topology changes solely for auditability.
-
-M5 additionally must distinguish Axit-Code canonical product truth from M5-generated bootstrap metadata; bootstrap metadata must never masquerade as the target's canonical roadmap or architecture source.
-
-## Evidence-driven evolution rule
-
-Do not grow Axit from imagination.
+## Evidence-driven evolution
 
 Use:
 
@@ -238,45 +245,16 @@ real scenario
   -> regression protection
 ```
 
-Possible correct layers include Rule, Knowledge, routing pointer, existing Capability binding, a new Capability only when genuinely missing, Skill, Workflow, Profile, Runtime/Harness policy, or no framework change at all.
-
-## Incident hardening rule
-
-Every meaningful repeatable incident should become:
-
-```text
-incident
-  -> root cause
-  -> smallest framework/config fix
-  -> regression protection
-  -> future runs inherit the fix
-```
-
-Durable lessons include:
-
-- REQUIRED/SUPPORTING verdict precedence must be explicit;
-- capability ids are declared, never invented;
-- unavailable acquisition differs from observed product failure;
-- Unity MCP setup remains manual/user-owned;
-- Git dirty status is configurable and ignored by default for gating;
-- runtime paths are resolved from current runtime context, not guessed from prefab hierarchy;
-- Unity 6 compile evidence requires fresh correlation and a distinct later terminal observation;
-- evidence provenance respects independently tracked System repositories;
-- active state is compacted after promotion;
-- closure-verifier output is persisted before `MILESTONE_DONE`;
-- flagship reasoning is reserved for the primary orchestrator; child lanes default Luna/medium;
-- milestone ordering follows real evidence, so M4 may be deferred rather than filled with a fake second System.
+Do not grow Axit from imagination.
 
 ## Memory discipline
 
-`project-memory.md` is durable alignment, not current run detail.
+`project-memory.md` = durable alignment.
 
-Current execution state belongs in `.axit/state/active.md`.
+`.axit/state/active.md` = compact current execution truth.
 
-Completed milestone detail belongs in report, retrospective, scenario manifest, and promotion review.
+Completed detail = milestone report / retrospective / manifest / promotion-review.
 
-Milestone target shape belongs in `.axit/roadmap/milestones-mockup.md`.
+`milestones-mockup.md` = human/assistant roadmap alignment.
 
-Canonical technical contracts remain in `.axit/specs/`, Core/System/Registry artifacts, executable source, reviewed Runtime Bindings, and `.axit/policies/`.
-
-If this memory conflicts with newer accepted truth, update this memory instead of forcing implementation back to old assumptions.
+If this memory conflicts with newer accepted truth, update this file rather than forcing newer implementation back to an old assumption.
