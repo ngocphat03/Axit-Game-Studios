@@ -7,6 +7,14 @@ system:
   source: src/QuickGun-MVP
   stage: prototype
 
+source_repository:
+  kind: git
+  repository: ngocphat03/QuickGun-MVP
+  canonical_ref: release
+  notes:
+    - "Resolve the current commit/ref at evidence time; do not persist a moving branch head as timeless truth."
+    - "The System repository may be nested, a submodule, separately tracked, or otherwise independent from the root Workspace repository."
+
 runtime:
   engine: Unity
   version: ""
@@ -42,3 +50,4 @@ unconfirmed:
 notes:
   - "This system uses the shared root Axit Core; do not duplicate Core under the source directory."
   - "Keep system-specific context here and cross-system contracts in the root registries."
+  - "Git provenance is System-aware: evidence may be canonical in this System repository even when the root Workspace repository does not track the System tree."
