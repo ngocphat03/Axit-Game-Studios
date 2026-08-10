@@ -33,178 +33,106 @@ A milestone is not complete because implementation exists. It is complete when i
 
 Status: substantially proven / foundation
 
-### Goal
+Goal: establish the smallest reusable Axit architecture and operating semantics.
 
-Establish the smallest reusable Axit architecture and operating semantics before expanding execution surface.
-
-### Capability demonstrated
-
-- Core responsibility model;
-- bounded implementation + independent verification;
-- root Workspace/System routing;
-- semantic Capability layer;
-- continuous orchestrator/sub-agent operating model;
-- configurable safety behavior.
-
-### Existing evidence
+Stable foundation:
 
 - four Core Profiles;
 - `implement-change` + `verify-change`;
-- `bounded-change` live validation;
-- root-routing validation;
-- Capability semantic Cases 1–5;
-- incident fixes for verdict precedence, capability-id discipline, manual MCP ownership, and Git-status gating.
+- `bounded-change`;
+- root Workspace/System routing;
+- semantic Capability layer;
+- continuous orchestrator/sub-agent model;
+- configurable safety behavior.
 
-### Exit expectation
-
-Foundation remains stable unless later milestones expose a demonstrated flaw. Do not repeatedly redesign M0 during later execution.
+Do not repeatedly redesign M0 unless later milestones expose a demonstrated flaw.
 
 ---
 
 ## M1 — Unity Runtime Binding
 
-Status: promoted
+Status: HUMAN_PROMOTED
 
-### Goal
+Goal: prove semantic Unity evidence need -> reviewed Runtime Binding -> real user-configured transport -> evidence -> independent verdict.
 
-Prove the complete chain from semantic Unity evidence need to a real user-configured transport and independent verification.
-
-### Initial slice
+Promoted scope remains exactly:
 
 - `unity.prefab.inspect`
 - `unity.serialized-fields.inspect`
 - `unity.playmode.verify`
 
-### Required demonstration
-
-```text
-accepted criterion
-  -> semantic Capability
-  -> reviewed Runtime Binding
-  -> real MCP operation(s)
-  -> current evidence
-  -> independent verify-change verdict
-```
-
-Include one bounded real `FAIL -> repair -> reacquire -> reverify` path.
-
-### Exit result
-
-PASS and human-promoted on 2026-08-10.
-
-The active `coplaydev-unity-mcp` binding is limited to the three proven mappings. M1 report/retrospective remain under `.axit/milestones/M1-unity-runtime-binding/`.
-
-Known deferred issue carried into M2 review only: `DEFERRED_PRIMARY_REASONING_CONFIG`.
+M1 closure artifacts: `.axit/milestones/M1-unity-runtime-binding/`.
 
 ---
 
 ## M2 — Autonomous Bounded Development
 
-Status: done-pending-human-review; closure PASS; recommendation PROMOTE
+Status: HUMAN_PROMOTED on 2026-08-10
 
-Execution plan:
+Goal: prove Axit can autonomously execute materially different bounded software tasks without routine user steering.
 
-```text
-.axit/milestones/M2-autonomous-bounded-development/plan.md
-```
+Result:
 
-### Goal
+- S1 REAL bug fix PASS;
+- S2 BENCHMARK small feature PASS;
+- S3 REAL behavior-preserving refactor PASS;
+- S4 BENCHMARK Unity-backed restoration PASS;
+- context continuity PASS;
+- two stalled sub-agent lanes recovered/replaced within policy;
+- independent closure verification PASS.
 
-Prove Axit can autonomously execute several materially different bounded software tasks, not only one prepared damage/MCP scenario.
+Promotion review: `.axit/milestones/M2-autonomous-bounded-development/promotion-review.md`.
 
-### Scenario families
+Post-M2 hardening:
 
-At least several of:
-
-- feature implementation;
-- bug fix;
-- bounded refactor;
-- gameplay behavior;
-- Unity UI behavior;
-- data/persistence change that does not require unresolved product architecture.
-
-### What this milestone should stress
-
-- correct Profile/Skill/Workflow routing;
-- implementation scope control;
-- sub-agent lane decomposition;
-- worker/verifier independence;
-- recovery/replacement after sub-agent stalls;
-- bounded repair loops;
-- context/checkpoint continuity over longer runs;
-- no unnecessary framework growth.
-
-### Exit gate
-
-Axit repeatedly reaches correct completion or correct hard blockers without routine user steering, and observed repeated gaps are hardened into the smallest correct framework layer.
-
-M2 must create report + retrospective, run closure verification, and stop for human promotion review before M3.
-
-The primary reasoning mismatch is an explicitly accepted M2-only deferred issue and must be revisited at M2 closure rather than silently inherited by M3.
+- primary project reasoning config changed to `xhigh`; M3 must verify the effective fresh-session value;
+- runtime target paths must be resolved from current runtime context rather than guessed from prefab hierarchy;
+- evidence provenance is System-aware for independently tracked repositories;
+- active state is compacted after promotion.
 
 ---
 
 ## M3 — Unity Execution Coverage
 
-Status: mockup / prohibited / not started until human M2 promotion and reasoning-config repair or explicit re-decision
+Status: current / ready-for-local-execution
 
-### Goal
+Execution plan:
 
-Expand Unity evidence/execution coverage only from demonstrated needs discovered during M1–M2.
+```text
+.axit/milestones/M3-unity-execution-coverage/plan.md
+```
 
-### Candidate existing capabilities
+Goal: prove the smallest Unity execution/evidence surface needed for representative real development work.
 
-Potentially bind, only if real scenarios require them:
+First demonstrated gap:
 
-- `unity.compile`
-- `unity.tests.run`
-- `unity.console.inspect`
-- `unity.scene.inspect`
-- `unity.component.inspect`
-- `unity.project.inspect`
+```text
+unity.compile
+```
 
-This milestone does **not** require binding every catalog entry.
+M3 must live-discover the concrete compile operation before mapping it, prove a full QuickGun baseline compile, validate compile acquisition/failure semantics, and complete at least one REAL QuickGun product scenario for which full Unity compile is REQUIRED after production C# changes.
 
-### Target demonstration
+Do not bind every remaining Unity Capability speculatively. Additional mappings require demonstrated `REQUIRED_NOW` evidence need.
 
-A nontrivial Unity vertical slice can combine appropriate source/tests/assets/scene/runtime/log evidence and produce an evidence-bounded verification result without overclaiming.
-
-### Exit gate
-
-Unity execution surface is broad enough for representative development work, while Capability semantics and Runtime Bindings remain narrow, reviewed, and replaceable.
+Exit gate: representative Unity work combines appropriate source/tests/compile/assets/runtime evidence and reaches an evidence-bounded independent verdict while Runtime Bindings remain narrow, reviewed, and replaceable.
 
 ---
 
 ## M4 — Cross-System Workspace
 
-Status: mockup / waits for real systems
+Status: mockup / waits for real interacting systems
 
-### Goal
+Goal: prove Axit can reason and verify across at least two real interacting Systems in the root Workspace.
 
-Prove Axit can reason and verify across at least two real interacting Systems in the root workspace.
-
-### Expected real topology
-
-Examples:
-
-```text
-Backend/API
-   <-> Unity client
-   <-> CMS
-   <-> services/workers
-```
-
-### Required principles
+Expected principles:
 
 - executable provider contract is source of truth;
-- `.axit` records ownership/routing/relationships rather than copied DTO/schema truth;
+- `.axit` stores ownership/routing/relationships rather than copied DTO/schema truth;
 - provider and consumers are inspected before assigning blame;
 - contract/integration/e2e tests validate shared boundaries;
 - cross-system architecture/state ownership remains explicit.
 
-### Exit gate
-
-At least one real cross-system change/failure is implemented or diagnosed end-to-end with contract-aware evidence and boundary tests.
+Exit gate: at least one real cross-system change/failure is implemented or diagnosed end-to-end with contract-aware evidence and boundary tests.
 
 ---
 
@@ -212,15 +140,13 @@ At least one real cross-system change/failure is implemented or diagnosed end-to
 
 Status: mockup
 
-### Goal
+Goal: given a new real Workspace, discover and bootstrap enough durable context to work effectively without generating a giant speculative agent catalog.
 
-Given a new real workspace, allow Axit to discover and bootstrap enough durable context to work effectively without generating a giant speculative agent catalog.
-
-### Expected flow
+Expected flow:
 
 ```text
 inspect repository
-  -> identify Systems
+  -> identify Systems and repository boundaries
   -> identify executable contracts/tests
   -> materialize workspace routing
   -> capture architecture/rules
@@ -228,16 +154,7 @@ inspect repository
   -> add specialization only from demonstrated gaps
 ```
 
-### What must be avoided
-
-- mass migration of legacy agents/skills;
-- speculative Profiles for every traditional job role;
-- huge auto-loaded documentation dumps;
-- copied source/API truth that becomes stale.
-
-### Exit gate
-
-A second materially different real project can be bootstrapped and complete representative work with limited manual Axit configuration.
+Exit gate: a second materially different real project can be bootstrapped and complete representative work with limited manual Axit configuration.
 
 ---
 
@@ -245,11 +162,9 @@ A second materially different real project can be bootstrapped and complete repr
 
 Status: mockup
 
-### Goal
+Goal: move contracts proven in Axit-Game-Studios into the actual Axit-Code runtime/product architecture.
 
-Move contracts proven in Axit-Game-Studios into the actual Axit-Code runtime/product architecture.
-
-### Candidate proven pieces to productize
+Candidate proven pieces:
 
 - Profile/Skill/Workflow loading;
 - Workspace/System routing;
@@ -261,13 +176,7 @@ Move contracts proven in Axit-Game-Studios into the actual Axit-Code runtime/pro
 - Run Ledger/checkpoint/resume semantics;
 - provider-independent model interface.
 
-### Boundary
-
-Axit-Game-Studios remains a spec/reference/benchmark lab. Do not turn it into the permanent runtime product merely because experiments work here.
-
-### Exit gate
-
-Axit-Code runs at least one previously proven vertical slice through its own runtime boundaries with equivalent or better evidence and safety behavior.
+Boundary: Axit-Game-Studios remains a spec/reference/benchmark lab.
 
 ---
 
@@ -275,79 +184,27 @@ Axit-Code runs at least one previously proven vertical slice through its own run
 
 Status: mockup
 
-### Goal
+Goal: prove extended autonomous execution and safe recovery under realistic failures.
 
-Prove the agent can run for extended periods and recover safely from realistic operational failures.
+Failure families include sub-agent stall/replacement, context compaction, interrupted/resumed runs, Unity transport disconnect/reconnect, policy denial, partial implementation, verifier failure, nested/submodule/separately tracked Systems, large-context pressure, unavailable dependencies, provider/model changes, and stale metadata.
 
-### Failure families
-
-- sub-agent timeout/stall/replacement;
-- context compaction and session recovery;
-- interrupted/resumed runs;
-- Unity MCP disconnect/reconnect as externally user-managed transport state;
-- unavailable tool/environment;
-- policy denial;
-- partial implementation;
-- verifier failure and bounded repair;
-- nested repositories/submodules/untracked systems;
-- large workspace/context pressure;
-- cross-system dependency unavailable;
-- provider/model replacement where supported;
-- stale metadata vs executable source discrepancy.
-
-### Audit expectation
-
-A run should make it possible to answer:
-
-```text
-What was requested?
-What decisions/scopes were accepted?
-What changed?
-Which agents/tools/capabilities ran?
-What evidence was acquired?
-Why was the final verdict reached?
-What failed and how was it recovered?
-Can execution resume safely?
-```
-
-### Exit gate
-
-Representative long-running milestones complete with bounded intervention, trustworthy evidence, recoverable state, and no known recurring incident that lacks either a deliberate accepted limitation or regression protection.
+Exit gate: representative long-running milestones complete with bounded intervention, trustworthy evidence, recoverable state, and no known recurring incident lacking an accepted limitation or regression protection.
 
 ---
 
-# Milestone report mockup
+# Promotion review questions
 
-Each completed milestone should leave a concise report with at least:
+Before promotion, user + assistant explicitly review:
 
-```text
-Milestone:
-Status: DONE | FAILED | HARD_BLOCKER
-Started from:
-Capability proven:
-Scenarios executed:
-Evidence summary:
-Failures encountered:
-Recovery/replacement loops:
-Framework/config changes caused by incidents:
-Regression protection added:
-Known residual risks:
-Recommended promotion decision: PROMOTE | REPAIR_AND_RERUN
-```
-
-# Retrospective questions
-
-Before promotion, user + assistant should explicitly review:
-
-1. Did the milestone prove its capability, or only a happy-path implementation?
-2. Did any sub-agent stop for something the orchestrator should have resolved itself?
-3. Did any hard-stop fire too early or too late?
-4. Was required evidence missing, mislabeled, or overclaimed?
+1. Was the capability proven or only a happy path?
+2. Did the orchestrator recover routine stalls itself?
+3. Did hard-stops fire correctly?
+4. Was evidence correctly REQUIRED/SUPPORTING and provenance-aware?
 5. Did setup assumptions cause avoidable interruption?
-6. Did any context disappear because it lived only in conversation?
-7. Did the run create unnecessary Profile/Skill/Workflow/Capability complexity?
-8. Which incident should become a permanent config/spec/regression rule?
+6. Did context survive without chat replay?
+7. Did the run create unnecessary framework complexity?
+8. Which incident must become a permanent rule/config/regression?
 9. Is the next milestone still the smallest valuable next capability?
-10. Should this mockup be refined before promotion?
+10. Should this map be deliberately revised before promotion?
 
-Do not silently rewrite milestone goals after execution starts. Record a deliberate roadmap revision when evidence justifies changing the map.
+Do not silently rewrite milestone goals after execution starts.
