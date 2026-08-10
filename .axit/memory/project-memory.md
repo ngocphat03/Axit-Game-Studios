@@ -58,6 +58,18 @@ Examples of Systems: Unity client, backend, CMS, services.
 
 Root routing uses `.axit/workspace.yaml`. System-local context belongs under `.axit/systems/<system-id>/`; cross-system ownership/contracts belong in root registries.
 
+A System may have its own canonical Git repository even when mounted under the Workspace source tree. Git topology does not redefine the Axit Workspace/System boundary.
+
+Current Unity System canonical repository metadata:
+
+```text
+system: unity-client
+repository: ngocphat03/QuickGun-MVP
+canonical ref: release
+```
+
+Resolve the current commit at evidence time. Do not persist a moving branch head as timeless truth.
+
 Do not duplicate executable contracts such as OpenAPI/protobuf/schema/DTO truth inside `.axit`; point to the real source.
 
 ### Capability v1
@@ -69,6 +81,7 @@ Current stable Unity evidence set includes ids such as:
 - `unity.prefab.inspect`
 - `unity.serialized-fields.inspect`
 - `unity.playmode.verify`
+- `unity.compile` remains declared but is unbound until M3 proves a real transport mapping.
 
 Capability output is evidence only. `verify-change` owns REQUIRED/SUPPORTING classification and PASS/FAIL/BLOCKED.
 
@@ -78,11 +91,17 @@ Bindings map stable semantic Capability ids to verified concrete transport opera
 
 Transport availability is runtime state, not proof encoded by the binding definition.
 
-MCP for Unity setup is currently user-owned/manual. Axit may inspect/use an already configured transport but must not install/configure/repair it during the continuous plan.
+MCP for Unity setup is user-owned/manual. Axit may inspect/use an already configured transport but must not install/configure/repair it during continuous milestones.
+
+Path-addressed runtime operations must resolve current full runtime identity before use. Prefab/source hierarchy is not sufficient proof of the full live scene hierarchy. After refresh/reload, resolve identity again rather than reuse stale paths/instance ids.
 
 ## Execution operating model
 
-Primary model: GPT-5.6 Sol at maximum execution reasoning where supported.
+Primary model: GPT-5.6 Sol.
+
+Project primary reasoning is configured to `xhigh` for M3 after M1/M2 exposed unreliable effective behavior from the previous primary `max` project setting. A fresh milestone must verify the effective primary value rather than trust configured intent.
+
+Sub-agent default remains GPT-5.6 Sol / `max` while supported and observed effective.
 
 The primary thread acts as **orchestrator only** when sub-agents are available. Delegatable exploration, setup inspection, implementation, tests, Unity evidence, repair, and verification belong to sub-agents.
 
@@ -123,6 +142,8 @@ start milestone
 
 Hard decisions remain human-owned when they materially change product intent, public contracts, state ownership, architecture, destructive scope, secrets/production access, or other irreversible/high-impact boundaries.
 
+M1 and M2 are human-promoted. Current milestone is M3 — Unity Execution Coverage.
+
 ## Git-status policy
 
 Workspace config owns whether Git status is used as a safety gate:
@@ -137,6 +158,21 @@ Default is `false`.
 When false, root/nested/submodule modified/deleted/untracked state must not by itself block execution. Current filesystem/source state is the working baseline.
 
 This does not authorize reset, clean, reverting user work, destructive deletion, or blind overwrite.
+
+## Evidence provenance
+
+Use the narrowest truthful class:
+
+```text
+workspace-canonical-pushed
+system-canonical-pushed
+local-or-separately-tracked
+ephemeral-runtime
+```
+
+For `system-canonical-pushed`, record System id + repository + ref + commit when known.
+
+Do not force Git tracking or change repository topology solely for auditability.
 
 ## Evidence-driven evolution rule
 
@@ -155,6 +191,8 @@ real scenario
 ```
 
 Possible correct layers include Rule, Knowledge, existing Capability binding, new Capability only when genuinely missing, Skill, Workflow, Profile, Runtime/Harness policy, or no framework change at all.
+
+M3's first demonstrated gap is full Unity compilation after real production changes, so `unity.compile` is the first candidate to discover/bind. Do not bind the other remaining Unity Capabilities unless M3 produces a real REQUIRED evidence need.
 
 ## Incident hardening rule
 
@@ -175,14 +213,19 @@ Examples already learned:
 - capability ids must never be invented;
 - ordinary project tests are not automatically Axit Capabilities;
 - unavailable acquisition differs from observed product failure;
-- Unity MCP setup should remain manual/user-owned for this workspace;
-- Git dirty status must be configurable and defaults to ignored for gating.
+- Unity MCP setup remains manual/user-owned;
+- Git dirty status is configurable and defaults to ignored for gating;
+- runtime full paths must be resolved from current runtime context, not guessed from prefab hierarchy;
+- evidence provenance must respect independent System repositories;
+- active state must be compacted after promotion rather than carrying completed milestone transcripts forever.
 
 ## Memory discipline
 
 `project-memory.md` is for durable alignment, not current run detail.
 
-Current execution state belongs in `.axit/state/active.md`.
+Current execution state belongs in `.axit/state/active.md` and should remain compact.
+
+Completed milestone detail belongs in its report, retrospective, scenario manifest, and promotion review.
 
 Milestone target shape belongs in `.axit/roadmap/milestones-mockup.md`.
 
