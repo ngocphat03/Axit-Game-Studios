@@ -1,6 +1,6 @@
 # Axit Project Memory
 
-Updated: 2026-08-10
+Updated: 2026-08-11
 
 ## North star
 
@@ -43,7 +43,7 @@ One Core Workflow:
 
 - `bounded-change`
 
-Core remains small. Add another Profile, Skill, or Workflow only when repeated live use demonstrates a durable gap.
+Core remains small. Add another Profile, Skill, or Workflow only when repeated live evidence demonstrates a durable gap.
 
 ### Workspace/System v1
 
@@ -54,13 +54,9 @@ repository root = product workspace
 src/*           = interacting Systems
 ```
 
-Examples of Systems: Unity client, backend, CMS, services.
-
-Root routing uses `.axit/workspace.yaml`. System-local context belongs under `.axit/systems/<system-id>/`; cross-system ownership/contracts belong in root registries.
-
 A System may have its own canonical Git repository even when mounted under the Workspace source tree. Git topology does not redefine the Axit Workspace/System boundary.
 
-Current Unity System canonical repository metadata:
+Current promoted Unity System metadata:
 
 ```text
 system: unity-client
@@ -68,13 +64,9 @@ repository: ngocphat03/QuickGun-MVP
 canonical ref: release
 ```
 
-Resolve the current commit at evidence time. Do not persist a moving branch head as timeless truth.
-
-Do not duplicate executable contracts such as OpenAPI/protobuf/schema/DTO truth inside `.axit`; point to the real source.
+Resolve moving repository heads at evidence time. Do not duplicate executable contracts such as OpenAPI/protobuf/schema/DTO truth inside `.axit`; point to the real source.
 
 ### Capability v1
-
-Capabilities express semantic evidence/execution intent, not provider/tool commands.
 
 Current reviewed active Unity binding maps exactly:
 
@@ -95,15 +87,13 @@ Capability output is evidence only. `verify-change` owns REQUIRED/SUPPORTING cla
 
 ### Runtime Binding v1
 
-Bindings map stable semantic Capability ids to verified concrete transport operations.
-
-Transport availability is runtime state, not proof encoded by the binding definition.
+Bindings map stable semantic Capability ids to verified concrete transport operations. Transport availability is runtime state, not proof encoded by the binding definition.
 
 MCP for Unity setup is user-owned/manual. Axit may inspect/use an already configured transport but must not install/configure/repair it during continuous milestones.
 
-Path-addressed runtime operations must resolve current full runtime identity before use. Prefab/source hierarchy is not sufficient proof of the full live scene hierarchy. After refresh/reload, resolve identity again rather than reuse stale paths/instance ids.
+Path-addressed runtime operations must resolve current full runtime identity before use. Prefab/source hierarchy is not sufficient proof of the full live scene hierarchy.
 
-Unity 6 compile request acceptance is not terminal compile evidence. A trustworthy `unity.compile` acquisition clears the diagnostic window before the request, establishes `fresh_cycle_correlated` through sampled nonterminal state, an advanced compile marker, or an advanced domain-reload marker, then establishes `terminal_state_observed` from a distinct later snapshot. It re-resolves exact editor/project identity after reload and pages diagnostics to completion. Verifier scripts must map evidence to both explicit flags and must not reuse the freshness snapshot as terminal proof.
+Unity 6 compile request acceptance is not terminal compile evidence. A trustworthy `unity.compile` acquisition clears the diagnostic window before the request, establishes `fresh_cycle_correlated`, establishes `terminal_state_observed` from a distinct later snapshot, re-resolves exact editor/project identity after reload, and pages diagnostics to completion.
 
 ## Execution operating model
 
@@ -120,9 +110,7 @@ primary orchestrator = gpt-5.6-sol / xhigh
 all child lanes       = gpt-5.6-luna / medium
 ```
 
-`all child lanes` includes explorers, workers, test/build/evidence agents, Unity/MCP acquisition agents, repair/recovery agents, independent verifiers, closure verifiers, report authors, and custom sub-agents.
-
-Do not silently escalate a child to Terra/Sol or above `medium`. Only an explicit current human instruction may authorize a bounded override. The override expires with its stated scope unless the user deliberately changes this durable policy.
+All child roles are covered. Do not silently escalate a child to Terra/Sol or above `medium`. Only an explicit current human instruction may authorize a bounded override.
 
 Child underperformance is handled by:
 
@@ -134,53 +122,68 @@ distill/sharpen context
   -> reacquire current evidence
 ```
 
-Do not use a larger child model as the automatic recovery mechanism.
-
-The primary thread acts as **orchestrator only** when sub-agents are available. Delegatable exploration, setup inspection, implementation, tests, Unity evidence, repair, and verification belong to sub-agents.
-
-Implementation and independent verification should use separate lanes when practical. Verification independence comes from fresh responsibility/context/evidence, not from using a more expensive verifier model.
-
-Use parallelism only for materially independent lanes. Read-heavy work may run concurrently; overlapping product writes, Runtime Binding/state/report writes, and Unity/editor mutations remain serialized. The configured thread limit is a ceiling, not a target.
+The primary thread acts as **orchestrator only** when sub-agents are available. Parallelize materially independent read-heavy work; serialize overlapping writes and editor/runtime mutations. The thread limit is a ceiling, not a target.
 
 Maximum bounded recovery/replacement budget for the same required lane/failure remains two attempts before escalation through the milestone's existing failure/blocker semantics.
 
-Routine phase completion does not require user confirmation.
-
 ## Human control model
 
-Automation should be high **inside one accepted milestone**.
-
-Between milestones, stop for human review.
+Automation is high **inside one accepted milestone** and stops for human promotion review between milestones.
 
 Expected loop:
 
 ```text
 start milestone
-  -> autonomous continuous execution
-  -> self-repair/replacement/reverification
-  -> milestone report + retrospective
+  -> autonomous execution
+  -> bounded recovery/reverification
+  -> report + retrospective
   -> persist final closure verdict
   -> STOP
   -> user + assistant review
-      -> promote and design/authorize next milestone
-      OR
-      -> repair framework/regressions and rerun only affected scope
 ```
 
 Hard decisions remain human-owned when they materially change product intent, public contracts, state ownership, architecture, destructive scope, secrets/production access, or other irreversible/high-impact boundaries.
 
-M1, M2, and M3 are human-promoted. No M4 execution plan is currently authorized.
+M1, M2, and M3 are human-promoted.
+
+## Roadmap alignment after M3
+
+M4 — Cross-System Workspace is **deferred**, not cancelled.
+
+Reason: the current QuickGun Workspace has one real registered System. Do not invent a backend/CMS/service or synthetic second System simply to exercise M4. Resume M4 when a genuine second interacting System and executable boundary exist.
+
+M5 — Project Bootstrap & Knowledge Plane is the current designed milestone.
+
+Target:
+
+```text
+repository: ngocphat03/Axit-Code
+canonical ref: release
+```
+
+M5 control artifacts:
+
+```text
+.axit/milestones/M5-project-bootstrap-knowledge-plane/plan.md
+.axit/milestones/M5-project-bootstrap-knowledge-plane/target-bootstrap.md
+.axit/milestones/M5-project-bootstrap-knowledge-plane/selection-review.md
+```
+
+M5 tests whether Axit can bootstrap a materially different real repository with minimal pointer-first durable context, recover that context in a fresh Luna/medium child without chat replay, and complete one frozen REAL target task with target-native verification.
+
+Important boundary: Axit-Code product work must execute from a trusted writable local Axit-Code checkout. Do not guess its filesystem path and do not use cloud/GitHub writes as a substitute for a local target workspace.
+
+M5 is **not M6 productization**. Do not migrate Game-Studios contracts into Axit-Code runtime architecture merely because Axit-Code is the M5 target.
 
 ## M3 promoted result
 
-M3 — Unity Execution Coverage proved:
+M3 proved:
 
 - live-discovered and reviewed `unity.compile` Runtime Binding;
 - fresh full QuickGun baseline Unity compile PASS;
-- acquisition distinction for clean compile, compiler-error evidence, and non-acquired states;
-- REAL scenario `M3-REAL-01` duplicate-release bug fix with 3/3 deterministic tests and fresh post-change full Unity compile PASS;
-- exact active binding partition of four mapped / five unbound capabilities;
-- one closure repair for freshness/terminal evidence separation;
+- compile acquisition success/error boundaries;
+- REAL duplicate-release fix with 3/3 deterministic tests and fresh post-change full Unity compile PASS;
+- exact four-mapped/five-unbound Unity capability partition;
 - final closure PASS and human promotion.
 
 Canonical QuickGun product fix:
@@ -202,11 +205,7 @@ safety:
   check_git_status: false
 ```
 
-Default is `false`.
-
-When false, root/nested/submodule modified/deleted/untracked state must not by itself block execution. Current filesystem/source state is the working baseline.
-
-This does not authorize reset, clean, reverting user work, destructive deletion, or blind overwrite.
+When false, root/nested/submodule modified/deleted/untracked state must not by itself block execution. This does not authorize reset, clean, reverting user work, destructive deletion, or blind overwrite.
 
 ## Evidence provenance
 
@@ -219,9 +218,9 @@ local-or-separately-tracked
 ephemeral-runtime
 ```
 
-For `system-canonical-pushed`, record System id + repository + ref + commit when known.
+For `system-canonical-pushed`, record System id + repository + ref + commit when known. Do not force Git topology changes solely for auditability.
 
-Do not force Git tracking or change repository topology solely for auditability.
+M5 additionally must distinguish Axit-Code canonical product truth from M5-generated bootstrap metadata; bootstrap metadata must never masquerade as the target's canonical roadmap or architecture source.
 
 ## Evidence-driven evolution rule
 
@@ -239,48 +238,45 @@ real scenario
   -> regression protection
 ```
 
-Possible correct layers include Rule, Knowledge, existing Capability binding, new Capability only when genuinely missing, Skill, Workflow, Profile, Runtime/Harness policy, or no framework change at all.
-
-M3 found no additional `REQUIRED_NOW` Unity capability beyond `unity.compile`. Keep the five remaining capabilities unbound until a future accepted criterion demonstrates a real required evidence gap.
+Possible correct layers include Rule, Knowledge, routing pointer, existing Capability binding, a new Capability only when genuinely missing, Skill, Workflow, Profile, Runtime/Harness policy, or no framework change at all.
 
 ## Incident hardening rule
 
-Every meaningful pipeline incident should become:
+Every meaningful repeatable incident should become:
 
 ```text
 incident
   -> root cause
-  -> framework/config fix when appropriate
-  -> regression rule/test
+  -> smallest framework/config fix
+  -> regression protection
   -> future runs inherit the fix
 ```
 
-Examples already learned:
+Durable lessons include:
 
-- verification required/supporting semantics need explicit precedence;
-- missing implementation differs from unresolved target identity;
-- capability ids must never be invented;
-- ordinary project tests are not automatically Axit Capabilities;
+- REQUIRED/SUPPORTING verdict precedence must be explicit;
+- capability ids are declared, never invented;
 - unavailable acquisition differs from observed product failure;
 - Unity MCP setup remains manual/user-owned;
-- Git dirty status is configurable and defaults to ignored for gating;
-- runtime full paths must be resolved from current runtime context, not guessed from prefab hierarchy;
-- Unity 6 compile requests require a clear diagnostic window, explicit freshness, a distinct later terminal observation, exact identity re-resolution, and complete diagnostic paging;
-- evidence provenance must respect independent System repositories;
-- active state must be compacted after promotion;
-- closure-verifier output must be persisted into report/retrospective/active state before `MILESTONE_DONE`;
-- expensive flagship reasoning is reserved for the primary orchestrator; future child lanes use Luna/medium unless the user explicitly overrides a bounded scope.
+- Git dirty status is configurable and ignored by default for gating;
+- runtime paths are resolved from current runtime context, not guessed from prefab hierarchy;
+- Unity 6 compile evidence requires fresh correlation and a distinct later terminal observation;
+- evidence provenance respects independently tracked System repositories;
+- active state is compacted after promotion;
+- closure-verifier output is persisted before `MILESTONE_DONE`;
+- flagship reasoning is reserved for the primary orchestrator; child lanes default Luna/medium;
+- milestone ordering follows real evidence, so M4 may be deferred rather than filled with a fake second System.
 
 ## Memory discipline
 
-`project-memory.md` is for durable alignment, not current run detail.
+`project-memory.md` is durable alignment, not current run detail.
 
-Current execution state belongs in `.axit/state/active.md` and should remain compact.
+Current execution state belongs in `.axit/state/active.md`.
 
-Completed milestone detail belongs in its report, retrospective, scenario manifest, and promotion review.
+Completed milestone detail belongs in report, retrospective, scenario manifest, and promotion review.
 
 Milestone target shape belongs in `.axit/roadmap/milestones-mockup.md`.
 
 Canonical technical contracts remain in `.axit/specs/`, Core/System/Registry artifacts, executable source, reviewed Runtime Bindings, and `.axit/policies/`.
 
-If this memory conflicts with newer accepted truth, update this memory instead of forcing the implementation back to old assumptions.
+If this memory conflicts with newer accepted truth, update this memory instead of forcing implementation back to old assumptions.
