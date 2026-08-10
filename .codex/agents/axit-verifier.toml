@@ -1,7 +1,7 @@
 name = "axit-verifier"
 description = "Independent read-only verifier for Axit bounded changes, runtime bindings, and evidence. Use after worker/setup lanes or whenever a fresh verification judgment is required."
-model = "gpt-5.6-sol"
-model_reasoning_effort = "max"
+model = "gpt-5.6-luna"
+model_reasoning_effort = "medium"
 sandbox_mode = "read-only"
 
 developer_instructions = """

@@ -3,7 +3,7 @@
 
 model = "gpt-5.6-sol"
 # M1/M2 observed that primary `max` did not resolve reliably in the project Codex config surface.
-# Use xhigh for the primary project setting and verify the effective value at milestone readiness.
+# Keep the primary orchestrator at xhigh and verify the effective value at milestone readiness.
 model_reasoning_effort = "xhigh"
 plan_mode_reasoning_effort = "xhigh"
 
@@ -26,8 +26,9 @@ Do not approve installing, configuring, upgrading, starting, or repairing Unity 
 [agents]
 enabled = true
 max_concurrent_threads_per_session = 4
-default_subagent_model = "gpt-5.6-sol"
-default_subagent_reasoning_effort = "max"
+# Cost policy: all child/sub-agent lanes use Luna at medium unless the user explicitly changes this policy.
+default_subagent_model = "gpt-5.6-luna"
+default_subagent_reasoning_effort = "medium"
 interrupt_message = true
 
 # Unity MCP is intentionally NOT configured here.

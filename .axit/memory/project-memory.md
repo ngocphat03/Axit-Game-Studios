@@ -114,11 +114,11 @@ same exact target and a complete terminal evidence set are re-established.
 
 ## Execution operating model
 
-Primary model: GPT-5.6 Sol.
+Primary orchestrator: GPT-5.6 Sol / `xhigh`.
 
-Project primary reasoning is configured to `xhigh` after M1/M2 exposed unreliable effective behavior from the previous primary `max` project setting. M3 verified a fresh effective primary `gpt-5.6-sol / xhigh`; future milestones must still verify the effective value rather than trust configured intent.
+Project primary reasoning is configured to `xhigh` after M1/M2 exposed unreliable effective behavior from the previous primary `max` project setting. A fresh milestone must verify the effective primary value rather than trust configured intent.
 
-Sub-agent default remains GPT-5.6 Sol / `max` while supported and observed effective.
+All child/sub-agent lanes, including independent verifier lanes, default to GPT-5.6 Luna / `medium` for cost control. Do not escalate child lanes to Terra/Sol or above `medium` reasoning unless the user explicitly changes this policy.
 
 The primary thread acts as **orchestrator only** when sub-agents are available. Delegatable exploration, setup inspection, implementation, tests, Unity evidence, repair, and verification belong to sub-agents.
 
@@ -244,7 +244,8 @@ Examples already learned:
   re-resolution, and complete diagnostic paging; verifier scripts must map
   both flags and request acceptance alone is never success;
 - evidence provenance must respect independent System repositories;
-- active state must be compacted after promotion rather than carrying completed milestone transcripts forever.
+- active state must be compacted after promotion rather than carrying completed milestone transcripts forever;
+- expensive flagship reasoning should be reserved for the primary orchestrator; child lanes use Luna/medium unless the user explicitly reconfigures cost policy.
 
 ## Memory discipline
 

@@ -119,6 +119,15 @@ at the commit above remains `system-canonical-pushed`; the current source/test
 delta remains `local-or-separately-tracked`.
 
 ## Safety and runtime boundary
+## Model / cost policy
+
+- Primary orchestrator: `gpt-5.6-sol / xhigh`.
+- Every child/sub-agent lane, including independent verifier: `gpt-5.6-luna / medium`.
+- Do not escalate a child lane to Terra/Sol or above `medium` reasoning unless the user explicitly changes this policy.
+- A fresh milestone session must verify the effective primary value; configured intent alone is insufficient.
+
+## Pre-M3 hardening completed
+
 
 `.axit/workspace.yaml` keeps `safety.check_git_status: false`; Git status is
 not a readiness gate. This does not authorize reset, clean, revert,
@@ -127,6 +136,36 @@ destructive deletion, or blind overwrite.
 Unity MCP remains manually configured and user-owned. Runtime/Harness policy
 owns authorization, and `verify-change` owns evidence classification and
 verdicts.
+- Runtime Binding validation Case 8 requires current full runtime target identity to be resolved before path-addressed runtime acquisition/mutation. Do not infer the complete scene path from prefab hierarchy.
+- Milestone closure/templates support System-aware Git provenance.
+- Post-promotion active state is intentionally compact; completed milestone details live in their durable artifacts.
+
+## Workspace safety
+
+Current configuration:
+
+```yaml
+safety:
+  check_git_status: false
+```
+
+Git status is not a readiness gate. This does not authorize reset, clean, revert, destructive deletion, or blind overwrite.
+
+Unity MCP remains manually configured/user-owned. Axit may use an already ready transport but must not install/configure/start/repair it.
+
+## M3 readiness requirement
+
+Before any M3 mapping/edit work, verify:
+
+- fresh effective primary = `gpt-5.6-sol / xhigh`;
+- child/sub-agent default = `gpt-5.6-luna / medium`;
+- sub-agent execution available;
+- intended QuickGun editor/project reachable through user-configured Unity MCP;
+- safe initial editor state;
+- current Unity version/project identity;
+- current QuickGun System repo/ref/commit when available;
+- existing M1 three-capability binding still valid;
+- `unity.compile` is still unbound before live transport discovery.
 
 ## Next action
 
