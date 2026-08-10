@@ -2,8 +2,9 @@
 # Loaded only when this repository is trusted by Codex.
 
 model = "gpt-5.6-sol"
-model_reasoning_effort = "max"
-# Plan mode currently uses the strongest documented config enum; execution remains max.
+# M1/M2 observed that primary `max` did not resolve reliably in the project Codex config surface.
+# Use xhigh for the primary project setting and verify the effective value at milestone readiness.
+model_reasoning_effort = "xhigh"
 plan_mode_reasoning_effort = "xhigh"
 
 # Keep normal command approvals, but let Codex auto-review routine requests
