@@ -12,7 +12,7 @@ Inside an accepted milestone:
 - every child lane: `gpt-5.6-luna / medium` by default under `.axit/policies/model-routing.md`;
 - no silent child model escalation;
 - parallelize only materially independent read-heavy work;
-- serialize overlapping writes and Unity/editor mutations;
+- serialize overlapping writes and editor/runtime mutations;
 - independently verify accepted outcomes;
 - persist report + retrospective + closure-verifier verdict;
 - run a post-verdict consistency audit;
@@ -79,27 +79,68 @@ Post-M3 hardening:
 - final closure verdict must be persisted before `MILESTONE_DONE`;
 - future child lanes use Luna/medium;
 - no silent child model escalation;
-- long milestones should record wall-clock/model/child/replacement/repair accounting.
+- long milestones record wall-clock/model/child/replacement/repair accounting when observable.
 
 ## M4 — Cross-System Workspace
 
-Status: mockup / NOT STARTED
+Status: DEFERRED_WAITING_REAL_SECOND_SYSTEM
 
 Goal: prove one real end-to-end change/failure across at least two interacting Systems with executable contract awareness.
 
-Do not start M4 until at least two real interacting Systems and accepted boundaries actually exist. If they do not, deliberately reconsider milestone order.
+M4 is deferred, not cancelled. Current QuickGun evidence does not justify inventing a backend/CMS/service or synthetic second System merely to preserve milestone numbering.
+
+Resume M4 only when a real accepted workspace exposes at least two interacting Systems with an executable provider/consumer boundary worth changing or diagnosing.
+
+Selection rationale:
+
+```text
+.axit/milestones/M5-project-bootstrap-knowledge-plane/selection-review.md
+```
 
 ## M5 — Project Bootstrap & Knowledge Plane
 
-Status: mockup
+Status: CURRENT_DESIGNED_AWAITING_TARGET_BOOTSTRAP
 
-Goal: bootstrap a materially different real workspace with small durable context and no speculative agent catalog.
+Target:
+
+```text
+repository: ngocphat03/Axit-Code
+canonical ref: release
+```
+
+Control plan:
+
+```text
+.axit/milestones/M5-project-bootstrap-knowledge-plane/plan.md
+```
+
+Target bootstrap contract:
+
+```text
+.axit/milestones/M5-project-bootstrap-knowledge-plane/target-bootstrap.md
+```
+
+Goal: prove Axit can enter a materially different real repository, discover only the durable context actually needed, recover that context in a fresh child without chat replay, and complete one frozen REAL task using target-native validation.
+
+Important execution boundary: product work must run from a trusted writable local Axit-Code checkout. Do not guess its filesystem path, do not mutate Axit-Code through cloud writes as a substitute, and do not start the long target run until project-scoped model routing is present before session start.
+
+M5 is also the first intended long-run benchmark of the durable cost policy:
+
+```text
+primary = Sol / xhigh
+children = Luna / medium
+model overrides expected = 0
+```
+
+Exit gate: minimal pointer-first bootstrap passes independent review, fresh-context continuity passes, one REAL target task passes target-native verification, model-routing control is compliant, cost/performance accounting is recorded when observable, and closure is durable before human promotion.
 
 ## M6 — Axit-Code Productization
 
-Status: mockup
+Status: mockup / NOT STARTED
 
-Goal: migrate proven Game-Studios contracts into the actual Axit-Code runtime: loading, routing, context, Capability/Binding resolution, Harness, Verification, Run Ledger, provider independence, and model/cost routing.
+Goal: migrate contracts proven in Axit-Game-Studios into the actual Axit-Code runtime: loading, routing, context, Capability/Binding resolution, Harness, Verification, Run Ledger, provider independence, and model/cost routing.
+
+M5 does not authorize M6. Bootstrap validation must not be presented as production runtime integration.
 
 ## M7 — Long-Run Reliability & Release Readiness
 
