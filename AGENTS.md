@@ -22,6 +22,25 @@ For a bounded change, keep implementation and verification in separate sub-agent
 
 Parallelize read-heavy independent exploration when useful. Serialize write-heavy lanes that could touch overlapping files or runtime/editor state.
 
+### Model routing and cost policy
+
+Before spawning delegated work, read `.axit/policies/model-routing.md`.
+
+Workspace defaults are:
+
+```text
+primary orchestrator = gpt-5.6-sol / xhigh
+all child lanes       = gpt-5.6-luna / medium
+```
+
+This applies to explorers, workers, Unity/MCP evidence lanes, repair/recovery agents, independent verifiers, closure verifiers, report authors, and custom sub-agents.
+
+A child lane must not autonomously escalate to Terra/Sol or above `medium` reasoning. When a child underperforms, first sharpen/distill context, steer/resume, replace with another Luna/medium child when needed, or decompose the task. Exhausting the normal recovery budget does not authorize model escalation.
+
+Only an explicit current human instruction may override child model/reasoning for a bounded scope. Record such an override in milestone evidence and do not carry it forward silently.
+
+Use concurrency only for materially independent lanes. Read-only work may parallelize; overlapping writes, Runtime Binding/state/report writes, and Unity/editor mutations must remain serialized. Do not spawn agents merely to fill available slots, and close obsolete/completed lanes promptly.
+
 ### Manual Unity MCP prerequisite
 
 MCP for Unity setup is user-owned and must be completed before any accepted milestone that requires Unity MCP evidence begins.
@@ -78,6 +97,8 @@ When the user asks to continue the Axit roadmap:
 3. execute that current accepted milestone continuously until `MILESTONE_DONE`, `FAILED`, or a declared `HARD_BLOCKER`;
 4. follow `.axit/roadmap/milestone-closure.md`;
 5. stop for human promotion review and do not start the next milestone automatically.
+
+If active state says no milestone is currently authorized, do not infer or auto-start the next mockup milestone.
 
 Do **not** hardcode or fall back to an older plan such as `.axit/plans/continuous-runtime-binding-v1.md` unless the current active state explicitly points to it.
 
