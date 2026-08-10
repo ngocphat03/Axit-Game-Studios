@@ -26,18 +26,22 @@ Parallelize read-heavy independent exploration when useful. Serialize write-heav
 
 Before spawning delegated work, read `.axit/policies/model-routing.md`.
 
-Workspace defaults are:
+Workspace allocation is:
 
 ```text
 primary orchestrator = gpt-5.6-sol / xhigh
-all child lanes       = gpt-5.6-luna / medium
+child preferred      = gpt-5.6-luna / medium
+child compat fallback= gpt-5.6-terra / medium
+child Sol            = forbidden unless explicit human override
 ```
 
-This applies to explorers, workers, Unity/MCP evidence lanes, repair/recovery agents, independent verifiers, closure verifiers, report authors, and custom sub-agents.
+The child policy applies to explorers, workers, Unity/MCP evidence lanes, repair/recovery agents, independent verifiers, closure verifiers, report authors, and custom sub-agents.
 
-A child lane must not autonomously escalate to Terra/Sol or above `medium` reasoning. When a child underperforms, first sharpen/distill context, steer/resume, replace with another Luna/medium child when needed, or decompose the task. Exhausting the normal recovery budget does not authorize model escalation.
+Use Luna/medium when the current child runtime actually supports Luna. If Luna is unavailable and Terra is supported, Terra/medium is an allowed compatibility fallback and must be recorded as `COMPAT_FALLBACK: LUNA_UNAVAILABLE -> TERRA_MEDIUM`. Do not silently fall back to Sol.
 
-Only an explicit current human instruction may override child model/reasoning for a bounded scope. Record such an override in milestone evidence and do not carry it forward silently.
+A child lane must not autonomously use Sol or reasoning above `medium`. When a child underperforms, first sharpen/distill context, steer/resume, replace with another allowed medium-tier child, or decompose the task. Exhausting the normal recovery budget does not authorize Sol escalation.
+
+Only an explicit current human instruction may override the allowed child tier for a bounded scope. Record such an override in milestone evidence and do not carry it forward silently.
 
 Use concurrency only for materially independent lanes. Read-only work may parallelize; overlapping writes, Runtime Binding/state/report writes, and Unity/editor mutations must remain serialized. Do not spawn agents merely to fill available slots, and close obsolete/completed lanes promptly.
 
