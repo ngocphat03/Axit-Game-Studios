@@ -165,17 +165,46 @@ Expected evidence boundaries:
 - Play Mode proves the exercised runtime behavior only;
 - `verify-change` owns final criterion mapping and verdict.
 
-## Acceptance criteria for Runtime Binding v1
+## Case 8 — runtime target identity must be resolved from current runtime context
 
-Runtime Binding v1 is ready to promote when:
+M1 and M2 both demonstrated the same failure pattern: a prefab-relative hierarchy was treated as a complete live scene hierarchy and omitted the `GameEnvironment/` runtime wrapper.
+
+For any path-addressed runtime acquisition or mutation:
+
+```text
+prefab/source hierarchy
+!=
+full runtime hierarchy
+```
+
+Required procedure:
+
+1. acquire or derive the current scene/runtime hierarchy using current read-only evidence available to the task;
+2. resolve the complete runtime target path/identity before the first path-addressed mutation/acquisition;
+3. freeze that resolved identity only for the current acquisition window;
+4. if refresh/reload invalidates the identity, resolve it again rather than guessing or reusing stale identifiers;
+5. perform mandatory cleanup even when target resolution/acquisition fails.
+
+Do not invent a new Capability merely to satisfy this procedure. Ordinary read-only source/scene evidence may resolve identity when sufficient. Add/bind a broader scene/component capability only if a later accepted criterion demonstrates that such evidence is REQUIRED and ordinary evidence is insufficient.
+
+Pass condition:
+
+- no full runtime target path is synthesized solely from prefab-relative names;
+- the evidence record states how current target identity was resolved;
+- stale runtime instance ids/paths are not persisted as canonical truth.
+
+## Acceptance criteria for Runtime Binding v1 and later expansions
+
+A Runtime Binding mapping is ready to promote when:
 
 - the transport and concrete operation names were verified from the actual environment;
-- only the three intended Capability ids are mapped initially;
+- only demonstrated Capability ids are mapped;
 - semantic Capability ids remain unchanged;
 - current availability is resolved at runtime rather than inferred from committed config;
 - acquired/unavailable/denied/transport_error remain distinct;
 - permissions remain under Runtime/Harness control;
 - no secrets or ephemeral machine state are committed;
-- the vertical slice produces traceable evidence and a correct `verify-change` verdict.
+- path-addressed runtime operations obey current target-resolution discipline;
+- the exercised vertical slice produces traceable evidence and a correct `verify-change` verdict.
 
-Apply these criteria to every candidate or expanded binding scope. Until they are met for a Capability, keep that Capability unbound. The current active `unity-client` scope remains limited to the three proven mappings above.
+Apply these criteria to every candidate or expanded binding scope. Until they are met for a Capability, keep that Capability unbound. The current active `unity-client` scope remains limited to the three proven mappings above until M3 or a later milestone proves an expansion.
