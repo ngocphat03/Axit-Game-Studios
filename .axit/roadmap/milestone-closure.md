@@ -110,26 +110,37 @@ Do not create new Profile, Skill, Workflow, Capability, or binding merely becaus
 
 Every long autonomous milestone must follow `.axit/policies/model-routing.md`.
 
-Default allocation is:
+Allocation policy:
 
 ```text
 primary orchestrator = gpt-5.6-sol / xhigh
-all child lanes       = gpt-5.6-luna / medium
+child preferred      = gpt-5.6-luna / medium
+child compat fallback= gpt-5.6-terra / medium when Luna is unavailable
+child Sol            = forbidden without explicit human override
 ```
 
 At readiness and closure, record configured and effective values when observable. Do not claim configured intent as observed runtime truth.
 
-A closure verifier must treat any child escalation above Luna/medium as a control finding unless a current explicit human override exists and the report records its bounded scope. Child underperformance must be handled by context sharpening, steer/resume, replacement, or decomposition before any human-authorized model override is considered.
+A closure verifier must distinguish:
 
-When observable, milestone reports/retrospectives should include child lanes spawned, replacements, repair/recovery loops, wall-clock duration, and model override count.
+- `PREFERRED_LUNA` — Luna/medium was actually available and used;
+- `COMPAT_TERRA` — Luna was unavailable and Terra/medium was used truthfully;
+- `HUMAN_OVERRIDE` — an explicit bounded user-authorized deviation;
+- `CONTROL_FINDING` — unapproved Sol child use, reasoning above medium, hidden fallback, or false model claims.
+
+Terra/medium caused solely by observed Luna unavailability is compliant and is not a human override.
+
+Child underperformance must be handled by context sharpening, steer/resume, replacement, or decomposition before any human-authorized model override is considered.
+
+When observable, milestone reports/retrospectives should include child lanes spawned, replacements, repair/recovery loops, wall-clock duration, child route, and human model override count.
 
 ## Reasoning/config readiness
 
-A long autonomous milestone must verify the effective primary and child model/reasoning settings during its readiness phase when the runtime exposes them.
+A long autonomous milestone must verify the effective primary and child model/reasoning settings during readiness when the runtime exposes them.
 
-If the milestone declares a required effective primary reasoning level and the session resolves lower, do not silently treat the configured value as active. Record the mismatch and repair/stop according to the milestone's execution-readiness policy.
+If the milestone requires a primary reasoning level and the session resolves lower, do not silently treat configured intent as active. Record the mismatch and repair/stop according to milestone policy.
 
-If effective child metadata cannot be observed, record it as unavailable rather than inferring it. The configured child default still remains Luna/medium.
+If child availability metadata is exposed, use it. If not, report effective child metadata as unavailable rather than inferring it. Never treat absence of Luna as permission to fall back to Sol.
 
 ## Post-verdict persistence regression
 
