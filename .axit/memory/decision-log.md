@@ -268,7 +268,7 @@ Framework effect:
 Runtime Binding validation Case 8 now requires current full runtime target identity to be acquired/derived before path-addressed runtime operations. Refresh/reload invalidates stale identity and requires re-resolution.
 
 Regression / follow-up:
-Do not add a new Capability solely for target resolution when ordinary current read-only evidence is sufficient. M3 must exercise this rule whenever it uses path-addressed runtime evidence.
+Do not add a new Capability solely for target resolution when ordinary current read-only evidence is sufficient.
 
 ## 2026-08-10 — Evidence provenance is Workspace/System aware
 Type: decision
@@ -297,18 +297,16 @@ Context:
 The earlier project `max` setting did not yield a reliably observed maximum primary session, while M2 was explicitly allowed to defer the issue.
 
 Decision / Root cause:
-After M2 promotion, change the primary project setting to `model_reasoning_effort = "xhigh"` while retaining sub-agent default `max`.
+After M2 promotion, change the primary project setting to `model_reasoning_effort = "xhigh"`.
 
 Why:
-This matches the strongest project-setting behavior we intend to validate empirically without weakening sub-agent reasoning that already worked in M1/M2.
+Use a stable high-reasoning primary orchestrator while verifying the effective value at readiness.
 
 Framework effect:
-M3 Phase 0 requires effective fresh primary `gpt-5.6-sol / xhigh` and treats a lower/unverifiable value as `PRIMARY_REASONING_NOT_EFFECTIVE`.
+M3 Phase 0 required effective fresh primary `gpt-5.6-sol / xhigh` and verified it successfully.
 
 Regression / follow-up:
-M3 Phase 0 verified the fresh effective value as `gpt-5.6-sol / xhigh`, so the
-M3 readiness condition is satisfied. Preserve live effective-value checks for
-future long milestones.
+The primary Sol/xhigh part remains active. The earlier sub-agent-max default is superseded by the later Luna/medium model-routing policy.
 
 ## 2026-08-10 — Promote M2 and prioritize Unity compile coverage
 Type: promotion
@@ -321,13 +319,13 @@ Decision / Root cause:
 Promote M2 without rerun and open M3 — Unity Execution Coverage.
 
 Why:
-The remaining repeated gap is no longer autonomous development behavior; it is trustworthy full Unity/project compilation after production changes, especially after QuickGun's Unity 2022 -> Unity 6 transition and large serialization/package churn.
+The remaining repeated gap was trustworthy full Unity/project compilation after production changes.
 
 Framework effect:
-M3 begins with live discovery and minimal mapping of `unity.compile`, then must prove a full QuickGun baseline compile and at least one REAL QuickGun product scenario with full Unity compile REQUIRED after production C# changes.
+M3 began with live discovery and minimal mapping of `unity.compile`, then proved a full QuickGun baseline compile and a REAL product scenario with full Unity compile REQUIRED.
 
 Regression / follow-up:
-Do not bind all remaining Unity Capabilities. Additional mappings require demonstrated `REQUIRED_NOW` evidence during M3 gap analysis.
+Do not bind all remaining Unity Capabilities. Additional mappings require demonstrated `REQUIRED_NOW` evidence.
 
 ## 2026-08-10 — Compact active state after promotion
 Type: decision
@@ -343,17 +341,17 @@ Why:
 Long-running roadmap continuity must remain token-efficient and easy for a fresh agent to reconstruct.
 
 Framework effect:
-Milestone closure now requires post-promotion active-state compaction. `active.md` keeps only current milestone, pointers, stable routing/binding facts, unresolved debt, and next action.
+Milestone closure requires post-promotion active-state compaction.
 
 Regression / follow-up:
-Future continuity probes should succeed from compact active state plus durable pointers, not by carrying full prior transcripts forward.
+Future continuity probes should succeed from compact active state plus durable pointers.
 
 ## 2026-08-10 — Unity 6 compile evidence requires correlated terminal acquisition
 Type: incident
 Status: active
 
 Context:
-M3 observed that the real CoplayDev compile request returns before Unity 6 has completed script compilation/reload. Reload also caused transient state-read interruption, reset acquisition-local timing continuity, and emitted a recoverable package WebSocket warning. Initial final-closure verification then found that the promoted binding required a sampled nonterminal boolean even though live discovery and marker-based evidence allowed other freshness signals; historical Phase 4 also reused one snapshot for freshness and terminal proof.
+M3 observed that the real CoplayDev compile request returns before Unity 6 has completed script compilation/reload. Initial final-closure verification then found that the promoted binding required a sampled nonterminal boolean even though live discovery and marker-based evidence allowed other freshness signals; historical Phase 4 also reused one snapshot for freshness and terminal proof.
 
 Decision / Root cause:
 Request acceptance is dispatch evidence, not compile success; freshness correlation and terminal readiness are separate facts and require separate observations.
@@ -362,7 +360,64 @@ Why:
 Only exact-target, fresh-cycle, terminal, completely paged diagnostics can support a trustworthy full-project compile criterion.
 
 Framework effect:
-The existing `unity.compile` binding clears Console diagnostics before request, establishes `fresh_cycle_correlated` through sampled nonterminal state, an advanced compile marker, or an advanced domain-reload marker, then separately establishes `terminal_state_observed`. It re-resolves exact editor/project identity and pages diagnostics to completion. Its identity and Console suboperations remain internal and do not create new Capability mappings.
+The existing `unity.compile` binding clears Console diagnostics before request, establishes `fresh_cycle_correlated` through sampled nonterminal state, an advanced compile marker, or an advanced domain-reload marker, then separately establishes `terminal_state_observed`. It re-resolves exact editor/project identity and pages diagnostics to completion.
 
 Regression / follow-up:
-Verifier scripts must map explicit freshness and terminal flags and may not reuse the freshness snapshot as terminal proof. Treat a transient CoplayDev reload warning as recoverable only after the same target and complete terminal evidence are re-established. Discard and reacquire an insufficient window; do not lower the criterion, reuse stale evidence, invent another Capability, or classify request acceptance as success.
+Verifier scripts must map explicit freshness and terminal flags and may not reuse the freshness snapshot as terminal proof. Treat transient reload noise as recoverable only after exact target and complete terminal evidence are re-established.
+
+## 2026-08-10 — Closure verdict must be persisted before MILESTONE_DONE
+Type: incident
+Status: active
+
+Context:
+M3 terminal output reported final closure PASS and `MILESTONE_DONE`, but the pushed report, retrospective, and active state still said final closure verification was pending.
+
+Decision / Root cause:
+The closure contract required a verifier before terminal output but omitted an explicit post-verdict persistence and consistency step.
+
+Why:
+A future session must be able to reconstruct terminal truth from durable artifacts without relying on console/chat history.
+
+Framework effect:
+Closure now requires: verifier result -> persist report/retrospective/active state -> fresh read-only consistency audit -> `MILESTONE_DONE`.
+
+Regression / follow-up:
+A console-only terminal verdict with durable files still saying pending is a closure defect. Repair closure artifacts only; do not rerun unaffected product/runtime evidence.
+
+## 2026-08-10 — Child lanes use Luna/medium by default
+Type: decision
+Status: active
+
+Context:
+Historical M3 used Sol/max children and took roughly 3h15m. The user explicitly prioritized total efficiency and cost control over giving every delegated lane the flagship model.
+
+Decision / Root cause:
+Reserve GPT-5.6 Sol / xhigh for the primary orchestrator. Every child/sub-agent role defaults to GPT-5.6 Luna / medium, including explorers, workers, evidence lanes, recovery agents, independent verifiers, closure verifiers, report authors, and custom agents.
+
+Why:
+Most child work is bounded and checkable. Overall system quality depends more on decomposition, evidence, independence, recovery, and context discipline than on maximizing model size for every lane.
+
+Framework effect:
+`.axit/policies/model-routing.md` is canonical and is routed from `workspace.yaml` and root `AGENTS.md`. `.codex/config.toml` and the custom `axit-verifier` use Luna/medium for child execution.
+
+Regression / follow-up:
+No silent child escalation to Terra/Sol or above medium. Underperformance uses distilled context, steer/resume, fresh Luna/medium replacement, decomposition, and evidence reacquisition. Only an explicit current human instruction may authorize a bounded override, and milestone closure must audit overrides. This supersedes only the earlier sub-agent-max portion of the M3 reasoning decision; primary Sol/xhigh remains active.
+
+## 2026-08-10 — Promote M3 Unity Execution Coverage
+Type: promotion
+Status: active
+
+Context:
+M3 proved a live `unity.compile` binding, full QuickGun baseline compilation, compile acquisition-state semantics, a frozen REAL duplicate-release fix, 3/3 deterministic regression tests, fresh post-change full Unity compile, and final independent closure PASS. Remote review verified the pushed QuickGun fix and Workspace artifacts.
+
+Decision / Root cause:
+Promote M3 without a full rerun after repairing closure persistence only.
+
+Why:
+The remaining defect was durable closure state, not product/runtime evidence. Rerunning Unity would add cost without addressing the actual control-layer issue.
+
+Framework effect:
+M1, M2, and M3 are HUMAN_PROMOTED. Active Unity mappings are exactly prefab inspect, serialized-fields inspect, playmode verify, and compile. Five remaining capabilities stay unbound.
+
+Regression / follow-up:
+M4 is not auto-started. The next milestone must be deliberately selected based on real System availability and accepted boundaries, while using the Luna/medium child policy.
