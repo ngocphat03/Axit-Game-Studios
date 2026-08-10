@@ -81,7 +81,12 @@ Current stable Unity evidence set includes ids such as:
 - `unity.prefab.inspect`
 - `unity.serialized-fields.inspect`
 - `unity.playmode.verify`
-- `unity.compile` remains declared but is unbound until M3 proves a real transport mapping.
+- `unity.compile`
+
+The reviewed active binding maps exactly those four ids. The five other
+declared Unity capabilities remain unbound: `unity.project.inspect`,
+`unity.tests.run`, `unity.scene.inspect`, `unity.component.inspect`, and
+`unity.console.inspect`.
 
 Capability output is evidence only. `verify-change` owns REQUIRED/SUPPORTING classification and PASS/FAIL/BLOCKED.
 
@@ -95,11 +100,23 @@ MCP for Unity setup is user-owned/manual. Axit may inspect/use an already config
 
 Path-addressed runtime operations must resolve current full runtime identity before use. Prefab/source hierarchy is not sufficient proof of the full live scene hierarchy. After refresh/reload, resolve identity again rather than reuse stale paths/instance ids.
 
+Unity 6 compile request acceptance is not terminal compile evidence. A
+trustworthy `unity.compile` acquisition clears the diagnostic window before
+the request, establishes `fresh_cycle_correlated` through sampled nonterminal
+state, an advanced compile marker, or an advanced domain-reload marker, then
+establishes `terminal_state_observed` from a distinct later snapshot. It also
+re-resolves exact editor/project identity after reload and pages diagnostics
+to completion. Verifier scripts must map evidence to both explicit flags and
+must not reuse the freshness snapshot as terminal proof. Compile-internal
+identity reads and Console operations do not create separate Capability
+mappings. A transient CoplayDev reload warning is recoverable only when the
+same exact target and a complete terminal evidence set are re-established.
+
 ## Execution operating model
 
 Primary model: GPT-5.6 Sol.
 
-Project primary reasoning is configured to `xhigh` for M3 after M1/M2 exposed unreliable effective behavior from the previous primary `max` project setting. A fresh milestone must verify the effective primary value rather than trust configured intent.
+Project primary reasoning is configured to `xhigh` after M1/M2 exposed unreliable effective behavior from the previous primary `max` project setting. M3 verified a fresh effective primary `gpt-5.6-sol / xhigh`; future milestones must still verify the effective value rather than trust configured intent.
 
 Sub-agent default remains GPT-5.6 Sol / `max` while supported and observed effective.
 
@@ -142,7 +159,10 @@ start milestone
 
 Hard decisions remain human-owned when they materially change product intent, public contracts, state ownership, architecture, destructive scope, secrets/production access, or other irreversible/high-impact boundaries.
 
-M1 and M2 are human-promoted. Current milestone is M3 — Unity Execution Coverage.
+M1 and M2 are human-promoted. M3 — Unity Execution Coverage has completed
+execution and closure repair loop 1 and awaits final independent closure
+re-verification before human promotion review. M3 remains current, is not
+`HUMAN_PROMOTED`, and M4 is not authorized.
 
 ## Git-status policy
 
@@ -192,7 +212,10 @@ real scenario
 
 Possible correct layers include Rule, Knowledge, existing Capability binding, new Capability only when genuinely missing, Skill, Workflow, Profile, Runtime/Harness policy, or no framework change at all.
 
-M3's first demonstrated gap is full Unity compilation after real production changes, so `unity.compile` is the first candidate to discover/bind. Do not bind the other remaining Unity Capabilities unless M3 produces a real REQUIRED evidence need.
+M3 proved and activated `unity.compile` after full baseline, acquisition-state,
+and REAL-scenario evidence. Its demonstrated-gap analysis found no additional
+`REQUIRED_NOW` need. Keep the five remaining Unity Capabilities unbound until a
+future accepted criterion demonstrates a real required evidence gap.
 
 ## Incident hardening rule
 
@@ -216,6 +239,10 @@ Examples already learned:
 - Unity MCP setup remains manual/user-owned;
 - Git dirty status is configurable and defaults to ignored for gating;
 - runtime full paths must be resolved from current runtime context, not guessed from prefab hierarchy;
+- Unity 6 compile requests require a clear diagnostic window, one explicit
+  freshness flag, a distinct later terminal flag, exact identity
+  re-resolution, and complete diagnostic paging; verifier scripts must map
+  both flags and request acceptance alone is never success;
 - evidence provenance must respect independent System repositories;
 - active state must be compacted after promotion rather than carrying completed milestone transcripts forever.
 

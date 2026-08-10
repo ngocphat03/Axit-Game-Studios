@@ -487,9 +487,251 @@ mappings:
         - broad game correctness from one scenario
         - deterministic source/serialization facts that were not observed
 
+  - capability: unity.compile
+    operation_class: execute
+    side_effects: derived-artifacts
+    inputs:
+      exact_runtime_target:
+        type: current-unity-editor-project-identity
+        required: true
+        constraints:
+          - exact unity-client System and QuickGun-MVP project identity
+          - current project root and connected editor identity must be resolved from live resources; partial-name matching is forbidden
+          - resolved identity is acquisition-scoped and must not be persisted in this binding
+      identity_timeout:
+        type: bounded-duration
+        required: true
+        constraints:
+          - positive and bounded by the acquisition request or Runtime/Harness
+      compilation_timeout:
+        type: bounded-duration
+        required: true
+        constraints:
+          - positive and bounded by the acquisition request or Runtime/Harness
+      diagnostics_timeout:
+        type: bounded-duration
+        required: true
+        constraints:
+          - positive and bounded by the acquisition request or Runtime/Harness
+    operations:
+      - resources/read
+      - read_console
+      - refresh_unity
+    operation_templates:
+      - id: resolve-pre-editor-identity
+        operation: resources/read
+        server: unityMCP
+        arguments:
+          uri: mcpforunity://instances
+        result_path: contents[0].text
+      - id: read-pre-project-identity
+        operation: resources/read
+        server: unityMCP
+        arguments:
+          uri: mcpforunity://project/info
+        result_path: contents[0].text
+        payload_success_path: success
+        payload_result_path: data
+        observed_result_fields:
+          - projectName
+          - projectRoot
+          - unityVersion
+      - id: read-pre-editor-state
+        operation: resources/read
+        server: unityMCP
+        arguments:
+          uri: mcpforunity://editor/state
+        result_path: contents[0].text
+        payload_success_path: success
+        payload_result_path: data
+      - id: clear-compile-diagnostic-window
+        operation: read_console
+        arguments:
+          action: clear
+        outer_error_path: isError
+        success_path: structuredContent.success
+        message_path: structuredContent.message
+        result_path: structuredContent.data
+        mutation_boundary: Ephemeral Unity Console clear only; this is not a source, asset, scene, or project write.
+      - id: request-script-compilation
+        operation: refresh_unity
+        arguments:
+          mode: force
+          scope: scripts
+          compile: request
+          wait_for_ready: false
+        outer_error_path: isError
+        success_path: structuredContent.result.success
+        message_path: structuredContent.result.message
+        error_path: structuredContent.result.error
+        result_path: structuredContent.result.data
+        observed_result_fields:
+          - refresh_triggered
+          - compile_requested
+          - resulting_state
+          - hint
+        request_accepted_when:
+          - isError != true
+          - structuredContent.result.success == true
+          - structuredContent.result.data.compile_requested == true
+        request_acceptance_is_not_compile_success: true
+      - id: poll-fresh-compile-cycle-to-terminal
+        operation: resources/read
+        server: unityMCP
+        arguments:
+          uri: mcpforunity://editor/state
+        result_path: contents[0].text
+        payload_success_path: success
+        payload_result_path: data
+        correlation:
+          pre_request_snapshot:
+            - retain the successful read-pre-editor-state payload for exact_runtime_target before requesting compilation
+            - retain available compile start, compile finish, and domain-reload marker values only for comparisons within this acquisition
+          order:
+            - after request-script-compilation is accepted, establish fresh_cycle_correlated through any one accepted alternative
+            - after fresh_cycle_correlated, separately establish terminal_state_observed from a successful editor-state payload
+          fresh_cycle_correlated:
+            require_any:
+              - id: post-request-nonterminal-state
+                source: successful post-request editor-state payload
+                condition_any:
+                  - data.compilation.is_compiling == true
+                  - data.compilation.is_domain_reload_pending == true
+                  - data.assets.is_updating == true
+                  - data.advice.ready_for_tools == false
+              - id: post-request-compile-marker-advanced
+                source: successful post-request editor-state payload for the same exact target as the retained pre-request snapshot
+                marker_condition_any:
+                  - data.compilation.last_compile_started_unix_ms is present and greater than its retained pre-request value
+                  - data.compilation.last_compile_finished_unix_ms is present and greater than its retained pre-request value
+              - id: post-request-domain-reload-marker-advanced
+                source: successful post-request editor-state payload for the same exact target as the retained pre-request snapshot
+                marker_condition:
+                  - data.compilation.last_domain_reload_after_unix_ms is present and greater than its retained pre-request value
+            insufficient:
+              - request acceptance alone
+              - a transient resource not-ready response alone; it counts only when followed by an accepted fresh-cycle marker and then terminal_state_observed
+          terminal_state_observed:
+            require_separate_observation_after: fresh_cycle_correlated
+            condition_all:
+              - data.compilation.is_compiling == false
+              - data.compilation.is_domain_reload_pending == false
+              - data.assets.is_updating == false
+              - data.advice.ready_for_tools == true
+          comparison_boundary:
+            exact_target: Pre-request values and every post-request comparison must belong to the same exact project/editor target.
+            session_continuity: An expected domain reload may change the ephemeral session id; session-id equality across reload is not required.
+            persistence: Session ids, editor instance hashes, and marker timestamps are acquisition-local evidence and must not be persisted.
+          reload_boundary: Unity 6 may finish a fast compile cycle before any nonterminal boolean state is sampled; an advanced accepted compile or domain-reload marker can establish fresh_cycle_correlated, but terminal_state_observed is still required separately.
+        polling: bounded by compilation_timeout; unbounded sleep is forbidden
+      - id: resolve-post-reload-editor-identity
+        operation: resources/read
+        server: unityMCP
+        arguments:
+          uri: mcpforunity://instances
+        result_path: contents[0].text
+      - id: read-post-reload-project-identity
+        operation: resources/read
+        server: unityMCP
+        arguments:
+          uri: mcpforunity://project/info
+        result_path: contents[0].text
+        payload_success_path: success
+        payload_result_path: data
+        observed_result_fields:
+          - projectName
+          - projectRoot
+          - unityVersion
+      - id: read-fresh-compile-diagnostics
+        operation: read_console
+        arguments:
+          action: get
+          types:
+            - error
+            - warning
+          page_size: 500
+          cursor: 0
+          format: detailed
+          include_stacktrace: true
+        outer_error_path: isError
+        success_path: structuredContent.success
+        message_path: structuredContent.message
+        result_path: structuredContent.data
+        observed_result_fields:
+          - cursor
+          - pageSize
+          - nextCursor
+          - truncated
+          - total
+          - items
+        diagnostic_item_fields:
+          - type
+          - message
+          - file
+          - line
+          - stackTrace
+        pagination:
+          next_cursor_path: structuredContent.data.nextCursor
+          next_request_cursor: previous structuredContent.data.nextCursor
+          complete_when: structuredContent.data.nextCursor == null
+          polling: bounded by diagnostics_timeout; repeated cursors and unbounded paging are forbidden
+    execution:
+      precondition:
+        - resolve-pre-editor-identity
+        - read-pre-project-identity
+        - read-pre-editor-state
+        - require exact current QuickGun-MVP project root and connected editor agreement before mutation
+      order:
+        - clear-compile-diagnostic-window
+        - request-script-compilation
+        - poll-fresh-compile-cycle-to-terminal
+        - resolve-post-reload-editor-identity
+        - read-post-reload-project-identity
+        - read-fresh-compile-diagnostics
+      identity_boundary:
+        - re-resolve the current editor and project after reload before accepting terminal evidence or diagnostics
+        - pre-request and post-reload identity must both exactly match exact_runtime_target
+        - do not retain live editor identifiers, connection details, or other acquisition-local identity as canonical binding data
+      timeout_boundary:
+        identity_resolution: bounded by identity_timeout
+        compile_cycle: bounded by compilation_timeout
+        diagnostic_paging: bounded by diagnostics_timeout
+        unbounded_waits: forbidden
+      acquired_when:
+        common:
+          - exact identity is established before the request and again after reload
+          - console clear succeeds before the compilation request
+          - compilation request is accepted
+          - fresh_cycle_correlated is established after request acceptance through any one accepted correlation alternative
+          - terminal_state_observed is separately established after fresh_cycle_correlated
+          - every error/warning diagnostics page is acquired through nextCursor == null
+        no_fresh_errors: common conditions hold and no returned diagnostic item is classified as an error
+        fresh_errors: common conditions hold and one or more returned diagnostic items are classified as errors
+      outcome_boundary:
+        acquired: Return either acquired with no fresh errors or acquired with fresh errors; compiler errors remain trustworthy acquired evidence.
+        unavailable: Required binding, exact QuickGun editor/project identity, or compatible runtime dependency is unavailable.
+        denied: Runtime or Harness policy refuses any required operation, including the ephemeral Console clear or compilation request.
+        transport_error: The transport or composite operation fails before the complete identity-correlated compile observation and diagnostic page set is trustworthy.
+      completion_is_not_verdict: true
+    side_effect_boundary:
+      allowed:
+        - Unity script-compilation derived artifacts
+        - ephemeral Unity Console clear used only to establish the fresh diagnostic window
+      forbidden:
+        - source, asset, prefab, scene, project-setting, package, or connection-configuration writes
+        - Play Mode entry or gameplay mutation
+    suboperation_boundary: Identity resources and Console diagnostics are internal to unity.compile acquisition and do not map unity.project.inspect or unity.console.inspect.
+    evidence_boundary:
+      can_establish:
+        - whether the exact current QuickGun-MVP project scripts complete the observed fresh Unity compilation cycle without fresh compiler errors
+        - concrete fresh compiler errors and warnings returned from the complete bounded diagnostic window
+      cannot_establish:
+        - gameplay correctness or Play Mode behavior
+        - correctness outside the exact project/editor and acquisition window observed
+        - compilation success from refresh_unity request acceptance alone
+
 unbound_capabilities:
   - unity.project.inspect
-  - unity.compile
   - unity.tests.run
   - unity.scene.inspect
   - unity.component.inspect
@@ -497,5 +739,7 @@ unbound_capabilities:
 
 notes:
   - This active binding records reviewed operation contracts, not current connectivity.
-  - Only the three mapped capabilities are bound; all other unity-client capabilities remain unbound.
+  - The active mappings are exactly unity.prefab.inspect, unity.serialized-fields.inspect, unity.playmode.verify, and unity.compile.
+  - unity.compile identity-resource reads and Console diagnostic suboperations are internal to compile acquisition; they do not map unity.project.inspect or unity.console.inspect.
+  - unity.project.inspect, unity.tests.run, unity.scene.inspect, unity.component.inspect, and unity.console.inspect remain explicitly unbound.
   - Runtime/Harness policy owns authorization and verify-change owns evidence classification and verdicts.

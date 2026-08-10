@@ -8,19 +8,19 @@ The goal is to prove that transport-specific execution can be introduced without
 
 ## Current binding state
 
-The `unity-client` System references the reviewed active `coplaydev-unity-mcp` binding. The active mapping is limited to exactly:
+The `unity-client` System references the reviewed active `coplaydev-unity-mcp` binding. The active mapping set is exactly:
 
 ```text
 unity.prefab.inspect
 unity.serialized-fields.inspect
 unity.playmode.verify
+unity.compile
 ```
 
-The other six declared Unity capabilities remain explicitly unbound:
+The other five declared Unity capabilities remain explicitly unbound:
 
 ```text
 unity.project.inspect
-unity.compile
 unity.tests.run
 unity.scene.inspect
 unity.component.inspect
@@ -29,11 +29,15 @@ unity.console.inspect
 
 `active` records the reviewed source-controlled mapping. It does not claim that the transport is currently connected or available; runtime availability must still be resolved for each acquisition.
 
+The identity-resource and Console-diagnostic operations inside
+`unity.compile` are composite-acquisition suboperations. They do not create
+separate mappings for `unity.project.inspect` or `unity.console.inspect`.
+
 The discovery rules below continue to apply to any new or expanded mapping. Do not fabricate a binding or operation name.
 
-## Active first live binding scope
+## Active reviewed binding scope
 
-The active binding maps only:
+The M1 first vertical slice remains semantically unchanged:
 
 ```text
 unity.prefab.inspect
@@ -41,7 +45,9 @@ unity.serialized-fields.inspect
 unity.playmode.verify
 ```
 
-Leave all other Unity capabilities unbound until a live task demonstrates need and the same validation criteria are satisfied.
+M3 adds only the proven `unity.compile` mapping. Leave the remaining five
+Unity capabilities unbound until a live task demonstrates REQUIRED need and
+the same validation criteria are satisfied.
 
 ## Case 1 — real transport discovery before mapping
 
@@ -61,12 +67,13 @@ Pass condition:
 
 A binding may map only Capability ids declared by the affected System's active capability sets.
 
-For the first slice, valid semantic ids are exactly:
+The current active semantic ids are exactly:
 
 ```text
 unity.prefab.inspect
 unity.serialized-fields.inspect
 unity.playmode.verify
+unity.compile
 ```
 
 A transport operation name may be provider-specific inside the binding, but it must not replace or rename the semantic Capability id.
@@ -138,7 +145,8 @@ A source-controlled binding may reference a stable logical runtime connection/ad
 
 ## Case 7 — first vertical slice
 
-After the three mappings are live, validate one real criterion chain:
+The M1 first vertical slice validated this real criterion chain with its three
+original mappings:
 
 ```text
 ordinary deterministic C# tests
@@ -193,6 +201,115 @@ Pass condition:
 - the evidence record states how current target identity was resolved;
 - stale runtime instance ids/paths are not persisted as canonical truth.
 
+## M3 live validation outcome — `unity.compile`
+
+### Live-discovered operation contract
+
+The actual CoplayDev unity-mcp interface exposed the composite operation
+surface used by the promoted mapping:
+
+- `resources/read` for current instance, project, and editor-state identity;
+- `read_console(action=clear)` to open a fresh diagnostic window;
+- `refresh_unity(mode=force, scope=scripts, compile=request,
+  wait_for_ready=false)` to request the script compile;
+- bounded editor-state reads that retain the exact pre-request state and
+  correlate a fresh compile cycle before a separate terminal-ready
+  observation;
+- post-reload instance/project identity reads; and
+- `read_console(action=get, types=[error, warning], format=detailed)` paged
+  from cursor zero until `nextCursor` is null.
+
+The compile request being accepted is not compile success. After the exact
+pre-request state and request acceptance, fresh-cycle correlation requires any
+one of: a successful post-request state payload showing compilation, domain
+reload, asset updating, or tools-not-ready; a post-request compile start or
+finish marker advanced relative to its retained pre-request value; or a
+post-request domain-reload marker advanced relative to its retained
+pre-request value. A separately observed terminal-ready state, exact
+post-reload identity, and the complete diagnostic page set are then required
+for acquired evidence. Project-identity resources and Console operations stay
+internal to `unity.compile` and do not map another Capability.
+
+### Exercised evidence chain
+
+- A fresh full-project baseline acquisition completed cleanly as
+  `acquired + compilation succeeds`, with exact pre/post project-editor
+  identity and complete diagnostics containing no compiler errors.
+- A reversible compile-error fixture produced
+  `acquired + compilation errors`. The fixture and its generated metadata
+  were removed, their marker was confirmed absent, Unity observed the
+  cleanup, and a separate fresh acquisition then returned
+  `acquired + compilation succeeds` with a complete empty diagnostic window.
+- Declarative decision fixtures preserved `unavailable`, `denied`, and
+  `transport_error` as acquisition states. They did not manufacture an editor
+  disconnect, permission change, or product failure, and none was treated as
+  a compile verdict.
+- REAL scenario `M3-REAL-01` independently reacquired the full-project compile
+  after the production C# change. The exact project/editor matched before and
+  after the request, diagnostics paging completed without compiler errors,
+  and the required compile criterion received `PASS` in that scenario's
+  independent verification.
+
+### Unity 6 reload boundary
+
+The exercised editor was Unity `6000.4.8f1`. A Unity 6 domain reload can
+temporarily interrupt a state read and can reset acquisition-local compiler
+timing fields, and a fast compile cycle can complete without an observable
+nonterminal boolean snapshot. The binding therefore accepts the three
+fresh-cycle alternatives above and does not require ephemeral session-id
+equality across an expected reload. Every pre/post marker comparison must
+belong to the same exact project/editor target. Session ids, editor instance
+hashes, and marker timestamps remain acquisition-local and are not persisted.
+A transient resource not-ready response alone is not correlation; it must be
+followed by an accepted fresh marker and a separate terminal-ready
+observation. The exact editor/project is re-resolved after reload, and
+diagnostics are accepted only after terminal-ready state and complete paging.
+
+### Closure repair loop 1 — correlation-contract alignment
+
+Closure repair loop 1 aligns the promoted mapping with the Phase 1
+live-discovered protocol. The earlier wording made a sampled post-request
+nonterminal boolean state mandatory even though the accepted protocol also
+allowed an advanced compile start/finish marker or an advanced domain-reload
+marker. The repaired contract requires `fresh_cycle_correlated` through any
+one accepted alternative and separately requires `terminal_state_observed`.
+Request acceptance alone remains insufficient, and no operation, argument,
+result path, permission boundary, acquisition outcome, verdict boundary, or
+Capability partition changes in this repair.
+
+### Current provenance
+
+- The canonical baseline is System `unity-client`, repository
+  `ngocphat03/QuickGun-MVP`, ref `release`, commit
+  `c35143a6ea72dd17e591e67b1e965e10a0b15a27`:
+  `system-canonical-pushed`.
+- The REAL scenario's current production/test edits and the current Workspace
+  binding/checklist artifacts are `local-or-separately-tracked`; pushed state
+  is not inferred.
+- Live editor identity, compile state, and diagnostics are
+  `ephemeral-runtime`. No acquisition-local connection identity is canonical
+  binding state.
+
+### Promoted and unbound scope
+
+```text
+active:
+  unity.prefab.inspect
+  unity.serialized-fields.inspect
+  unity.playmode.verify
+  unity.compile
+
+unbound:
+  unity.project.inspect
+  unity.tests.run
+  unity.scene.inspect
+  unity.component.inspect
+  unity.console.inspect
+```
+
+M3 Phase 8 classified no capability as `REQUIRED_NOW`, so no additional
+mapping is authorized.
+
 ## Acceptance criteria for Runtime Binding v1 and later expansions
 
 A Runtime Binding mapping is ready to promote when:
@@ -207,4 +324,7 @@ A Runtime Binding mapping is ready to promote when:
 - path-addressed runtime operations obey current target-resolution discipline;
 - the exercised vertical slice produces traceable evidence and a correct `verify-change` verdict.
 
-Apply these criteria to every candidate or expanded binding scope. Until they are met for a Capability, keep that Capability unbound. The current active `unity-client` scope remains limited to the three proven mappings above until M3 or a later milestone proves an expansion.
+Apply these criteria to every candidate or expanded binding scope. Until they
+are met for a Capability, keep that Capability unbound. The current active
+`unity-client` scope is limited to the four proven mappings above; the other
+five declared capabilities remain unbound.

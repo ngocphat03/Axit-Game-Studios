@@ -207,7 +207,7 @@ Framework effect:
 Milestone readiness must inspect effective primary/sub-agent model and reasoning levels.
 
 Regression / follow-up:
-After M2 promotion the project primary setting is changed to `xhigh`. M3 must verify a fresh effective primary `gpt-5.6-sol / xhigh`; the config edit alone does not close the incident.
+M3 Phase 0 verified a fresh effective primary `gpt-5.6-sol / xhigh` from authoritative root turn context, closing the milestone-specific mismatch. Future long milestones must retain effective-value readiness checks rather than infer behavior from config alone.
 
 ## 2026-08-10 — Classify evidence provenance without forcing Git tracking
 Type: decision
@@ -306,7 +306,9 @@ Framework effect:
 M3 Phase 0 requires effective fresh primary `gpt-5.6-sol / xhigh` and treats a lower/unverifiable value as `PRIMARY_REASONING_NOT_EFFECTIVE`.
 
 Regression / follow-up:
-Do not mark this incident fully resolved until a fresh trusted M3 session verifies the effective value.
+M3 Phase 0 verified the fresh effective value as `gpt-5.6-sol / xhigh`, so the
+M3 readiness condition is satisfied. Preserve live effective-value checks for
+future long milestones.
 
 ## 2026-08-10 — Promote M2 and prioritize Unity compile coverage
 Type: promotion
@@ -345,3 +347,22 @@ Milestone closure now requires post-promotion active-state compaction. `active.m
 
 Regression / follow-up:
 Future continuity probes should succeed from compact active state plus durable pointers, not by carrying full prior transcripts forward.
+
+## 2026-08-10 — Unity 6 compile evidence requires correlated terminal acquisition
+Type: incident
+Status: active
+
+Context:
+M3 observed that the real CoplayDev compile request returns before Unity 6 has completed script compilation/reload. Reload also caused transient state-read interruption, reset acquisition-local timing continuity, and emitted a recoverable package WebSocket warning. Initial final-closure verification then found that the promoted binding required a sampled nonterminal boolean even though live discovery and marker-based evidence allowed other freshness signals; historical Phase 4 also reused one snapshot for freshness and terminal proof.
+
+Decision / Root cause:
+Request acceptance is dispatch evidence, not compile success; freshness correlation and terminal readiness are separate facts and require separate observations.
+
+Why:
+Only exact-target, fresh-cycle, terminal, completely paged diagnostics can support a trustworthy full-project compile criterion.
+
+Framework effect:
+The existing `unity.compile` binding clears Console diagnostics before request, establishes `fresh_cycle_correlated` through sampled nonterminal state, an advanced compile marker, or an advanced domain-reload marker, then separately establishes `terminal_state_observed`. It re-resolves exact editor/project identity and pages diagnostics to completion. Its identity and Console suboperations remain internal and do not create new Capability mappings.
+
+Regression / follow-up:
+Verifier scripts must map explicit freshness and terminal flags and may not reuse the freshness snapshot as terminal proof. Treat a transient CoplayDev reload warning as recoverable only after the same target and complete terminal evidence are re-established. Discard and reacquire an insufficient window; do not lower the criterion, reuse stale evidence, invent another Capability, or classify request acceptance as success.

@@ -11,19 +11,20 @@ runtime_bindings:
 
 unbound_capabilities:
   - unity.project.inspect
-  - unity.compile
   - unity.tests.run
   - unity.scene.inspect
   - unity.component.inspect
   - unity.console.inspect
 
 notes:
-  - "Capability semantic v1 is stable after live validation on 2026-08-09."
+  - "Capability semantic v1 remains stable after its live validation."
   - "This sidecar declares semantic capabilities relevant to the Unity client; it does not claim a transport is currently available."
   - "Use only capability ids explicitly declared by the referenced active capability sets; do not invent aliases or project-specific capability names."
   - "If no declared capability matches an evidence need, describe the need as ordinary evidence or a capability gap instead of synthesizing an id."
-  - "The reviewed CoplayDev unity-mcp definition is active; this does not claim that the transport is currently online."
-  - "Only unity.prefab.inspect, unity.serialized-fields.inspect, and unity.playmode.verify are mapped; every other declared Unity capability remains explicitly unbound."
+  - "The reviewed CoplayDev unity-mcp definition is active; this records reviewed operation contracts and does not claim current transport connectivity."
+  - "Active mappings are exactly unity.prefab.inspect, unity.serialized-fields.inspect, unity.playmode.verify, and unity.compile."
+  - "unity.compile identity-resource reads and Console diagnostics are internal suboperations; they do not map unity.project.inspect or unity.console.inspect."
+  - "The other five declared Unity capabilities remain explicitly unbound: unity.project.inspect, unity.tests.run, unity.scene.inspect, unity.component.inspect, and unity.console.inspect."
   - "Runtime bindings may later use Unity MCP, Axit Unity, Unity CLI/editor automation, or another compatible transport without changing capability ids."
   - "Load this file only when the current task requires Unity-specific evidence acquisition."
   - "verify-change still decides REQUIRED versus SUPPORTING evidence and the final verdict."

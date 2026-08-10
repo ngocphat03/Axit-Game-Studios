@@ -12,13 +12,14 @@ namespace QG.Tests
         {
             ConsecutiveEmptyPoolLeasesAreDistinct();
             ReleasedSourceIsReusable();
+            DuplicateReleaseDoesNotAliasOutstandingLeases();
 
             if (failures > 0)
             {
                 Environment.Exit(1);
             }
 
-            Console.WriteLine("AudioSourcePool: all 2 tests passed.");
+            Console.WriteLine("AudioSourcePool: all 3 tests passed.");
         }
 
         private static void ConsecutiveEmptyPoolLeasesAreDistinct()
@@ -42,6 +43,20 @@ namespace QG.Tests
 
             AssertSame(released, reused, "a released source is reused");
             AssertNotSame(stillLeased, reused, "reuse does not alias an unreleased lease");
+        }
+
+        private static void DuplicateReleaseDoesNotAliasOutstandingLeases()
+        {
+            var pool = CreateEmptyPool();
+            AudioSource released = pool.Get();
+
+            pool.Release(released);
+            pool.Release(released);
+
+            AudioSource first = pool.Get();
+            AudioSource second = pool.Get();
+
+            AssertNotSame(first, second, "duplicate release does not alias outstanding leases");
         }
 
         private static AudioSourcePool CreateEmptyPool()
