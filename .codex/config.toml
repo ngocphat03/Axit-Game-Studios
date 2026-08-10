@@ -26,8 +26,10 @@ Do not approve installing, configuring, upgrading, starting, or repairing Unity 
 [agents]
 enabled = true
 max_concurrent_threads_per_session = 4
-# Cost policy: all child/sub-agent lanes use Luna at medium unless the user explicitly changes this policy.
-default_subagent_model = "gpt-5.6-luna"
+# Preferred child tier is Luna/medium when supported. The current observed Codex
+# child runtime exposes Terra and Sol but not Luna, so use the allowed Terra/medium
+# compatibility fallback. Child Sol remains forbidden without explicit user override.
+default_subagent_model = "gpt-5.6-terra"
 default_subagent_reasoning_effort = "medium"
 interrupt_message = true
 
