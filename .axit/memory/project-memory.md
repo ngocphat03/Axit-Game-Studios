@@ -76,17 +76,20 @@ Do not duplicate executable contracts such as OpenAPI/protobuf/schema/DTO truth 
 
 Capabilities express semantic evidence/execution intent, not provider/tool commands.
 
-Current stable Unity evidence set includes ids such as:
+Current reviewed active Unity binding maps exactly:
 
 - `unity.prefab.inspect`
 - `unity.serialized-fields.inspect`
 - `unity.playmode.verify`
 - `unity.compile`
 
-The reviewed active binding maps exactly those four ids. The five other
-declared Unity capabilities remain unbound: `unity.project.inspect`,
-`unity.tests.run`, `unity.scene.inspect`, `unity.component.inspect`, and
-`unity.console.inspect`.
+The five other declared Unity capabilities remain unbound:
+
+- `unity.project.inspect`
+- `unity.tests.run`
+- `unity.scene.inspect`
+- `unity.component.inspect`
+- `unity.console.inspect`
 
 Capability output is evidence only. `verify-change` owns REQUIRED/SUPPORTING classification and PASS/FAIL/BLOCKED.
 
@@ -100,40 +103,46 @@ MCP for Unity setup is user-owned/manual. Axit may inspect/use an already config
 
 Path-addressed runtime operations must resolve current full runtime identity before use. Prefab/source hierarchy is not sufficient proof of the full live scene hierarchy. After refresh/reload, resolve identity again rather than reuse stale paths/instance ids.
 
-Unity 6 compile request acceptance is not terminal compile evidence. A
-trustworthy `unity.compile` acquisition clears the diagnostic window before
-the request, establishes `fresh_cycle_correlated` through sampled nonterminal
-state, an advanced compile marker, or an advanced domain-reload marker, then
-establishes `terminal_state_observed` from a distinct later snapshot. It also
-re-resolves exact editor/project identity after reload and pages diagnostics
-to completion. Verifier scripts must map evidence to both explicit flags and
-must not reuse the freshness snapshot as terminal proof. Compile-internal
-identity reads and Console operations do not create separate Capability
-mappings. A transient CoplayDev reload warning is recoverable only when the
-same exact target and a complete terminal evidence set are re-established.
+Unity 6 compile request acceptance is not terminal compile evidence. A trustworthy `unity.compile` acquisition clears the diagnostic window before the request, establishes `fresh_cycle_correlated` through sampled nonterminal state, an advanced compile marker, or an advanced domain-reload marker, then establishes `terminal_state_observed` from a distinct later snapshot. It re-resolves exact editor/project identity after reload and pages diagnostics to completion. Verifier scripts must map evidence to both explicit flags and must not reuse the freshness snapshot as terminal proof.
 
 ## Execution operating model
 
-Primary orchestrator: GPT-5.6 Sol / `xhigh`.
+Canonical model/cost policy:
 
-Project primary reasoning is configured to `xhigh` after M1/M2 exposed unreliable effective behavior from the previous primary `max` project setting. A fresh milestone must verify the effective primary value rather than trust configured intent.
+```text
+.axit/policies/model-routing.md
+```
 
-All child/sub-agent lanes, including independent verifier lanes, default to GPT-5.6 Luna / `medium` for cost control. Do not escalate child lanes to Terra/Sol or above `medium` reasoning unless the user explicitly changes this policy.
+Default allocation:
+
+```text
+primary orchestrator = gpt-5.6-sol / xhigh
+all child lanes       = gpt-5.6-luna / medium
+```
+
+`all child lanes` includes explorers, workers, test/build/evidence agents, Unity/MCP acquisition agents, repair/recovery agents, independent verifiers, closure verifiers, report authors, and custom sub-agents.
+
+Do not silently escalate a child to Terra/Sol or above `medium`. Only an explicit current human instruction may authorize a bounded override. The override expires with its stated scope unless the user deliberately changes this durable policy.
+
+Child underperformance is handled by:
+
+```text
+distill/sharpen context
+  -> steer/resume Luna/medium
+  -> replace with fresh Luna/medium
+  -> decompose into smaller checkable lanes
+  -> reacquire current evidence
+```
+
+Do not use a larger child model as the automatic recovery mechanism.
 
 The primary thread acts as **orchestrator only** when sub-agents are available. Delegatable exploration, setup inspection, implementation, tests, Unity evidence, repair, and verification belong to sub-agents.
 
-Implementation and independent verification should use separate lanes when practical.
+Implementation and independent verification should use separate lanes when practical. Verification independence comes from fresh responsibility/context/evidence, not from using a more expensive verifier model.
 
-If a sub-agent stalls inside accepted scope:
+Use parallelism only for materially independent lanes. Read-heavy work may run concurrently; overlapping product writes, Runtime Binding/state/report writes, and Unity/editor mutations remain serialized. The configured thread limit is a ceiling, not a target.
 
-```text
-steer/resume
-  -> replace with distilled-context agent if needed
-      -> reacquire current evidence
-          -> continue
-```
-
-Maximum bounded recovery/replacement budget for the same required lane/failure: two attempts before escalation.
+Maximum bounded recovery/replacement budget for the same required lane/failure remains two attempts before escalation through the milestone's existing failure/blocker semantics.
 
 Routine phase completion does not require user confirmation.
 
@@ -150,19 +159,39 @@ start milestone
   -> autonomous continuous execution
   -> self-repair/replacement/reverification
   -> milestone report + retrospective
+  -> persist final closure verdict
   -> STOP
   -> user + assistant review
-      -> promote and start next milestone
+      -> promote and design/authorize next milestone
       OR
-      -> repair framework/regressions and rerun
+      -> repair framework/regressions and rerun only affected scope
 ```
 
 Hard decisions remain human-owned when they materially change product intent, public contracts, state ownership, architecture, destructive scope, secrets/production access, or other irreversible/high-impact boundaries.
 
-M1 and M2 are human-promoted. M3 — Unity Execution Coverage has completed
-execution and closure repair loop 1 and awaits final independent closure
-re-verification before human promotion review. M3 remains current, is not
-`HUMAN_PROMOTED`, and M4 is not authorized.
+M1, M2, and M3 are human-promoted. No M4 execution plan is currently authorized.
+
+## M3 promoted result
+
+M3 — Unity Execution Coverage proved:
+
+- live-discovered and reviewed `unity.compile` Runtime Binding;
+- fresh full QuickGun baseline Unity compile PASS;
+- acquisition distinction for clean compile, compiler-error evidence, and non-acquired states;
+- REAL scenario `M3-REAL-01` duplicate-release bug fix with 3/3 deterministic tests and fresh post-change full Unity compile PASS;
+- exact active binding partition of four mapped / five unbound capabilities;
+- one closure repair for freshness/terminal evidence separation;
+- final closure PASS and human promotion.
+
+Canonical QuickGun product fix:
+
+```text
+repository: ngocphat03/QuickGun-MVP
+ref: release
+commit: e2e1b1b6f3b0720d91e51def6b610f5714e17c52
+```
+
+Historical M3 used Sol/max children and took roughly 3h15m. That historical fact motivated the later Luna/medium child policy and must not be rewritten as if M3 itself used the cheaper routing.
 
 ## Git-status policy
 
@@ -212,10 +241,7 @@ real scenario
 
 Possible correct layers include Rule, Knowledge, existing Capability binding, new Capability only when genuinely missing, Skill, Workflow, Profile, Runtime/Harness policy, or no framework change at all.
 
-M3 proved and activated `unity.compile` after full baseline, acquisition-state,
-and REAL-scenario evidence. Its demonstrated-gap analysis found no additional
-`REQUIRED_NOW` need. Keep the five remaining Unity Capabilities unbound until a
-future accepted criterion demonstrates a real required evidence gap.
+M3 found no additional `REQUIRED_NOW` Unity capability beyond `unity.compile`. Keep the five remaining capabilities unbound until a future accepted criterion demonstrates a real required evidence gap.
 
 ## Incident hardening rule
 
@@ -231,21 +257,19 @@ incident
 
 Examples already learned:
 
-- verification required/supporting semantics needed explicit precedence;
-- missing implementation must differ from unresolved target identity;
+- verification required/supporting semantics need explicit precedence;
+- missing implementation differs from unresolved target identity;
 - capability ids must never be invented;
 - ordinary project tests are not automatically Axit Capabilities;
 - unavailable acquisition differs from observed product failure;
 - Unity MCP setup remains manual/user-owned;
 - Git dirty status is configurable and defaults to ignored for gating;
 - runtime full paths must be resolved from current runtime context, not guessed from prefab hierarchy;
-- Unity 6 compile requests require a clear diagnostic window, one explicit
-  freshness flag, a distinct later terminal flag, exact identity
-  re-resolution, and complete diagnostic paging; verifier scripts must map
-  both flags and request acceptance alone is never success;
+- Unity 6 compile requests require a clear diagnostic window, explicit freshness, a distinct later terminal observation, exact identity re-resolution, and complete diagnostic paging;
 - evidence provenance must respect independent System repositories;
-- active state must be compacted after promotion rather than carrying completed milestone transcripts forever;
-- expensive flagship reasoning should be reserved for the primary orchestrator; child lanes use Luna/medium unless the user explicitly reconfigures cost policy.
+- active state must be compacted after promotion;
+- closure-verifier output must be persisted into report/retrospective/active state before `MILESTONE_DONE`;
+- expensive flagship reasoning is reserved for the primary orchestrator; future child lanes use Luna/medium unless the user explicitly overrides a bounded scope.
 
 ## Memory discipline
 
@@ -257,6 +281,6 @@ Completed milestone detail belongs in its report, retrospective, scenario manife
 
 Milestone target shape belongs in `.axit/roadmap/milestones-mockup.md`.
 
-Canonical technical contracts remain in `.axit/specs/`, Core/System/Registry artifacts, executable source, and reviewed Runtime Bindings.
+Canonical technical contracts remain in `.axit/specs/`, Core/System/Registry artifacts, executable source, reviewed Runtime Bindings, and `.axit/policies/`.
 
 If this memory conflicts with newer accepted truth, update this memory instead of forcing the implementation back to old assumptions.
