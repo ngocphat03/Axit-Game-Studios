@@ -14,7 +14,16 @@ Date: YYYY-MM-DD
 
 ## Evidence summary
 
-<Required evidence, verifier result, and important provenance. Distinguish pushed/reproducible, separately tracked local, and ephemeral runtime evidence.>
+<Required evidence, verifier result, and important provenance.>
+
+Classify material evidence using the narrowest truthful class:
+
+- `workspace-canonical-pushed`;
+- `system-canonical-pushed` — include System id + repository + ref + commit when known;
+- `local-or-separately-tracked`;
+- `ephemeral-runtime`.
+
+Do not assume a System mounted under the Workspace is tracked by the Workspace repository.
 
 ## Failures and recovery
 
