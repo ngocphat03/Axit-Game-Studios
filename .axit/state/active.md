@@ -1,69 +1,30 @@
 # Axit Workspace Active State
 
-Status: M3-closure-repair-1-complete-pending-final-verification
+Updated: 2026-08-10
+Status: M3-human-promoted-awaiting-next-milestone-design
 
 ## Current milestone
 
 ```text
-M3 — Unity Execution Coverage
+none active
 ```
 
-Execution plan:
+M3 — Unity Execution Coverage is **HUMAN_PROMOTED**. M4 has not started and no next milestone execution plan is currently authorized.
+
+If the user asks to continue the roadmap before a new milestone is deliberately accepted, stop at planning/review rather than inferring M4 execution from the mockup.
+
+## Promoted milestone pointers
 
 ```text
-.axit/milestones/M3-unity-execution-coverage/plan.md
+M1 -> .axit/milestones/M1-unity-runtime-binding/
+M2 -> .axit/milestones/M2-autonomous-bounded-development/
+M3 -> .axit/milestones/M3-unity-execution-coverage/
 ```
 
-M3 execution and closure repair loop 1 are complete. A fresh independent
-closure re-verifier owns the final technical gate before human promotion
-review. M3 remains current, is not `HUMAN_PROMOTED`, and does not authorize M4.
-
-## Human promotion state
-
-- M1 — Unity Runtime Binding: **HUMAN_PROMOTED**.
-- M2 — Autonomous Bounded Development: **HUMAN_PROMOTED**.
-
-Durable promoted milestone artifacts remain under:
+M3 human promotion record:
 
 ```text
-.axit/milestones/M1-unity-runtime-binding/
-.axit/milestones/M2-autonomous-bounded-development/
-```
-
-## M3 execution state
-
-- Fresh effective primary `gpt-5.6-sol / xhigh`, sub-agent
-  `gpt-5.6-sol / max`, the exact QuickGun editor/project, and safe Edit Mode
-  were verified at readiness.
-- `unity.compile` passed live discovery, mapping validation, a clean
-  full-project baseline, acquisition-state regression with mandatory fixture
-  cleanup, and the REAL scenario's fresh required compile.
-- REAL scenario `M3-REAL-01` was frozen/approved before implementation and
-  freshly reverified after closure repair with 3/3 deterministic tests plus a
-  full Unity compile whose advanced reload marker established freshness, a
-  distinct later snapshot established terminal readiness, and complete
-  diagnostics returned zero compiler errors.
-- Phase 9 promoted `unity.compile` at the binding level only. Phase 8 recorded
-  `REQUIRED_NOW: none`; additional bindings promoted: **none**.
-- Initial final-closure verification returned `FAIL`: the promoted binding
-  required a sampled nonterminal boolean even though the discovered protocol
-  and evidence allowed advanced compile/reload markers, and historical Phase 4
-  reused one snapshot for freshness and terminal proof.
-- Closure repair loop 1 aligned the existing mapping to three freshness
-  alternatives plus a separately required terminal snapshot. Independent
-  binding verification, reacquired Phase 4 revalidation, and fresh Phase 7
-  verification all returned `PASS`.
-- Repair loops: **1 closure repair; 0 product/baseline repairs**. Sub-agent
-  replacements: **0**. No hard blocker fired.
-
-Durable M3 review pointers:
-
-```text
-.axit/milestones/M3-unity-execution-coverage/report.md
-.axit/milestones/M3-unity-execution-coverage/retrospective.md
-.axit/milestones/M3-unity-execution-coverage/scenario-manifest.md
-.axit/milestones/M3-unity-execution-coverage/phase4-acquisition-regression.md
-.axit/milestones/M3-unity-execution-coverage/phase8-gap-analysis.md
+.axit/milestones/M3-unity-execution-coverage/promotion-review.md
 ```
 
 ## Active Unity binding
@@ -89,88 +50,53 @@ Remaining unbound capabilities are exactly:
 - `unity.component.inspect`
 - `unity.console.inspect`
 
-The binding's `active` status records reviewed operation contracts; it does
-not claim current transport connectivity. Compile-internal identity-resource
-reads and Console diagnostics do not map another Capability.
+Binding `active` means reviewed operation definition, not current transport connectivity.
 
-## QuickGun System and evidence boundary
+## Model / cost policy
+
+Canonical policy:
+
+```text
+.axit/policies/model-routing.md
+```
+
+Defaults:
+
+```text
+primary orchestrator = gpt-5.6-sol / xhigh
+all child lanes       = gpt-5.6-luna / medium
+```
+
+The child rule includes explorers, workers, Unity/MCP evidence lanes, repair/recovery agents, independent verifiers, closure verifiers, report authors, and custom sub-agents.
+
+Do not silently escalate a child to Terra/Sol or above `medium`. Only an explicit current human instruction may authorize a bounded override.
+
+Historical M3 used Sol/max children; do not reinterpret that historical run as Luna/medium.
+
+## Stable execution rules
+
+- Root `.axit/workspace.yaml` is the Workspace router.
+- `safety.check_git_status: false`; Git status is not a readiness gate.
+- Unity MCP setup remains manually configured/user-owned.
+- Path-addressed runtime operations must resolve current full runtime identity; do not infer complete scene paths from prefab hierarchy.
+- Unity 6 compile evidence requires fresh-cycle correlation, a distinct later terminal observation, exact identity re-resolution, and complete diagnostics paging.
+- Milestone closure must persist the closure-verifier result and pass a post-verdict consistency audit before `MILESTONE_DONE`.
+- Detailed completed-milestone history belongs in report/retrospective/manifest/promotion-review, not this active file.
+
+## QuickGun System
 
 ```text
 system: unity-client
 source: src/QuickGun-MVP
-repository: ngocphat03/QuickGun-MVP
+canonical repository: ngocphat03/QuickGun-MVP
 canonical ref: release
-current baseline commit: c35143a6ea72dd17e591e67b1e965e10a0b15a27
+M3 promoted production fix commit: e2e1b1b6f3b0720d91e51def6b610f5714e17c52
 ```
 
-Scenario source/test edits and current Workspace milestone artifacts remain
-`local-or-separately-tracked` unless stronger pushed provenance is actually
-proved. Live Unity identity, compilation, and diagnostic observations remain
-`ephemeral-runtime`.
-
-The current bounded product delta is:
-
-- `AudioSourcePool.Release` enqueues only when an active lease is removed;
-- the root `AudioSourcePoolTests` harness adds the duplicate-release regression
-  and now covers all three accepted ownership cases.
-
-No M3 commit, push, or pull request is claimed. The unchanged System baseline
-at the commit above remains `system-canonical-pushed`; the current source/test
-delta remains `local-or-separately-tracked`.
-
-## Safety and runtime boundary
-## Model / cost policy
-
-- Primary orchestrator: `gpt-5.6-sol / xhigh`.
-- Every child/sub-agent lane, including independent verifier: `gpt-5.6-luna / medium`.
-- Do not escalate a child lane to Terra/Sol or above `medium` reasoning unless the user explicitly changes this policy.
-- A fresh milestone session must verify the effective primary value; configured intent alone is insufficient.
-
-## Pre-M3 hardening completed
-
-
-`.axit/workspace.yaml` keeps `safety.check_git_status: false`; Git status is
-not a readiness gate. This does not authorize reset, clean, revert,
-destructive deletion, or blind overwrite.
-
-Unity MCP remains manually configured and user-owned. Runtime/Harness policy
-owns authorization, and `verify-change` owns evidence classification and
-verdicts.
-- Runtime Binding validation Case 8 requires current full runtime target identity to be resolved before path-addressed runtime acquisition/mutation. Do not infer the complete scene path from prefab hierarchy.
-- Milestone closure/templates support System-aware Git provenance.
-- Post-promotion active state is intentionally compact; completed milestone details live in their durable artifacts.
-
-## Workspace safety
-
-Current configuration:
-
-```yaml
-safety:
-  check_git_status: false
-```
-
-Git status is not a readiness gate. This does not authorize reset, clean, revert, destructive deletion, or blind overwrite.
-
-Unity MCP remains manually configured/user-owned. Axit may use an already ready transport but must not install/configure/start/repair it.
-
-## M3 readiness requirement
-
-Before any M3 mapping/edit work, verify:
-
-- fresh effective primary = `gpt-5.6-sol / xhigh`;
-- child/sub-agent default = `gpt-5.6-luna / medium`;
-- sub-agent execution available;
-- intended QuickGun editor/project reachable through user-configured Unity MCP;
-- safe initial editor state;
-- current Unity version/project identity;
-- current QuickGun System repo/ref/commit when available;
-- existing M1 three-capability binding still valid;
-- `unity.compile` is still unbound before live transport discovery.
+Resolve moving repository heads again when future evidence is acquired.
 
 ## Next action
 
-Run final independent closure re-verification against the repaired binding and
-current Phase 4/7 evidence. If it accepts the candidate, review the M3 report
-and retrospective for explicit human promotion. If it finds a defect,
-repair/reverify M3 first. Do not mark M3 `HUMAN_PROMOTED` or start M4
-automatically.
+User + assistant decide the smallest valuable next milestone.
+
+Do not auto-start M4. If a real second interacting System does not yet exist with accepted boundaries, reconsider milestone ordering rather than manufacturing a cross-system benchmark.
