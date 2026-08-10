@@ -1,102 +1,122 @@
 # Axit Workspace Active State
 
-Updated: 2026-08-10
-Status: M3-human-promoted-awaiting-next-milestone-design
+Updated: 2026-08-11
+Status: M5-designed-awaiting-target-bootstrap
 
 ## Current milestone
 
 ```text
-none active
+M5 — Project Bootstrap & Knowledge Plane
 ```
 
-M3 — Unity Execution Coverage is **HUMAN_PROMOTED**. M4 has not started and no next milestone execution plan is currently authorized.
-
-If the user asks to continue the roadmap before a new milestone is deliberately accepted, stop at planning/review rather than inferring M4 execution from the mockup.
-
-## Promoted milestone pointers
+Control plan:
 
 ```text
-M1 -> .axit/milestones/M1-unity-runtime-binding/
-M2 -> .axit/milestones/M2-autonomous-bounded-development/
-M3 -> .axit/milestones/M3-unity-execution-coverage/
+.axit/milestones/M5-project-bootstrap-knowledge-plane/plan.md
 ```
 
-M3 human promotion record:
+Target bootstrap contract:
 
 ```text
-.axit/milestones/M3-unity-execution-coverage/promotion-review.md
+.axit/milestones/M5-project-bootstrap-knowledge-plane/target-bootstrap.md
 ```
 
-## Active Unity binding
-
-Reviewed definition:
+Selection rationale:
 
 ```text
-.axit/bindings/unity-client/coplaydev-unity-mcp.yaml
+.axit/milestones/M5-project-bootstrap-knowledge-plane/selection-review.md
 ```
 
-Active mappings are exactly:
+M5 is deliberately selected ahead of M4. M4 is deferred until a real accepted workspace contains at least two interacting Systems with an executable boundary. Do not manufacture a second System or cross-system benchmark.
 
-- `unity.prefab.inspect`
-- `unity.serialized-fields.inspect`
-- `unity.playmode.verify`
-- `unity.compile`
+## Promotion state
 
-Remaining unbound capabilities are exactly:
+```text
+M1 — Unity Runtime Binding: HUMAN_PROMOTED
+M2 — Autonomous Bounded Development: HUMAN_PROMOTED
+M3 — Unity Execution Coverage: HUMAN_PROMOTED
+M4 — Cross-System Workspace: DEFERRED_WAITING_REAL_SECOND_SYSTEM
+M5 — Project Bootstrap & Knowledge Plane: CURRENT_DESIGNED_AWAITING_TARGET_BOOTSTRAP
+M6 — Axit-Code Productization: NOT_AUTHORIZED
+```
 
-- `unity.project.inspect`
-- `unity.tests.run`
-- `unity.scene.inspect`
-- `unity.component.inspect`
-- `unity.console.inspect`
+## M5 target
 
-Binding `active` means reviewed operation definition, not current transport connectivity.
+```text
+repository: ngocphat03/Axit-Code
+canonical ref: release
+execution root: trusted writable local Axit-Code checkout root
+local path: intentionally unresolved
+```
+
+Do not guess the Axit-Code local path. Do not perform Axit-Code product edits from Axit-Game-Studios or through GitHub/cloud writes as a substitute for a writable target workspace.
+
+The long M5 target run must start from a fresh trusted Codex session at the Axit-Code root after target-local project model routing is present before session start.
 
 ## Model / cost policy
 
-Canonical policy:
+Canonical Game-Studios policy:
 
 ```text
 .axit/policies/model-routing.md
 ```
 
-Defaults:
+M5 required allocation:
 
 ```text
 primary orchestrator = gpt-5.6-sol / xhigh
 all child lanes       = gpt-5.6-luna / medium
 ```
 
-The child rule includes explorers, workers, Unity/MCP evidence lanes, repair/recovery agents, independent verifiers, closure verifiers, report authors, and custom sub-agents.
+This includes explorers, bootstrap authors, implementation workers, test/build lanes, recovery agents, independent verifiers, closure verifiers, and report authors.
 
-Do not silently escalate a child to Terra/Sol or above `medium`. Only an explicit current human instruction may authorize a bounded override.
+No silent child escalation. Only an explicit current human instruction may authorize a bounded override. M5 expected model override count is zero.
 
-Historical M3 used Sol/max children; do not reinterpret that historical run as Luna/medium.
+Because project-scoped Codex defaults are loaded at session start, target model routing must be prepared before launching the long Axit-Code session; changing it after children have spawned does not prove compliance.
 
-## Stable execution rules
+## M5 authoritative target anchors
 
-- Root `.axit/workspace.yaml` is the Workspace router.
-- `safety.check_git_status: false`; Git status is not a readiness gate.
-- Unity MCP setup remains manually configured/user-owned.
-- Path-addressed runtime operations must resolve current full runtime identity; do not infer complete scene paths from prefab hierarchy.
-- Unity 6 compile evidence requires fresh-cycle correlation, a distinct later terminal observation, exact identity re-resolution, and complete diagnostics paging.
-- Milestone closure must persist the closure-verifier result and pass a post-verdict consistency audit before `MILESTONE_DONE`.
-- Detailed completed-milestone history belongs in report/retrospective/manifest/promotion-review, not this active file.
-
-## QuickGun System
+Reacquire current target truth at run time. Current known source hierarchy:
 
 ```text
-system: unity-client
-source: src/QuickGun-MVP
-canonical repository: ngocphat03/QuickGun-MVP
-canonical ref: release
-M3 promoted production fix commit: e2e1b1b6f3b0720d91e51def6b610f5714e17c52
+docs/PLAN.md          = canonical product goal/scope/roadmap
+README.md             = current repository summary
+docs/architecture.md  = architecture detail subordinate to PLAN
+package.json          = target-native workspace validation scripts
 ```
 
-Resolve moving repository heads again when future evidence is acquired.
+Current known repository validation entrypoint:
+
+```text
+npm run verify
+```
+
+Do not freeze these facts if the target repository has changed; current target files win.
+
+## Stable promoted foundations carried into M5
+
+- Core remains intentionally small: four Profiles, two Skills, one Workflow.
+- Evidence-driven evolution; no speculative Profile/Skill/Workflow/Capability growth.
+- Milestone automation is high inside one accepted milestone and stops for human promotion review.
+- Closure verifier result must be persisted, followed by a fresh post-verdict consistency audit, before `MILESTONE_DONE`.
+- Git status is not a universal readiness gate when workspace policy disables it; never reset/clean/revert unrelated work.
+- Evidence provenance must distinguish canonical target source, generated bootstrap metadata, local-only execution evidence, and ephemeral runtime/process evidence.
+
+## QuickGun / Unity foundation remains promoted
+
+Active reviewed Unity mappings remain exactly:
+
+```text
+unity.prefab.inspect
+unity.serialized-fields.inspect
+unity.playmode.verify
+unity.compile
+```
+
+The remaining five Unity capabilities stay unbound until demonstrated need. M5 must not expand Unity Runtime Bindings merely because it is the current milestone.
 
 ## Next action
 
-User + assistant decide the smallest valuable next milestone.
+Prepare the M5 target-local bootstrap in the user's Axit-Code checkout, then start a fresh trusted Codex session from the Axit-Code repository root and execute the transferred M5 runbook continuously.
 
-Do not auto-start M4. If a real second interacting System does not yet exist with accepted boundaries, reconsider milestone ordering rather than manufacturing a cross-system benchmark.
+Do not start M5 product work from the current Game-Studios root. Do not start M4 or M6 automatically.
