@@ -100,14 +100,21 @@ local-or-separately-tracked
 ephemeral-runtime
 ```
 
+## Model / cost policy
+
+- Primary orchestrator: `gpt-5.6-sol / xhigh`.
+- Every child/sub-agent lane, including independent verifier: `gpt-5.6-luna / medium`.
+- Do not escalate a child lane to Terra/Sol or above `medium` reasoning unless the user explicitly changes this policy.
+- A fresh milestone session must verify the effective primary value; configured intent alone is insufficient.
+
 ## Pre-M3 hardening completed
 
 - M2 human promotion recorded.
 - Project primary reasoning config changed from `max` to `xhigh`.
-- Sub-agent default remains `gpt-5.6-sol / max`.
-- M3 Phase 0 must verify effective primary `gpt-5.6-sol / xhigh` in a fresh trusted session; configured intent alone is insufficient.
-- Runtime Binding validation Case 8 now requires current full runtime target identity to be resolved before path-addressed runtime acquisition/mutation. Do not infer the complete scene path from prefab hierarchy.
-- Milestone closure/templates now support System-aware Git provenance.
+- Child/sub-agent default changed from `gpt-5.6-sol / max` to `gpt-5.6-luna / medium` for cost control.
+- Custom `axit-verifier` also uses `gpt-5.6-luna / medium`.
+- Runtime Binding validation Case 8 requires current full runtime target identity to be resolved before path-addressed runtime acquisition/mutation. Do not infer the complete scene path from prefab hierarchy.
+- Milestone closure/templates support System-aware Git provenance.
 - Post-promotion active state is intentionally compact; completed milestone details live in their durable artifacts.
 
 ## Workspace safety
@@ -128,6 +135,7 @@ Unity MCP remains manually configured/user-owned. Axit may use an already ready 
 Before any M3 mapping/edit work, verify:
 
 - fresh effective primary = `gpt-5.6-sol / xhigh`;
+- child/sub-agent default = `gpt-5.6-luna / medium`;
 - sub-agent execution available;
 - intended QuickGun editor/project reachable through user-configured Unity MCP;
 - safe initial editor state;
