@@ -8,14 +8,22 @@ This is the human/assistant roadmap alignment map, not an executable plan. Execu
 
 Inside an accepted milestone:
 
-- primary orchestrator: `gpt-5.6-sol / xhigh`;
-- every child lane: `gpt-5.6-luna / medium` by default under `.axit/policies/model-routing.md`;
-- no silent child model escalation;
+```text
+primary = gpt-5.6-sol / xhigh
+child preferred = gpt-5.6-luna / medium when supported
+child compatibility fallback = gpt-5.6-terra / medium when Luna is unavailable
+child Sol = forbidden without explicit current human override
+```
+
+Also:
+
 - parallelize only materially independent read-heavy work;
 - serialize overlapping writes and editor/runtime mutations;
+- do not spawn a new child merely for every phase/checkpoint;
 - independently verify accepted outcomes;
-- persist report + retrospective + closure-verifier verdict;
-- run a post-verdict consistency audit;
+- persist the **actual** closure-verifier verdict after it returns;
+- run a fresh post-verdict consistency audit;
+- record terminal end-to-end wall-clock for long-run comparisons;
 - stop for human promotion review.
 
 ## M0 — Foundation Contracts
@@ -44,26 +52,11 @@ Proved materially different bounded tasks, worker/verifier separation, recovery/
 
 ## M3 — Unity Execution Coverage
 
-Status: HUMAN_PROMOTED on 2026-08-10
+Status: HUMAN_PROMOTED
 
-Promotion review:
+Proved live `unity.compile`, full QuickGun compile evidence, a REAL product fix, bounded repair, and independent closure.
 
-```text
-.axit/milestones/M3-unity-execution-coverage/promotion-review.md
-```
-
-Proved:
-
-- live-discovered `unity.compile` mapping;
-- full QuickGun baseline compile PASS;
-- compile success/error acquisition semantics;
-- REAL duplicate-release bug fix PASS;
-- final focused tests 3/3;
-- fresh post-change full Unity compile PASS;
-- closure repair + final closure PASS;
-- no additional `REQUIRED_NOW` Unity mapping.
-
-Active mappings after M3:
+Active Unity mappings after M3:
 
 ```text
 unity.prefab.inspect
@@ -74,73 +67,110 @@ unity.compile
 
 Five remaining Unity capabilities stay unbound until demonstrated need.
 
-Post-M3 hardening:
-
-- final closure verdict must be persisted before `MILESTONE_DONE`;
-- future child lanes use Luna/medium;
-- no silent child model escalation;
-- long milestones record wall-clock/model/child/replacement/repair accounting when observable.
-
 ## M4 — Cross-System Workspace
 
 Status: DEFERRED_WAITING_REAL_SECOND_SYSTEM
 
 Goal: prove one real end-to-end change/failure across at least two interacting Systems with executable contract awareness.
 
-M4 is deferred, not cancelled. Current QuickGun evidence does not justify inventing a backend/CMS/service or synthetic second System merely to preserve milestone numbering.
-
-Resume M4 only when a real accepted workspace exposes at least two interacting Systems with an executable provider/consumer boundary worth changing or diagnosing.
-
-Selection rationale:
-
-```text
-.axit/milestones/M5-project-bootstrap-knowledge-plane/selection-review.md
-```
+Do not manufacture a backend/CMS/service or synthetic second System merely to preserve milestone numbering.
 
 ## M5 — Project Bootstrap & Knowledge Plane
 
-Status: CURRENT_DESIGNED_AWAITING_TARGET_BOOTSTRAP
+Status: HUMAN_PROMOTED on 2026-08-11
 
 Target:
 
 ```text
-repository: ngocphat03/Axit-Code
-canonical ref: release
+ngocphat03/Axit-Code
+execution branch: feature/m5
 ```
 
-Control plan:
+Promotion review:
 
 ```text
-.axit/milestones/M5-project-bootstrap-knowledge-plane/plan.md
+.axit/milestones/M5-project-bootstrap-knowledge-plane/promotion-review.md
 ```
 
-Target bootstrap contract:
+Proved:
+
+- minimal pointer-first bootstrap in a materially different real repository;
+- canonical product truth remained target-owned (`docs/PLAN.md`);
+- independent bootstrap review PASS;
+- fresh-context continuity PASS without chat replay;
+- one frozen REAL Axit-Code task PASS;
+- focused tests 10/10 and repository verification PASS;
+- medium-tier delegated execution via `COMPAT_TERRA` with zero human model overrides;
+- final closure PASS after metadata-only persistence repair.
+
+Performance sample:
 
 ```text
-.axit/milestones/M5-project-bootstrap-knowledge-plane/target-bootstrap.md
+terminal end-to-end = 26m 02s
+execution-to-preclosure = 22m 12s
+child lanes = 19
+peak useful parallelism = 4
+replacements = 0
+REAL repair loops = 0
 ```
 
-Goal: prove Axit can enter a materially different real repository, discover only the durable context actually needed, recover that context in a fresh child without chat replay, and complete one frozen REAL task using target-native validation.
-
-Important execution boundary: product work must run from a trusted writable local Axit-Code checkout. Do not guess its filesystem path, do not mutate Axit-Code through cloud writes as a substitute, and do not start the long target run until project-scoped model routing is present before session start.
-
-M5 is also the first intended long-run benchmark of the durable cost policy:
-
-```text
-primary = Sol / xhigh
-children = Luna / medium
-model overrides expected = 0
-```
-
-Exit gate: minimal pointer-first bootstrap passes independent review, fresh-context continuity passes, one REAL target task passes target-native verification, model-routing control is compliant, cost/performance accounting is recorded when observable, and closure is durable before human promotion.
+Nineteen lanes is retained as an orchestration-overhead signal, not a hard failure threshold.
 
 ## M6 — Axit-Code Productization
 
-Status: mockup / NOT STARTED
+Status: DECOMPOSED / IN PROGRESS BY HUMAN-ACCEPTED SLICES
 
-Goal: migrate contracts proven in Axit-Game-Studios into the actual Axit-Code runtime: loading, routing, context, Capability/Binding resolution, Harness, Verification, Run Ledger, provider independence, and model/cost routing.
+Goal: migrate proven semantics into the actual Axit-Code runtime without copying the Game-Studios filesystem or growing multiple subsystems at once.
 
-M5 does not authorize M6. Bootstrap validation must not be presented as production runtime integration.
+### M6-A — Loader Foundation
+
+Status: DESIGNED_DEPENDENCY_GATED
+
+Plan:
+
+```text
+.axit/milestones/M6A-loader-foundation/plan.md
+```
+
+Selection review:
+
+```text
+.axit/milestones/M6A-loader-foundation/selection-review.md
+```
+
+Goal:
+
+```text
+accepted Profile / Rule / Workflow / Knowledge source
+  -> deterministic parse/validate
+  -> normalized typed records
+  -> source identity/provenance
+  -> explicit conflict/error semantics
+```
+
+M6-A deliberately excludes Context Builder, Harness, Tool Gateway, Run Ledger, provider integration, CLI orchestration, Unity integration and M6-B.
+
+Current dependency gate: Axit-Code PR #5 (`docs: establish AxitCode and Game Design rules`) is open/draft/unmerged and explicitly positions its rule/catalog foundation before loader implementation. Do not auto-merge or treat it as canonical. Human review must accept, revise or supersede the foundation before M6-A long execution.
+
+If accepted loader-input conventions remain unavailable at readiness:
+
+```text
+HARD_BLOCKER: KNOWLEDGE_FOUNDATION_NOT_ACCEPTED
+```
+
+### M6-B — Context Builder
+
+Status: mockup / NOT AUTHORIZED
+
+Goal: consume proven loader records to construct minimal, source-aware model context with explicit identity and deterministic tests.
+
+Do not design implementation details until M6-A is promoted.
+
+### Later M6 slices
+
+Future bounded slices may cover Harness/Tool Gateway, Verification, Run Ledger, provider/runtime integration, CLI orchestration, Capability/Binding resolution and Unity host integration only when their prerequisites are proven.
+
+Do not bundle them automatically.
 
 ## M7 — Long-Run Reliability & Release Readiness
 
@@ -156,9 +186,10 @@ Goal: prove long-running recovery, resumability, evidence trust, model-routing c
 4. Did setup/control assumptions fail?
 5. Did context survive without chat replay?
 6. Did the run create unnecessary framework growth?
-7. Did child lanes remain Luna/medium unless explicitly human-overridden?
-8. What were wall-clock duration, child count, replacements, repair loops, and model overrides?
-9. Which incident needs a permanent rule/regression?
-10. Is the next milestone still the smallest valuable next capability?
+7. Did child lanes stay on the allowed medium tier unless explicitly human-overridden?
+8. What were terminal wall-clock, child count, peak useful parallelism, replacements, repair loops, and model overrides?
+9. Was child-lane count proportional to actual independent work, or did orchestration churn dominate?
+10. Which incident needs a permanent rule/regression?
+11. Is the next slice still the smallest valuable next capability?
 
 Do not silently rewrite a milestone goal after execution starts.
