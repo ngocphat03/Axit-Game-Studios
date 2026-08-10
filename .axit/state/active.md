@@ -1,87 +1,109 @@
 # Axit Workspace Active State
 
 Updated: 2026-08-11
-Status: M5-bootstrap-materialized-awaiting-fresh-target-session
+Status: M6A-designed-dependency-gated
 
-## Current milestone
-
-```text
-M5 — Project Bootstrap & Knowledge Plane
-```
-
-Control plan:
-
-```text
-.axit/milestones/M5-project-bootstrap-knowledge-plane/plan.md
-```
-
-Runtime compatibility overlay:
-
-```text
-.axit/milestones/M5-project-bootstrap-knowledge-plane/runtime-compatibility.md
-```
-
-Selection rationale:
-
-```text
-.axit/milestones/M5-project-bootstrap-knowledge-plane/selection-review.md
-```
-
-M4 remains deferred until a real accepted workspace contains at least two interacting Systems with an executable boundary.
-
-## Promotion state
+## Roadmap state
 
 ```text
 M1 — Unity Runtime Binding: HUMAN_PROMOTED
 M2 — Autonomous Bounded Development: HUMAN_PROMOTED
 M3 — Unity Execution Coverage: HUMAN_PROMOTED
 M4 — Cross-System Workspace: DEFERRED_WAITING_REAL_SECOND_SYSTEM
-M5 — Project Bootstrap & Knowledge Plane: CURRENT_BOOTSTRAP_MATERIALIZED
-M6 — Axit-Code Productization: NOT_AUTHORIZED
+M5 — Project Bootstrap & Knowledge Plane: HUMAN_PROMOTED
+M6-A — Loader Foundation: DESIGNED_DEPENDENCY_GATED
+M6-B+ — NOT_AUTHORIZED
 ```
 
-## First M5 launch result
-
-The first attempt stopped correctly before product work:
+M5 promotion review:
 
 ```text
-Status: HARD_BLOCKER
-Blocker: TARGET_WORKSPACE_NOT_READY
-child lanes launched: 0
-product changes: none
-Git publish actions: none
-M6 actions: none
+.axit/milestones/M5-project-bootstrap-knowledge-plane/promotion-review.md
 ```
 
-Observed causes were wrong execution root and Luna not being exposed by the current child runtime. This was a setup/policy incident, not an M5 product failure.
-
-## Target bootstrap now materialized
-
-Axit-Code canonical target:
+M5 target audit branch:
 
 ```text
-repository: ngocphat03/Axit-Code
-ref: release
-latest bootstrap commit after materialization: 99f8275e7f325e7ebb9e1f59d27db6657548bf1a
+ngocphat03/Axit-Code@feature/m5
 ```
 
-Target execution bootstrap now exists in Axit-Code:
+Promoted M5 result: bootstrap review PASS, continuity PASS, REAL task PASS, repository verification PASS, final closure verifier PASS. Closure persistence was repaired in metadata only; no full rerun was required.
+
+Performance accounting retained from M5:
 
 ```text
-AGENTS.md
-.codex/config.toml
-.codex/agents/axit-verifier.toml
-.codex/m5/runbook.md
-.codex/m5/runtime-compatibility.md
+execution_to_preclosure = 22m 12s
+terminal_end_to_end     = 26m 02s
+child lanes             = 19
+peak useful parallelism = 4
+replacements            = 0
+REAL repair loops       = 0
+human model overrides   = 0
+child route             = COMPAT_TERRA / medium
 ```
 
-These files are execution/bootstrap metadata. They do not pre-create the M5 Knowledge Plane and do not replace `docs/PLAN.md` as Axit-Code product truth.
+## Current designed slice
 
-The user's local Axit-Code checkout must be synced to include these files before the fresh M5 session starts.
+```text
+M6-A — Profile / Rule / Workflow / Knowledge Loader Foundation
+```
+
+Plan:
+
+```text
+.axit/milestones/M6A-loader-foundation/plan.md
+```
+
+Selection/dependency review:
+
+```text
+.axit/milestones/M6A-loader-foundation/selection-review.md
+```
+
+M6-A is designed but **not ready for long implementation execution**.
+
+## Mandatory dependency gate
+
+At current review time, Axit-Code PR #5:
+
+```text
+PR: #5 docs: establish AxitCode and Game Design rules
+state: open
+draft: true
+merged: false
+role: declarative rule/catalog foundation intended to precede loader work
+```
+
+Do not automatically merge, rebase, close, or treat PR #5 as canonical.
+
+Before M6-A can run, human review must deliberately resolve the loader-input foundation. If canonical accepted source still lacks the required convention, M6-A readiness returns:
+
+```text
+HARD_BLOCKER: KNOWLEDGE_FOUNDATION_NOT_ACCEPTED
+```
+
+## M6-A scope boundary
+
+M6-A implements only the smallest accepted declarative loader foundation under the authoritative Axit-Code runtime boundary.
+
+It does not implement:
+
+```text
+Context Builder
+Harness / Tool Gateway
+Run Ledger
+provider integration
+CLI run orchestration
+Unity integration
+Capability/Binding runtime
+M6-B
+```
+
+Do not copy Game-Studios `.axit` wholesale into Axit-Code. Productize proven semantics as Axit-Code-native contracts.
 
 ## Model / cost policy
 
-Canonical Game-Studios policy:
+Canonical policy:
 
 ```text
 .axit/policies/model-routing.md
@@ -90,42 +112,38 @@ Canonical Game-Studios policy:
 Accepted hierarchy:
 
 ```text
-primary orchestrator = gpt-5.6-sol / xhigh
-child preferred      = gpt-5.6-luna / medium when supported
-child compat fallback= gpt-5.6-terra / medium when Luna is unavailable
-child Sol            = forbidden unless explicitly human-authorized
+primary = gpt-5.6-sol / xhigh
+child preferred = gpt-5.6-luna / medium when supported
+child compatibility fallback = gpt-5.6-terra / medium when Luna is unavailable
+child Sol = forbidden without explicit current human override
 ```
 
-The current observed runtime does not expose Luna child execution, so the target `.codex/config.toml` uses Terra/medium as `COMPAT_TERRA`. This does not count as a human model override.
+M5 demonstrated `COMPAT_TERRA` successfully. This does not permanently replace the preference for Luna if a future runtime exposes it.
 
-Never silently fall back to child Sol or reasoning above medium.
+## Stable execution rules
 
-## M5 authoritative target anchors
+- Automation remains high inside one accepted milestone and stops for human review.
+- Actual final verifier verdict must be persisted after it returns, then consistency-audited before `MILESTONE_DONE`.
+- Use terminal end-to-end duration for milestone latency comparison; pre-closure duration may be retained as a secondary metric.
+- Spawn child lanes for materially independent work or verification independence, not merely one new lane per phase/checkpoint.
+- Preserve unrelated filesystem state; do not reset/clean/revert unrelated work.
+- Evidence-driven evolution remains mandatory; no speculative Profile/Skill/Workflow/Capability growth.
 
-Reacquire current target truth at run time:
+## QuickGun / Unity foundation
+
+Promoted Unity mappings remain exactly:
 
 ```text
-docs/PLAN.md          = canonical product goal/scope/roadmap
-README.md             = current repository summary
-docs/architecture.md  = architecture detail subordinate to PLAN
-package.json          = target-native workspace validation scripts
+unity.prefab.inspect
+unity.serialized-fields.inspect
+unity.playmode.verify
+unity.compile
 ```
 
-Current known repository validation entrypoint is `npm run verify`; current target files win if changed.
-
-## Stable promoted foundations carried into M5
-
-- Core remains intentionally small; no speculative Profile/Skill/Workflow/Capability growth.
-- Automation is high inside one accepted milestone and stops for human promotion review.
-- Closure verifier result must be persisted and post-verdict consistency-audited before `MILESTONE_DONE`.
-- Preserve unrelated filesystem state; never reset/clean/revert unrelated user work.
-- Evidence provenance must distinguish canonical target truth, M5 bootstrap metadata, local-only execution evidence, and ephemeral process evidence.
+Five remaining Unity capabilities stay unbound until demonstrated need. M6-A must not expand Unity bindings.
 
 ## Next action
 
-1. Sync/pull the local `ngocphat03/Axit-Code` `release` checkout so the new `AGENTS.md` and `.codex/**` bootstrap files are present.
-2. Open a **fresh trusted Codex session at the Axit-Code repository root**.
-3. Run `.codex/m5/runbook.md`; it already includes the accepted runtime compatibility route.
-4. Run continuously until M5 terminal state and stop for human review.
+Human + assistant review Axit-Code PR #5 and decide whether its rule/catalog foundation should be accepted, revised, or superseded.
 
-Do not rerun M5 from Axit-Game-Studios. Do not start M4 or M6 automatically.
+Do not start the M6-A long run until that dependency decision is explicit. Do not start M6-B or revive M4 automatically.
