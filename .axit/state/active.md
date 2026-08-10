@@ -1,7 +1,7 @@
 # Axit Workspace Active State
 
 Updated: 2026-08-11
-Status: M5-repair-ready-awaiting-target-root
+Status: M5-bootstrap-materialized-awaiting-fresh-target-session
 
 ## Current milestone
 
@@ -13,12 +13,6 @@ Control plan:
 
 ```text
 .axit/milestones/M5-project-bootstrap-knowledge-plane/plan.md
-```
-
-Target bootstrap contract:
-
-```text
-.axit/milestones/M5-project-bootstrap-knowledge-plane/target-bootstrap.md
 ```
 
 Runtime compatibility overlay:
@@ -33,7 +27,7 @@ Selection rationale:
 .axit/milestones/M5-project-bootstrap-knowledge-plane/selection-review.md
 ```
 
-M5 is deliberately selected ahead of M4. M4 remains deferred until a real accepted workspace contains at least two interacting Systems with an executable boundary.
+M4 remains deferred until a real accepted workspace contains at least two interacting Systems with an executable boundary.
 
 ## Promotion state
 
@@ -42,51 +36,58 @@ M1 — Unity Runtime Binding: HUMAN_PROMOTED
 M2 — Autonomous Bounded Development: HUMAN_PROMOTED
 M3 — Unity Execution Coverage: HUMAN_PROMOTED
 M4 — Cross-System Workspace: DEFERRED_WAITING_REAL_SECOND_SYSTEM
-M5 — Project Bootstrap & Knowledge Plane: CURRENT_REPAIR_READY_AWAITING_TARGET_ROOT
+M5 — Project Bootstrap & Knowledge Plane: CURRENT_BOOTSTRAP_MATERIALIZED
 M6 — Axit-Code Productization: NOT_AUTHORIZED
 ```
 
-## M5 first launch result
+## First M5 launch result
 
-The first M5 attempt stopped correctly before product work:
+The first attempt stopped correctly before product work:
 
 ```text
 Status: HARD_BLOCKER
 Blocker: TARGET_WORKSPACE_NOT_READY
-child lanes successfully launched: 0
+child lanes launched: 0
 product changes: none
 Git publish actions: none
 M6 actions: none
 ```
 
-Observed causes:
+Observed causes were wrong execution root and Luna not being exposed by the current child runtime. This was a setup/policy incident, not an M5 product failure.
 
-- the Codex session was rooted at Axit-Game-Studios rather than Axit-Code;
-- the accepted local Axit-Code path was intentionally unresolved;
-- the current child runtime exposed Sol and Terra but not Luna.
+## Target bootstrap now materialized
 
-This is a launch/setup-policy incident, not an M5 product failure. Do not rerun from the Game-Studios root.
-
-## M5 target
+Axit-Code canonical target:
 
 ```text
 repository: ngocphat03/Axit-Code
-canonical ref: release
-execution root: trusted writable local Axit-Code checkout root
-local path: selected by the user when opening the target checkout; do not guess
+ref: release
+latest bootstrap commit after materialization: 99f8275e7f325e7ebb9e1f59d27db6657548bf1a
 ```
 
-Do not perform Axit-Code product edits from Axit-Game-Studios or through GitHub/cloud writes as a substitute for a writable target workspace.
+Target execution bootstrap now exists in Axit-Code:
+
+```text
+AGENTS.md
+.codex/config.toml
+.codex/agents/axit-verifier.toml
+.codex/m5/runbook.md
+.codex/m5/runtime-compatibility.md
+```
+
+These files are execution/bootstrap metadata. They do not pre-create the M5 Knowledge Plane and do not replace `docs/PLAN.md` as Axit-Code product truth.
+
+The user's local Axit-Code checkout must be synced to include these files before the fresh M5 session starts.
 
 ## Model / cost policy
 
-Canonical policy:
+Canonical Game-Studios policy:
 
 ```text
 .axit/policies/model-routing.md
 ```
 
-Accepted routing:
+Accepted hierarchy:
 
 ```text
 primary orchestrator = gpt-5.6-sol / xhigh
@@ -95,24 +96,13 @@ child compat fallback= gpt-5.6-terra / medium when Luna is unavailable
 child Sol            = forbidden unless explicitly human-authorized
 ```
 
-For the currently observed runtime, the compatible child route is:
+The current observed runtime does not expose Luna child execution, so the target `.codex/config.toml` uses Terra/medium as `COMPAT_TERRA`. This does not count as a human model override.
 
-```text
-COMPAT_TERRA
-model: gpt-5.6-terra
-reasoning: medium
-reason: LUNA_UNAVAILABLE
-```
-
-This is compliant and does not count as a human model override. If a future runtime exposes Luna, switch back to `PREFERRED_LUNA`.
-
-Never silently fall back to child Sol. Child reasoning above medium also requires explicit human override.
-
-Because project-scoped Codex defaults are loaded at session start, target model routing must be prepared before launching the fresh Axit-Code session.
+Never silently fall back to child Sol or reasoning above medium.
 
 ## M5 authoritative target anchors
 
-Reacquire current target truth at run time. Current known source hierarchy:
+Reacquire current target truth at run time:
 
 ```text
 docs/PLAN.md          = canonical product goal/scope/roadmap
@@ -121,42 +111,21 @@ docs/architecture.md  = architecture detail subordinate to PLAN
 package.json          = target-native workspace validation scripts
 ```
 
-Current known repository validation entrypoint:
-
-```text
-npm run verify
-```
-
-Do not freeze these facts if the target repository has changed; current target files win.
+Current known repository validation entrypoint is `npm run verify`; current target files win if changed.
 
 ## Stable promoted foundations carried into M5
 
-- Core remains intentionally small: four Profiles, two Skills, one Workflow.
-- Evidence-driven evolution; no speculative Profile/Skill/Workflow/Capability growth.
-- Milestone automation is high inside one accepted milestone and stops for human promotion review.
-- Closure verifier result must be persisted, followed by a fresh post-verdict consistency audit, before `MILESTONE_DONE`.
-- Git status is not a universal readiness gate when workspace policy disables it; never reset/clean/revert unrelated work.
-- Evidence provenance must distinguish canonical target source, generated bootstrap metadata, local-only execution evidence, and ephemeral runtime/process evidence.
-
-## QuickGun / Unity foundation remains promoted
-
-Active reviewed Unity mappings remain exactly:
-
-```text
-unity.prefab.inspect
-unity.serialized-fields.inspect
-unity.playmode.verify
-unity.compile
-```
-
-The remaining five Unity capabilities stay unbound until demonstrated need. M5 must not expand Unity Runtime Bindings merely because it is current.
+- Core remains intentionally small; no speculative Profile/Skill/Workflow/Capability growth.
+- Automation is high inside one accepted milestone and stops for human promotion review.
+- Closure verifier result must be persisted and post-verdict consistency-audited before `MILESTONE_DONE`.
+- Preserve unrelated filesystem state; never reset/clean/revert unrelated user work.
+- Evidence provenance must distinguish canonical target truth, M5 bootstrap metadata, local-only execution evidence, and ephemeral process evidence.
 
 ## Next action
 
-1. Open/select the real local Axit-Code checkout.
-2. Prepare target-local project Codex config before session start using the current compatible child route (`Terra / medium` unless Luna is demonstrably available).
-3. Make the M5 plan plus runtime compatibility overlay locally readable as execution metadata.
-4. Start a fresh trusted Codex session at the Axit-Code repository root.
-5. Run M5 continuously.
+1. Sync/pull the local `ngocphat03/Axit-Code` `release` checkout so the new `AGENTS.md` and `.codex/**` bootstrap files are present.
+2. Open a **fresh trusted Codex session at the Axit-Code repository root**.
+3. Run `.codex/m5/runbook.md`; it already includes the accepted runtime compatibility route.
+4. Run continuously until M5 terminal state and stop for human review.
 
-Do not start M5 again from Game-Studios root. Do not start M4 or M6 automatically.
+Do not rerun M5 from Axit-Game-Studios. Do not start M4 or M6 automatically.
