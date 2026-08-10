@@ -141,12 +141,7 @@ Context:
 Continuous execution stopped because a nested Unity repository reported many modified/deleted/untracked files even though the root workspace intentionally may contain nested repos/submodules or untracked systems.
 
 Decision / Root cause:
-Add workspace setting:
-
-```yaml
-safety:
-  check_git_status: false
-```
+Add workspace setting `safety.check_git_status: false`.
 
 Why:
 Git topology/tracking state is not universally a valid readiness gate for the user's workspace style.
@@ -171,7 +166,7 @@ Why:
 This maximizes autonomy without allowing unattended architectural drift across major capability boundaries.
 
 Framework effect:
-Future Master Roadmap should compose milestone execution plans and require explicit milestone promotion after review.
+The roadmap composes milestone execution plans and requires explicit human promotion after review.
 
 Regression / follow-up:
 Every milestone retrospective must convert recurring pipeline failures into framework/config fixes plus regression protection where appropriate.
@@ -190,10 +185,10 @@ Why:
 Long autonomous runs need durable handoff artifacts so the user and assistant can review results after conversation/session context has changed.
 
 Framework effect:
-`.axit/roadmap/milestone-closure.md` is now an active contract. Every future milestone plan must persist `.axit/milestones/<id>-<slug>/report.md` and `retrospective.md` before returning `MILESTONE_DONE`, then stop for human promotion review.
+`.axit/roadmap/milestone-closure.md` is active. Every future milestone plan must persist report + retrospective before returning `MILESTONE_DONE`, then stop for human promotion review.
 
 Regression / follow-up:
-Use `.axit/templates/milestone-report.md` and `.axit/templates/milestone-retrospective.md`; closure verification must check documentation/state consistency and durable incident hardening.
+Use milestone report/retrospective templates; closure verification must check documentation/state consistency and durable incident hardening.
 
 ## 2026-08-10 — Verify effective reasoning, not configured intent
 Type: incident
@@ -203,51 +198,150 @@ Context:
 M1 loaded the trusted project config, but the primary session resolved to `gpt-5.6-sol / medium` while `.codex/config.toml` requested `model_reasoning_effort = "max"`. Spawned sub-agents were observed at Sol/max.
 
 Decision / Root cause:
-The project used a primary Codex config value outside the currently documented `model_reasoning_effort` enum, whose strongest documented value is `xhigh`. Configured intent was incorrectly treated as sufficient until the live effective session exposed the mismatch.
+Configured intent was incorrectly treated as sufficient until the live effective session exposed the mismatch.
 
 Why:
 Long autonomous milestones should not silently run at a materially lower primary reasoning level than intended.
 
 Framework effect:
-Milestone readiness must inspect effective primary/sub-agent model and reasoning levels. For the current Codex config surface, use the strongest supported primary setting rather than assuming the underlying model API's `max` value is accepted by the Codex config key.
+Milestone readiness must inspect effective primary/sub-agent model and reasoning levels.
 
 Regression / follow-up:
-The issue remains unresolved. A later explicit decision permits M2 to proceed before repair, but does not mark this incident fixed.
+After M2 promotion the project primary setting is changed to `xhigh`. M3 must verify a fresh effective primary `gpt-5.6-sol / xhigh`; the config edit alone does not close the incident.
 
 ## 2026-08-10 — Classify evidence provenance without forcing Git tracking
+Type: decision
+Status: superseded
+
+Context:
+M1 reported local evidence not present on the pushed root GitHub branch.
+
+Decision / Root cause:
+Initially distinguish canonical pushed evidence, separately tracked/untracked local evidence, and ephemeral runtime evidence.
+
+Why:
+Review needed honest auditability without forcing Git tracking.
+
+Framework effect:
+Initial milestone templates used root-oriented provenance classes.
+
+Regression / follow-up:
+Superseded by the System-aware provenance decision below after QuickGun's separate canonical repository was audited.
+
+Superseded by: 2026-08-10 — Evidence provenance is Workspace/System aware
+
+## 2026-08-10 — Promote M1 and defer primary reasoning repair through M2
+Type: promotion
+Status: superseded
+
+Context:
+M1 passed technical review and the user approved moving to M2 while explicitly deferring the reasoning mismatch.
+
+Decision / Root cause:
+Promote M1 and authorize M2 with `DEFERRED_PRIMARY_REASONING_CONFIG` as an M2-only exception.
+
+Why:
+Priority was validating autonomous bounded development without pretending the reasoning mismatch was fixed.
+
+Framework effect:
+M2 could proceed while recording the issue.
+
+Regression / follow-up:
+The exception expired at M2 human review. M3 does not inherit it.
+
+Superseded by: 2026-08-10 — Primary project reasoning set to xhigh for M3
+
+## 2026-08-10 — Runtime paths require current target resolution
+Type: incident
+Status: active
+
+Context:
+M1 and M2 independently repeated the same hierarchy error: a prefab-relative path omitted the live `GameEnvironment/` scene wrapper.
+
+Decision / Root cause:
+Prefab/source hierarchy was incorrectly treated as the complete runtime hierarchy.
+
+Why:
+Two milestones repeating the same failure establishes a durable procedural gap.
+
+Framework effect:
+Runtime Binding validation Case 8 now requires current full runtime target identity to be acquired/derived before path-addressed runtime operations. Refresh/reload invalidates stale identity and requires re-resolution.
+
+Regression / follow-up:
+Do not add a new Capability solely for target resolution when ordinary current read-only evidence is sufficient. M3 must exercise this rule whenever it uses path-addressed runtime evidence.
+
+## 2026-08-10 — Evidence provenance is Workspace/System aware
 Type: decision
 Status: active
 
 Context:
-M1 reported a local deterministic test change and 16/16 PASS, but the test source is not present on the pushed root GitHub branch because workspace Systems/tests may be untracked, nested, submodules, or separately tracked.
+Post-M2 audit found that QuickGun production changes were canonical and pushed in `ngocphat03/QuickGun-MVP` even though the root Axit-Game-Studios repository did not track them.
 
 Decision / Root cause:
-Remote review must distinguish canonical pushed evidence, separately tracked/untracked local evidence, and ephemeral runtime evidence instead of assuming every verified artifact is present in the root Git repository.
+Repository provenance belongs to the relevant Workspace/System boundary, not only the root repository.
 
 Why:
-The workspace intentionally does not require Git status/tracking as an execution gate, but review still needs honest auditability boundaries.
+A product Workspace may mount nested, submodule, or independently tracked Systems while still needing accurate canonical auditability.
 
 Framework effect:
-Milestone report/retrospective templates require evidence provenance classification.
+Use `workspace-canonical-pushed`, `system-canonical-pushed`, `local-or-separately-tracked`, and `ephemeral-runtime`. `system-canonical-pushed` records System id + repository + ref + commit when known. `unity-client` records `ngocphat03/QuickGun-MVP` / `release` as canonical repository metadata.
 
 Regression / follow-up:
-Do not force Git tracking solely for auditability. Never claim remote source inspection when evidence exists only in the local/separately tracked System; preserve the local run's recorded evidence and state the review limitation explicitly.
+Resolve moving branch commits at evidence time; never treat an old branch-head commit as timeless truth. Do not change Git topology solely for provenance.
 
-## 2026-08-10 — Promote M1 and defer primary reasoning repair through M2
+## 2026-08-10 — Primary project reasoning set to xhigh for M3
+Type: decision
+Status: active
+
+Context:
+The earlier project `max` setting did not yield a reliably observed maximum primary session, while M2 was explicitly allowed to defer the issue.
+
+Decision / Root cause:
+After M2 promotion, change the primary project setting to `model_reasoning_effort = "xhigh"` while retaining sub-agent default `max`.
+
+Why:
+This matches the strongest project-setting behavior we intend to validate empirically without weakening sub-agent reasoning that already worked in M1/M2.
+
+Framework effect:
+M3 Phase 0 requires effective fresh primary `gpt-5.6-sol / xhigh` and treats a lower/unverifiable value as `PRIMARY_REASONING_NOT_EFFECTIVE`.
+
+Regression / follow-up:
+Do not mark this incident fully resolved until a fresh trusted M3 session verifies the effective value.
+
+## 2026-08-10 — Promote M2 and prioritize Unity compile coverage
 Type: promotion
 Status: active
 
 Context:
-M1 Runtime Binding passed technical review and the user approved moving to M2, while explicitly stating that the primary reasoning mismatch still needs to be repaired later.
+M2 completed four frozen scenarios, context continuity, bounded lane replacement, and independent closure verification. A direct audit of `ngocphat03/QuickGun-MVP` confirmed the real S1 bug fix and S3 behavior-preserving refactor in canonical System source.
 
 Decision / Root cause:
-Promote M1 and authorize M2 now. Treat `DEFERRED_PRIMARY_REASONING_CONFIG` as a known unresolved M2-only exception rather than blocking M2.
+Promote M2 without rerun and open M3 — Unity Execution Coverage.
 
 Why:
-Current priority is validating autonomous bounded development. The reasoning mismatch is known, observable, and not being mistaken for a resolved state.
+The remaining repeated gap is no longer autonomous development behavior; it is trustworthy full Unity/project compilation after production changes, especially after QuickGun's Unity 2022 -> Unity 6 transition and large serialization/package churn.
 
 Framework effect:
-M2 readiness must record effective primary/sub-agent reasoning but may continue if the same known primary mismatch persists. M2 report/retrospective must carry the issue to the promotion review.
+M3 begins with live discovery and minimal mapping of `unity.compile`, then must prove a full QuickGun baseline compile and at least one REAL QuickGun product scenario with full Unity compile REQUIRED after production C# changes.
 
 Regression / follow-up:
-The exception expires at the M2 human review gate. M3 must not inherit it silently; the user and assistant must explicitly repair, re-defer, or otherwise decide the issue before M3 promotion.
+Do not bind all remaining Unity Capabilities. Additional mappings require demonstrated `REQUIRED_NOW` evidence during M3 gap analysis.
+
+## 2026-08-10 — Compact active state after promotion
+Type: decision
+Status: active
+
+Context:
+M2 proved continuity, but `active.md` accumulated a large completed-milestone transcript.
+
+Decision / Root cause:
+After human promotion, detailed completed history belongs in report/retrospective/scenario manifest rather than active state.
+
+Why:
+Long-running roadmap continuity must remain token-efficient and easy for a fresh agent to reconstruct.
+
+Framework effect:
+Milestone closure now requires post-promotion active-state compaction. `active.md` keeps only current milestone, pointers, stable routing/binding facts, unresolved debt, and next action.
+
+Regression / follow-up:
+Future continuity probes should succeed from compact active state plus durable pointers, not by carrying full prior transcripts forward.
