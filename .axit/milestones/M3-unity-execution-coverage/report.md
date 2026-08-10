@@ -1,207 +1,187 @@
 # M3 — Unity Execution Coverage Report
 
-Status: **candidate for `MILESTONE_DONE`**, pending final independent closure re-verification
-Review state: pending-human-review-after-final-closure-gate
-Human promotion: **NOT_PROMOTED**
+Status: **DONE**
+Closure verification: **PASS**
+Human promotion: **HUMAN_PROMOTED** on 2026-08-10
 Date: 2026-08-10
 
-`MILESTONE_DONE` is the execution/closure terminal state proposed by this
-report. It is not `HUMAN_PROMOTED`, does not authorize M4, and is not issued
-until a fresh independent closure verifier accepts the repaired artifacts and
-current evidence boundaries below.
+M3 execution, one bounded closure repair, final independent closure verification, remote code/artifact audit, and human promotion are complete. M4 was not started.
 
 ## Capability proven
 
-M3 demonstrated that Axit can acquire trustworthy full-project Unity script
-compilation evidence for the exact current QuickGun editor/project and use it
-as REQUIRED evidence after a bounded REAL production C# fix.
+M3 proved that Axit can acquire trustworthy full-project Unity script-compilation evidence for the exact current QuickGun editor/project and require a fresh full Unity compile after a bounded REAL production C# change.
 
-The live-discovered `unity.compile` acquisition is a composite:
+The reviewed active Unity binding now maps exactly:
 
-1. resolve exact current instance, project, and editor state;
+```text
+unity.prefab.inspect
+unity.serialized-fields.inspect
+unity.playmode.verify
+unity.compile
+```
+
+The remaining five declared Unity capabilities remain unbound:
+
+```text
+unity.project.inspect
+unity.tests.run
+unity.scene.inspect
+unity.component.inspect
+unity.console.inspect
+```
+
+No additional M3 capability was promoted because Phase 8 found `REQUIRED_NOW: none`.
+
+## Baseline compile result
+
+**PASS.**
+
+The live-discovered `unity.compile` acquisition uses the current CoplayDev Unity transport as a composite operation:
+
+1. resolve the exact current editor/project identity;
 2. clear the Unity Console to open a fresh diagnostic window;
-3. call `refresh_unity(mode=force, scope=scripts, compile=request,
-   wait_for_ready=false)`;
-4. establish `fresh_cycle_correlated` through one of three live-discovered
-   alternatives—sampled nonterminal state, an advanced compile marker, or an
-   advanced domain-reload marker—then establish `terminal_state_observed`
-   from a distinct later state snapshot;
-5. re-resolve exact instance/project identity after reload; and
-6. page detailed error/warning diagnostics from cursor zero through
-   `nextCursor == null`.
+3. request script compilation with the observed force/scripts/request operation;
+4. establish `fresh_cycle_correlated` from an accepted post-request signal;
+5. establish `terminal_state_observed` from a distinct later state observation;
+6. re-resolve exact identity after reload; and
+7. page compiler diagnostics to completion.
 
-Request acceptance is not compilation success. Acquisition outcome remains
-separate from the verifier's product/criterion verdict.
+Request acceptance is dispatch evidence, not compilation success. Acquisition outcome remains separate from the verification verdict.
 
-## Scenarios executed
+A fresh full QuickGun baseline compile reached terminal evidence with zero compiler errors.
 
-| Phase/scenario | Result | Durable outcome |
-|---|---|---|
-| Phase 0 readiness | `READY` | Authoritative fresh root turn context reported effective primary `gpt-5.6-sol / xhigh`; sub-agent execution reported `gpt-5.6-sol / max`. The exact QuickGun project was reachable in safe Edit Mode. |
-| Phase 1 live discovery | complete | The current CoplayDev interface supplied the composite operation contract above; no operation name was inferred. |
-| Phase 2 candidate mapping | independent `PASS` | Only `unity.compile` was added to the reviewed candidate scope; semantic ids, permission boundaries, outcome classes, and the original three mappings were preserved. |
-| Phase 3 baseline compile | independent `PASS` | A fresh full QuickGun Unity compile reached terminal evidence with zero compiler errors. A CoplayDev WebSocket warning during reload was recoverable transport/package noise, not a project compiler error or setup blocker. |
-| Phase 4 acquisition regression, closure-repair reacquisition | independent revalidation `PASS` | Reacquired error and clean branches each used distinct freshness observation A and later terminal observation B. The unique temporary `CS1029` fixture proved `acquired + compilation errors`; fixture, generated `.meta`, and marker cleanup were verified; final diagnostics returned `total=0`. |
-| `M3-REAL-01` contract | `FROZEN_APPROVED` before implementation | The accepted defect was duplicate `AudioSourcePool.Release` ownership causing one source to back two outstanding leases. |
-| `M3-REAL-01` implementation and fresh post-repair Phase 7 verification | independent `PASS` | Pre-fix reproduction failed for the expected alias reason; the current deterministic harness passed 3/3. An advanced domain-reload marker established compile freshness, a distinct later snapshot established terminal state, exact identity matched, and complete diagnostics returned `total=0`. No product repair or compile reacquisition retry occurred. |
-| Phase 8 gap analysis | complete | `REQUIRED_NOW: none`; no additional binding was authorized. |
-| Phase 9 binding promotion | independent `PASS` | `unity.compile` became active beside the three M1 mappings; the other five declared capabilities remain unbound. |
-| Initial final-closure verification | `FAIL` | The promoted binding required a sampled nonterminal boolean state even though Phase 1 discovery and marker-based Phase 4/7 evidence used other valid freshness signals; historical Phase 4 also reused one snapshot for freshness and terminal state. The gate correctly withheld `MILESTONE_DONE`. |
-| Closure repair loop 1 | binding repair independent `PASS` | The existing `unity.compile` mapping now accepts the three discovered freshness alternatives and separately requires a later terminal snapshot. No operation, permission, outcome, verdict boundary, semantic Capability, or mapped/unbound partition changed. |
+## Compile acquisition regression
 
-The REAL scenario changed only:
+Phase 4 independently demonstrated the important acquisition boundary:
 
-- `src/QuickGun-MVP/Assets/QuickGunCore/Scripts/Services/AudioSourcePool.cs`
-  — enqueue only when `_active.Remove(source)` proves an active lease;
-- `tests/QuickGun-MVP/AudioSourcePoolTests.cs`
-  — add the duplicate-release/non-alias regression and retain the two prior
-  ownership cases.
+```text
+acquired + compilation succeeds
+acquired + compilation errors exist
+unavailable
+denied
+transport_error
+```
 
-No public signature, state owner, package, asset, scene, prefab, binding, or
-semantic Capability changed as part of the product fix.
+A temporary bounded `#error AXIT_M3_PHASE4_INTENTIONAL_COMPILE_ERROR` fixture produced the expected fresh `CS1029` compiler diagnostic. The fixture and generated `.meta` were removed, the clean branch was reacquired, and complete diagnostics returned `total=0`.
 
-## Evidence summary
+The initial closure verifier found that historical evidence reused one state observation for both freshness and terminal proof and that the binding wording was narrower than live discovery. Closure repair loop 1 corrected only that evidence contract, then reacquired Phase 4 and Phase 7 evidence. Freshness and terminal state are now separate explicit flags and require separate observations.
 
-### Runtime and repository identity
+## REAL scenario — M3-REAL-01
 
-- Exact Unity project: `QuickGun-MVP` at
-  `/Volumes/FatDisk 1/DataProfiles/DataAXit/UnityProject/Axit-Game-Studios/src/QuickGun-MVP`.
-- Editor version: Unity `6000.4.8f1`; acquisition began and ended in safe Edit
-  Mode.
-- System baseline: `unity-client`, repository
-  `ngocphat03/QuickGun-MVP`, ref `release`, commit
-  `c35143a6ea72dd17e591e67b1e965e10a0b15a27`.
-- Local `HEAD` and local `origin/release` both resolved to that commit during
-  the run; no network fetch was performed.
+Scenario type: **REAL bug fix**.
 
-### Required evidence and verdict boundaries
+Accepted defect: duplicate `AudioSourcePool.Release` calls could enqueue one source twice, allowing two later outstanding leases to alias the same `AudioSource`.
 
-- Baseline compilation: fresh `acquired + compilation succeeds`; independent
-  compile criterion `PASS`; zero compiler errors.
-- Acquisition regression: reacquired clean and compiler-error branches each
-  used separate freshness and terminal observations; independent Phase 4
-  revalidation returned `PASS`. Non-acquired states remained acquisition
-  classifications rather than product failures.
-- REAL scenario deterministic evidence: 3/3 current tests passed with
-  warnings as errors against the actual production source.
-- REAL scenario Unity evidence: fresh post-repair full-project compile after
-  the final production edit; reload marker
-  `1786369155112 -> 1786373156412` established freshness, a distinct later
-  snapshot established terminal-ready state, exact pre/post identity matched,
-  and complete diagnostics returned `total=0`; independent scenario `PASS`.
-- Binding repair evidence: structural contract alignment preserved the same
-  four active/five unbound partition and received independent `PASS`.
-- Case 8: no path-addressed product/runtime operation was used in M3. Exact
-  project/editor identity was nevertheless resolved before and re-resolved
-  after compile reload. No runtime hierarchy was guessed or persisted.
+The frozen contract was independently approved before implementation.
 
-### Evidence provenance
+Final production change in the canonical QuickGun System:
 
-| Material evidence | Narrowest truthful class | Boundary |
-|---|---|---|
-| Unchanged QuickGun baseline at the exact commit above | `system-canonical-pushed` | System `unity-client`; `ngocphat03/QuickGun-MVP`; `release`; `c35143a6ea72dd17e591e67b1e965e10a0b15a27`. |
-| Current `AudioSourcePool.cs` delta, root test delta, binding/sidecar/checklist state, and M3 milestone artifacts | `local-or-separately-tracked` | Current filesystem evidence; none is claimed newly committed or pushed by M3. The production delta sits on top of the canonical System baseline. |
-| Effective turn configuration, standalone test process, live Unity identity/state, reload correlation, and diagnostics | `ephemeral-runtime` | Valid only for the observed acquisition/run window; no live connection state is canonicalized. |
+```csharp
+if (_active.Remove(source))
+{
+    _pool.Enqueue(source);
+}
+```
 
-No new M3 evidence is promoted to `workspace-canonical-pushed` without proof.
-The existing M1 `HUMAN_PROMOTED` report and M2 `HUMAN_PROMOTED` promotion
-review are durable authorization pointers, not claims that the current M3
-edits were pushed.
+This preserves normal one-time release/reuse while preventing a repeated release of the same lease from creating another available-pool entry.
 
-## Failures and recovery
+Required deterministic regression coverage now contains three cases:
 
-- Product/baseline repair loops: **0**.
-- Closure repair loops: **1**.
-- Sub-agent replacements: **0**; no agent was replaced and no lane required a
-  recovery escalation.
-- Hard blockers: **none fired**.
-- Initial final-closure verification returned `FAIL` because the promoted
-  binding's mandatory sampled-nonterminal wording did not match the
-  live-discovered marker alternatives, and historical Phase 4 used one state
-  snapshot for both freshness and terminal proof.
-- Closure repair loop 1 aligned only the existing binding/checklist contract,
-  then independently passed binding verification. Phase 4 acquired one new
-  fixture window with distinct A/B observations for both error and clean
-  branches and independently revalidated `PASS`. The fixture, `.meta`, and
-  marker are absent.
-- Phase 7 reacquired all current REQUIRED evidence after the binding repair:
-  3/3 tests and a fresh, separately terminalized, exact-identity compile with
-  `total=0`. This current acquisition needed no compile reacquisition retry.
-- Earlier Phase 4 and Phase 7 capture/reacquisition events remain incident
-  chronology only; none is reused as current closure evidence.
-- Unity 6 domain reload briefly interrupted transport reads and produced a
-  recoverable CoplayDev WebSocket warning. Bounded re-resolution recovered the
-  same target without setup/configuration changes, so
-  `UNITY_MCP_NOT_READY` was correctly not raised.
+- consecutive empty-pool leases are distinct;
+- a validly released source is reusable without aliasing an unreleased lease;
+- duplicate release does not alias the next two outstanding leases.
 
-## Framework/config changes caused by incidents
+Final focused verification passed **3/3**, and a fresh full Unity compilation after the final production C# edit completed with zero compiler diagnostics.
 
-- The reviewed binding now contains only the proven `unity.compile` composite
-  in addition to the M1 three-mapping slice.
-- Runtime Binding validation records that a Unity 6 compile request returns
-  before terminal evidence, requires a clear-before-request diagnostic
-  window, one of three explicit freshness alternatives, a distinct later
-  terminal observation, post-reload identity resolution, and complete
-  diagnostic paging.
-- Project memory and the incident log now carry that smallest durable rule and
-  the current four-mapped/five-unbound partition.
+Final scenario verdict: **PASS**.
 
-No Profile, Skill, Workflow, semantic Capability, package, or additional
-binding was created.
+## Recovery and accounting
 
-## Regression protection added
+```text
+product/baseline repair loops: 0
+closure repair loops: 1
+sub-agent replacements: 0
+hard blockers: none
+```
 
-- `.axit/milestones/M3-unity-execution-coverage/phase4-acquisition-regression.md`
-  preserves the success/error/non-acquired decision boundaries and cleanup
-  proof.
-- `tests/QuickGun-MVP/AudioSourcePoolTests.cs` preserves the duplicate-release
-  ownership regression alongside valid reuse and distinct lease cases.
-- The active binding and Runtime Binding checklist preserve explicit
-  `fresh_cycle_correlated` and `terminal_state_observed` flags. Verifier
-  scripts must map evidence to both flags and must not reuse the freshness
-  snapshot as terminal proof.
-- `.axit/milestones/M3-unity-execution-coverage/phase8-gap-analysis.md`
-  prevents compile-internal project/Console operations from silently growing
-  into separate mappings.
+The one closure repair fixed evidence-contract consistency only. It did not modify product behavior beyond the already accepted REAL fix and did not require a product or baseline compile repair.
+
+Transient Unity 6 reload transport interruptions were recovered by bounded re-resolution of the same exact editor/project without changing user-owned MCP configuration.
+
+## Evidence provenance after push
+
+### System-canonical-pushed
+
+QuickGun production fix:
+
+```text
+system: unity-client
+repository: ngocphat03/QuickGun-MVP
+ref: release
+commit: e2e1b1b6f3b0720d91e51def6b610f5714e17c52
+file: Assets/QuickGunCore/Scripts/Services/AudioSourcePool.cs
+```
+
+The pushed commit contains the bounded duplicate-release guard.
+
+### Workspace-canonical-pushed
+
+The pushed Axit Workspace branch `agent/axit-core-layout-v1` contains the M3 report/retrospective/scenario artifacts, active Runtime Binding and System sidecar, Phase 4/8 artifacts, and focused root regression test.
+
+### Ephemeral-runtime
+
+Live Unity editor identity, compile/reload observations, diagnostic windows, standalone test processes, and final runtime connection state remain acquisition-local evidence and are not canonicalized.
+
+## Model / cost accounting
+
+Historical M3 execution used:
+
+```text
+primary: gpt-5.6-sol / xhigh
+children observed during M3: gpt-5.6-sol / max
+```
+
+That historical fact is retained for auditability.
+
+After M3, the user adopted the durable workspace cost policy:
+
+```text
+primary orchestrator = gpt-5.6-sol / xhigh
+all future child lanes = gpt-5.6-luna / medium
+```
+
+Future children may not silently escalate above Luna/medium. See `.axit/policies/model-routing.md`.
+
+## Framework hardening caused by M3
+
+M3 justified only the smallest demonstrated changes:
+
+- activate `unity.compile` alongside the M1 three-mapping slice;
+- preserve the Unity 6 clear/request/freshness/separate-terminal/re-resolve/page acquisition procedure;
+- preserve the duplicate-release regression test;
+- require post-closure-verdict persistence before emitting `MILESTONE_DONE`;
+- adopt a durable child model-routing/cost policy after the long expensive M3 run.
+
+No new Profile, Skill, Workflow, semantic Capability, package, transport, or additional Runtime Binding mapping was justified.
 
 ## Known residual risks
 
-- The active binding is a reviewed operation definition, not proof that the
-  user-owned Unity MCP transport will be connected on a future run.
-- Unity 6 reload can transiently interrupt reads or reset acquisition-local
-  timing fields; future acquisitions must perform the same bounded correlation
-  and identity re-resolution.
-- The compiler proof covers the exact observed QuickGun script-compilation
-  window, not player builds, all target platforms, package upgrades, broad
-  gameplay correctness, or performance.
-- The non-acquired Phase 4 cases are declarative decision fixtures rather than
-  deliberately manufactured live disconnect/denial/crash events.
-- `unity.scene.inspect` remains `REPEATED_GAP_FOR_HUMAN_REVIEW`; all five
-  remaining capabilities are unbound because none was `REQUIRED_NOW`.
-- Current M3 source/test/documentation changes remain
-  `local-or-separately-tracked`; this milestone did not authorize or perform a
-  commit, push, or pull request.
-- The repaired closure candidate still requires final independent closure
-  re-verification before `MILESTONE_DONE` can be issued.
+- Runtime Binding `active` means reviewed definition, not guaranteed future transport connectivity.
+- Unity 6 domain reload may transiently interrupt transport reads; future acquisitions must reacquire exact identity and terminal evidence.
+- Compilation proof covers the observed QuickGun script-compilation surface, not player builds, every target platform, package upgrades, performance, or broad gameplay correctness.
+- `unity.scene.inspect` remains a repeated gap for later human review but was not `REQUIRED_NOW` in M3.
+- Model/cost performance has not yet been benchmarked under the new Luna/medium child policy; the next long milestone should record wall-clock duration and child accounting for comparison.
 
-## Promotion recommendation
-
-**PROMOTE**, subject to final independent closure re-verification and then
-explicit human review. Do not begin M4 automatically.
-
-Subject to the final independent closure re-verifier, the candidate terminal
-schema is:
+## Promotion decision
 
 ```text
-Status: MILESTONE_DONE
-Milestone: M3 Unity Execution Coverage
-Baseline compile: PASS
-Active Unity bindings: unity.prefab.inspect, unity.serialized-fields.inspect, unity.playmode.verify, unity.compile
-REAL scenario: M3-REAL-01 + PASS
-Repair loops: 1 closure repair (0 product/baseline repairs)
-Sub-agent replacements: 0
-Additional bindings promoted: none
-Context/auditability: PASS
-Known residual risks: runtime connectivity remains resolve-at-runtime; Unity 6 reload requires reacquisition discipline; current M3 source/test/docs are local-or-separately-tracked; five capabilities remain unbound
-Promotion recommendation: PROMOTE
+M3 technical capability: PASS
+Final closure verification: PASS
+Remote product patch audit: PASS
+Remote artifact audit: PASS
+Human decision: HUMAN_PROMOTED
+Full M3 rerun: NO
+M4 started: NO
 ```
+
+M3 is promoted. The next milestone must be deliberately designed/authorized; do not auto-start M4 from the roadmap mockup.
