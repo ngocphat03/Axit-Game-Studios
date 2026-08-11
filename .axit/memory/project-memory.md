@@ -18,7 +18,7 @@ Do not turn Game-Studios into the final Axit-Code runtime. Productize proven sem
 
 ## Stable Game-Studios foundation
 
-Core v1 remains intentionally small:
+Core v1 stays intentionally small:
 
 ```text
 Profiles: game-designer, technical-architect, implementation-engineer, quality-verifier
@@ -31,23 +31,19 @@ No new Core Profile/Skill/Workflow without repeated demonstrated need.
 Workspace/System v1:
 
 ```text
-repository root = product workspace
+repository root = Workspace/Product
 src/*           = interacting Systems
 ```
 
-A System may have an independent canonical Git repository without changing the Axit Workspace/System boundary.
-
-QuickGun Unity System canonical repository:
+QuickGun canonical Unity System:
 
 ```text
 ngocphat03/QuickGun-MVP @ release
 ```
 
-Resolve moving branch heads at evidence time.
-
 ## Unity Capability / Runtime Binding state
 
-Promoted active Unity mappings are exactly:
+Promoted mappings are exactly:
 
 ```text
 unity.prefab.inspect
@@ -66,11 +62,9 @@ unity.component.inspect
 unity.console.inspect
 ```
 
-Capability semantics are provider-neutral. Runtime Binding maps them to reviewed transport operations. Capability output is evidence; `verify-change` owns REQUIRED/SUPPORTING and PASS/FAIL/BLOCKED.
+Capability semantics are provider-neutral. Runtime Binding maps them to reviewed transport operations. `verify-change` owns REQUIRED/SUPPORTING and PASS/FAIL/BLOCKED.
 
-MCP for Unity setup remains manual/user-owned.
-
-Runtime full paths must be resolved from current runtime context, not inferred from prefab-relative hierarchy. Unity 6 compile success requires fresh-cycle correlation, a distinct later terminal observation, exact target re-resolution, and complete diagnostics paging.
+MCP for Unity setup remains manual/user-owned. Runtime full paths must be resolved from current runtime context, not inferred from prefab-relative hierarchy. Unity compile success requires fresh-cycle correlation, a distinct later terminal observation, exact target re-resolution, and complete diagnostics paging.
 
 ## Model / cost policy
 
@@ -89,49 +83,36 @@ child compatibility fallback = gpt-5.6-terra / medium when Luna is unavailable
 child Sol = forbidden without explicit current human override
 ```
 
-The current Codex runtime observed during M5 did not expose Luna children, so `COMPAT_TERRA` / medium is accepted. This is a compatibility route, not a human model override and not a permanent preference change.
-
 Child underperformance response:
 
 ```text
 sharpen context
-  -> steer/resume allowed medium-tier child
-  -> replace with fresh allowed medium-tier child
-  -> decompose
-  -> reacquire evidence
+-> steer/resume allowed medium-tier child
+-> fresh allowed medium-tier replacement
+-> decompose
+-> reacquire evidence
 ```
 
-Never silently buy a child Sol as recovery.
+Primary orchestrates; children handle materially independent work. Parallelize independent reads and serialize overlapping writes/editor mutations. Thread limits are ceilings, not targets. M5 showed that child-lane count can become orchestration overhead; do not spawn a new lane merely for every checkpoint.
 
-Primary is orchestration-only when delegation is available. Parallelize materially independent read-heavy work; serialize overlapping writes/editor mutations. Thread limits are ceilings, not targets.
+## Human control and closure
 
-M5 showed that lane count itself can become overhead: 19 child lanes for a small product diff with peak useful parallelism 4. Do not create a new child merely for every phase/checkpoint. Keep fresh lanes when independence materially matters, especially verification.
+Automation is high inside one accepted milestone. Every milestone stops for human promotion review before the next execution slice.
 
-## Human control and milestone closure
-
-Automation is high inside one accepted milestone. Every milestone stops for human promotion review before the next slice.
-
-Closure sequence must be:
+Closure sequence:
 
 ```text
 draft closure artifacts
-  -> independent closure verifier returns actual verdict
-  -> persist actual verdict
-  -> fresh read-only consistency audit
-  -> MILESTONE_DONE
-  -> STOP
+-> independent closure verifier returns actual verdict
+-> persist actual verdict
+-> fresh read-only consistency audit
+-> MILESTONE_DONE
+-> STOP
 ```
 
-Do not pre-write a predicted PASS and call that persisted verifier evidence.
+A clearly pre-verdict draft may contain `PENDING`; a verifier must not fail solely because its own verdict has not yet been returned. Predicted PASS before verifier execution is forbidden. After the verifier returns, stale PENDING is a defect.
 
-For long-run performance accounting retain both when available:
-
-```text
-execution_to_preclosure
-terminal_end_to_end
-```
-
-Use terminal end-to-end duration for milestone latency comparisons.
+For long runs record trustworthy timing/model/lane metrics when observable. Use terminal end-to-end as primary latency. If telemetry is unavailable, say unavailable rather than infer configured intent.
 
 ## Promoted milestone state
 
@@ -141,32 +122,18 @@ M2 — Autonomous Bounded Development: HUMAN_PROMOTED
 M3 — Unity Execution Coverage: HUMAN_PROMOTED
 M4 — Cross-System Workspace: DEFERRED_WAITING_REAL_SECOND_SYSTEM
 M5 — Project Bootstrap & Knowledge Plane: HUMAN_PROMOTED
+M6-A — Loader Foundation: HUMAN_PROMOTED
 ```
 
-M4 remains deferred because no real accepted second interacting QuickGun System exists. Do not manufacture a cross-system benchmark.
+M4 remains deferred because no real accepted second interacting QuickGun System exists. Do not manufacture one.
 
-## M5 promoted result
+## M5 durable result
 
-Target:
+Target `ngocphat03/Axit-Code`; execution/audit branch `feature/m5`.
 
-```text
-ngocphat03/Axit-Code
-execution/audit branch: feature/m5
-```
+M5 proved pointer-first bootstrap in a materially different repository, target-owned `docs/PLAN.md` authority, fresh-context continuity, one bounded REAL Axit-Code task, root verification, medium-tier delegated execution, and independent closure.
 
-M5 proved:
-
-- pointer-first bootstrap in a materially different real repository;
-- `docs/PLAN.md` remained target-owned canonical product/roadmap truth;
-- bootstrap review PASS;
-- fresh-context continuity PASS without chat replay;
-- one frozen REAL Axit-Code task PASS;
-- focused agent tests reported 10/10 PASS;
-- root `npm run verify` reported PASS;
-- medium-tier delegated execution via `COMPAT_TERRA` with 0 human model overrides;
-- final independent closure PASS.
-
-Timing sample:
+Performance sample:
 
 ```text
 execution_to_preclosure = 22m 12s
@@ -177,44 +144,88 @@ replacements            = 0
 REAL repair loops       = 0
 ```
 
-M5 initially repeated the closure-persistence defect: artifacts predicted terminal PASS before the final verifier returned. Post-run review repaired metadata only and persisted the actual verifier PASS. No product/runtime rerun was necessary.
+M5 also hardened post-verdict persistence and lane-count discipline.
 
-M5 audit metadata may remain on `feature/m5`; human promotion does not require merging all `.codex/m5/**` into `release`. The valid test-only product diff can be integrated separately.
+## M6-A promoted result — Loader Contract v1
 
-## M6 decomposition
-
-M6 is Axit-Code Productization and must proceed by bounded slices, not one giant run.
-
-Current designed slice:
+Canonical target technical contract:
 
 ```text
-M6-A — Profile / Rule / Workflow / Knowledge Loader Foundation
+ngocphat03/Axit-Code@release:docs/decisions/ADR-002-loader-contract-v1.md
 ```
 
-Artifacts:
+Canonical fixture:
 
 ```text
-.axit/milestones/M6A-loader-foundation/plan.md
-.axit/milestones/M6A-loader-foundation/selection-review.md
+.agents/profiles/feature-development.md
 ```
 
-M6-A only proves deterministic declarative loading/validation, normalized records, source identity/provenance, deterministic ordering, and explicit conflict/error behavior.
-
-It explicitly excludes Context Builder, Harness/Tool Gateway, Run Ledger, provider integration, CLI orchestration, Unity integration, Capability/Binding runtime, and M6-B.
-
-### Current M6-A dependency
-
-At 2026-08-11, Axit-Code PR #5 `docs: establish AxitCode and Game Design rules` is open, draft, and unmerged. Its own stated sequence places rule/catalog foundation before Profile/Rule/Workflow/Knowledge loader implementation.
-
-Do not automatically merge/rebase/close or treat draft PR #5 as canonical. Human review must accept, revise, or supersede that foundation.
-
-Until an accepted loader-input foundation exists on the chosen Axit-Code baseline:
+Validated product branch:
 
 ```text
-HARD_BLOCKER: KNOWLEDGE_FOUNDATION_NOT_ACCEPTED
+ngocphat03/Axit-Code@feature/m6a-loader
 ```
 
-Context Builder becomes M6-B only after M6-A is promoted.
+Promoted capability:
+
+```text
+.agents/{profiles,rules,workflows,skills,knowledge}/**/*.md
+-> strict v1 frontmatter validation
+-> normalized record kind/id/schemaVersion/markdown/source
+-> deterministic repo-relative lexical order
+-> duplicate (kind,id) error
+-> no success catalog when any ERROR exists
+```
+
+Loader v1 intentionally has no precedence/override, lifecycle/status/activation/scope, reference resolution, profile auto-selection, Context Builder, execution permission, Harness bypass, provider behavior, or Unity behavior.
+
+Promotion evidence:
+
+```text
+focused tests = 16/16 PASS
+package build/typecheck = PASS
+root npm run verify = PASS
+real canonical fixture = PASS
+closure verifier = PASS
+post-verdict consistency audit = PASS
+product repair loops = 1/2
+```
+
+The first closure verifier found a real strict-parser bug involving inline `#` comments. Repair attempt 1/2 fixed it and added regression tests. A later post-verdict audit found only a fixture-manifest terminal-newline representation defect; metadata-only correction and fresh audit passed.
+
+Human-observed Codex UI duration was about `28m 02s`, but durable repository telemetry did not preserve trustworthy start/end timing. Keep this provenance distinction.
+
+Promotion validates M6-A capability; it does **not** imply `feature/m6a-loader` is merged into Axit-Code `release`.
+
+## M6-B — Context Builder Foundation
+
+Current state:
+
+```text
+DESIGNED_INTEGRATION_GATED
+NOT_AUTHORIZED_FOR_EXECUTION
+```
+
+Pointers:
+
+```text
+.axit/milestones/M6B-context-builder/selection-review.md
+.axit/milestones/M6B-context-builder/plan.md
+```
+
+M6-B should be the smallest source-aware Context Builder slice after M6-A. Canonical execution flow says context combines requirement/constraints, project inspection, profile/workflow/skills, relevant source/artifacts, prior task results, and allowed tool descriptors, while preserving provenance and not treating source/Markdown as system policy.
+
+Before any M6-B execution, the selected Axit-Code writable baseline must actually contain the promoted M6-A loader implementation plus ADR-002/fixture and passing target verification. Otherwise:
+
+```text
+HARD_BLOCKER: M6A_PRODUCT_BASELINE_NOT_INTEGRATED
+```
+
+Do not auto-merge/cherry-pick/rebase/open a PR merely to clear the gate.
+
+M6-B Phase 0 must discover/freeze exact context semantics before implementation, especially input categories, provenance, deterministic ordering, trusted-vs-untrusted content boundary, relevance responsibility, size/token/truncation behavior, reference-resolution boundary, diagnostics, and a real canonical scenario.
+
+Do not automatically include profile auto-selection, semantic/vector search, Harness/Tool Gateway, Run Ledger, provider calls, planning-loop changes, CLI orchestration, Unity integration, Capability/Binding runtime, or M6-C+.
 
 ## Git/status and provenance
 
@@ -225,11 +236,9 @@ safety:
   check_git_status: false
 ```
 
-Dirty/untracked/nested Git state is not itself a readiness blocker when this flag is false. This never authorizes reset/clean/revert/destructive overwrite.
+Dirty/untracked/nested Git state is not itself a readiness blocker when false. This never authorizes reset/clean/revert/destructive overwrite.
 
-Evidence provenance remains Workspace/System-aware. Do not change Git topology solely for auditability.
-
-For target-repository bootstrap/productization work, distinguish canonical target truth from execution metadata; execution metadata must not masquerade as product roadmap or architecture authority.
+Evidence provenance remains Workspace/System-aware. For target-repository productization, distinguish canonical product truth from execution metadata and human/UI evidence.
 
 ## Evidence-driven evolution
 
@@ -237,12 +246,12 @@ Use:
 
 ```text
 real scenario
-  -> evidence
-  -> demonstrated gap
-  -> smallest correct layer
-  -> implementation
-  -> independent verification
-  -> regression protection
+-> evidence
+-> demonstrated gap
+-> smallest correct layer
+-> implementation
+-> independent verification
+-> regression protection
 ```
 
 Do not grow Axit from imagination.
@@ -253,8 +262,8 @@ Do not grow Axit from imagination.
 
 `.axit/state/active.md` = compact current execution truth.
 
-Completed detail = milestone report / retrospective / manifest / promotion-review.
+Completed detail = milestone report / retrospective / manifests / promotion review.
 
 `milestones-mockup.md` = human/assistant roadmap alignment.
 
-If this memory conflicts with newer accepted truth, update this file rather than forcing newer implementation back to an old assumption.
+If memory conflicts with newer accepted truth, update memory rather than forcing newer implementation back to an old assumption.
