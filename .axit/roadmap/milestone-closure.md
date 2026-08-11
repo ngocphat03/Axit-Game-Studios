@@ -36,7 +36,17 @@ scenario execution complete
   -> STOP for human promotion review
 ```
 
-A predicted terminal schema written **before** the closure verifier runs is only a draft expectation. It does not satisfy verdict persistence even if the later verifier happens to return the predicted result.
+A pre-verdict draft may truthfully contain:
+
+```text
+Closure verifier: PENDING
+```
+
+`PENDING` at this draft stage is **not itself a verifier failure**. The verifier must evaluate evidence, scope, consistency, and whether the artifact is clearly pre-verdict. It must not fail solely because its own not-yet-returned verdict is still marked PENDING.
+
+After the verifier actually returns, `PENDING` becomes invalid: the exact returned PASS / FAIL / BLOCKED must be persisted before the post-verdict consistency audit and terminal result.
+
+A predicted terminal PASS written **before** the closure verifier runs is only a draft expectation and must not be represented as the verifier's actual result.
 
 Persisting the verifier verdict after it returns is an allowed closure-metadata write. It is not a product mutation and does not invalidate verifier independence.
 
@@ -158,11 +168,18 @@ After a closure verifier returns terminal PASS/FAIL/BLOCKED:
 4. run one fresh read-only consistency check across durable closure artifacts;
 5. only then emit `MILESTONE_DONE` when the closure result permits it.
 
-Both of these are closure defects:
+These are closure defects:
 
 ```text
 console says final PASS but durable files still say pending
 pre-written files predict PASS before verifier, verifier later PASSes, but actual result is never persisted afterward
+post-verdict artifacts still say PENDING after the verifier has returned
+```
+
+This is **not** a closure defect by itself:
+
+```text
+clearly pre-verdict draft says PENDING before the verifier has run
 ```
 
 Repair closure artifacts only; do not rerun unaffected product/runtime evidence.
