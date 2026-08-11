@@ -1,6 +1,6 @@
 # M6-A — Profile / Rule / Workflow / Knowledge Loader Foundation
 
-Status: designed / dependency-gated
+Status: designed / ready-for-phase0-canonical-discovery
 
 ## Goal
 
@@ -18,9 +18,9 @@ accepted declarative source files
   -> target-native tests
 ```
 
-M6-A does **not** build the Context Builder yet. It only establishes trustworthy loader contracts that a later Context Builder can consume.
+M6-A does **not** build Context Builder yet. Context Builder is a later M6 slice.
 
-## Target
+## Target and authority
 
 ```text
 repository: ngocphat03/Axit-Code
@@ -29,32 +29,31 @@ runtime owner: @axitcode/agent
 canonical product/roadmap truth: docs/PLAN.md
 ```
 
-Always reacquire current release/PLAN/architecture/ADR truth at execution time.
+At execution start, reacquire current `release`, `docs/PLAN.md`, architecture, ADRs, package/source/tests, and any accepted declarative artifacts.
 
-## Dependency gate — mandatory
+Current canonical PLAN explicitly places profile loading/context loading with schema/diagnostics/tests in Phase 1 Slice 2. M6-A takes the loader foundation portion only.
 
-At plan design time, Axit-Code PR #5 `docs: establish AxitCode and Game Design rules` is open, draft, and unmerged. Its stated purpose is to establish rule/catalog conventions before Profile/Rule/Workflow/Knowledge loader implementation.
+## Historical PR handling
 
-Phase 0 must reacquire PR #5 and current `release` state.
+PR #5 `docs: establish AxitCode and Game Design rules` is stale draft prior art, not a mandatory dependency. At 2026-08-11 review it was last updated 2026-08-07, still draft/unmerged, without review comments, and its branch had diverged from current `release`.
 
-If the loader would need schema/frontmatter/taxonomy conventions that are still only present in an unaccepted draft branch, stop before implementation with:
+Therefore:
+
+- do not auto-merge/rebase/close PR #5;
+- do not treat its taxonomy/frontmatter as canonical merely because it exists;
+- Phase 0 may inspect it as optional historical design input;
+- readiness and contract freeze must be decided from current canonical accepted sources.
+
+Do **not** block merely because PR #5 is unmerged.
+
+If current canonical sources do not contain enough accepted semantics to freeze a loader contract without inventing material behavior, stop for the specific missing decision with evidence, using the appropriate blocker such as:
 
 ```text
-HARD_BLOCKER: KNOWLEDGE_FOUNDATION_NOT_ACCEPTED
+KNOWLEDGE_FOUNDATION_NOT_ACCEPTED
+PRODUCT_INTENT
+PUBLIC_CONTRACT_DECISION
+ARCHITECTURE_DECISION
 ```
-
-Do not automatically merge, rebase, close, publish, or treat draft PR #5 as canonical.
-
-Human resolution options are external to this plan:
-
-```text
-merge accepted PR #5
-revise then merge PR #5
-supersede it with another accepted foundation
-explicitly accept a different canonical loader-input contract
-```
-
-Once an accepted foundation exists on the chosen implementation baseline, M6-A may continue.
 
 ## Productization invariants carried from Game-Studios
 
@@ -62,14 +61,14 @@ Only migrate semantics that match Axit-Code product architecture:
 
 - declarative knowledge is user-owned context, not execution permission;
 - canonical product sources remain authoritative over copied summaries;
-- loaders must preserve source identity/provenance;
+- loaders preserve source identity/provenance;
 - deterministic machine-checkable behavior is preferred;
 - unknown/invalid input fails explicitly rather than being silently guessed;
 - Profile/Rule/Workflow/Knowledge semantics remain provider-neutral;
 - a loader cannot grant tools, bypass Harness, or declare completion;
-- do not create new Profile/Skill/Workflow types just because Game-Studios contains them.
+- do not create new artifact types merely because Game-Studios contains them.
 
-Do **not** copy the Game-Studios `.axit` directory or its Core schemas wholesale.
+Do not copy the Game-Studios `.axit` directory or schemas wholesale.
 
 ## Model / cost policy
 
@@ -80,37 +79,31 @@ child compatibility fallback = gpt-5.6-terra / medium when Luna is unavailable
 child Sol = forbidden without explicit current human override
 ```
 
-All child roles use the allowed medium tier: discovery, design review, implementation, tests, repair, independent verification, closure verification, and reporting.
-
-No model escalation as a recovery mechanism.
+All child roles use the allowed medium tier: discovery, contract review, implementation, tests, repair, independent verification, closure verification, and reporting.
 
 ## Orchestration-efficiency policy
 
-M5 succeeded but used 19 child lanes for a small test-only diff. M6-A treats that as an optimization signal, not a hard failure.
+M5 succeeded but used 19 child lanes for a small test-only diff. Treat that as an optimization signal.
 
-Rules:
-
-- spawn a new lane only for materially independent work or required verification independence;
-- reuse an existing lane when responsibility and context remain the same;
-- do not create a new child merely for every phase/checkpoint/report update;
-- keep read-only discovery parallel but bounded by useful work;
-- serialize overlapping source writes and result/state writes;
-- fresh independent verifier remains required even if it increases lane count;
-- record total child lanes and peak useful parallelism at closure.
-
-Do not set an arbitrary pass/fail lane-count threshold from one M5 sample.
+- spawn lanes only for materially independent work or required verification independence;
+- reuse same-responsibility lanes when safe;
+- do not create a new child for every phase/checkpoint/report update;
+- parallelize independent read-only discovery;
+- serialize overlapping source/result writes;
+- fresh independent verifier remains required;
+- record total child lanes and peak useful parallelism.
 
 ## Operating boundaries
 
 - Primary orchestrates only when delegation is available.
 - Do not ask for routine confirmations inside accepted scope.
-- Do not commit, push, publish, merge, or open/update PRs during the autonomous M6-A run unless a separate explicit human instruction authorizes that exact action.
+- Do not commit, push, publish, merge, or open/update PRs during the autonomous run unless separately authorized by the user.
 - Do not change `docs/PLAN.md` merely to fit implementation.
-- Do not start Context Builder, Harness, Tool Gateway, Run Ledger, provider integration, CLI orchestration, Unity integration, Capability/Binding resolution, or M6-B.
-- Do not introduce a new parser dependency unless current accepted architecture and frozen scope justify it; prefer existing platform/dependencies when sufficient.
-- Preserve unrelated current filesystem state.
-- Maximum two bounded repair attempts for the same required implementation/verification failure.
-- Follow durable closure: actual final verifier verdict must be persisted, then a fresh read-only consistency audit runs before `MILESTONE_DONE`.
+- Do not start Context Builder, Harness, Tool Gateway, Run Ledger, provider integration, CLI orchestration, Unity integration, Capability/Binding runtime, or M6-B.
+- Do not introduce a new parser dependency unless frozen acceptance justifies it.
+- Preserve unrelated filesystem state.
+- Maximum two bounded repair attempts for the same required failure.
+- Closure must persist the actual verifier verdict after it returns, then consistency-audit before `MILESTONE_DONE`.
 
 ## Hard blockers
 
@@ -129,63 +122,66 @@ REPEATED_REQUIRED_FAILURE
 
 ---
 
-# Phase 0 — Reacquire canonical baseline and dependency state
+# Phase 0 — Reacquire canonical baseline
 
 Run from a trusted writable Axit-Code checkout on the human-selected implementation baseline.
 
-Read-only lanes independently reacquire:
+Read-only lanes reacquire:
 
-- current `docs/PLAN.md` Phase 1 status and next accepted direction;
+- current `docs/PLAN.md` Phase 1 status and accepted direction;
 - current `release` package/source/test structure;
-- current architecture + ADR-001 ownership boundaries;
-- current PR #5 state and diff intent;
-- whether accepted `.agents` taxonomy/frontmatter/rule fixtures exist on the implementation baseline;
-- current validation commands (`npm run verify` and relevant package tests);
-- effective model routing when observable.
+- architecture + ADR ownership boundaries;
+- current declarative artifact conventions already accepted on the baseline, if any;
+- current validation commands;
+- effective model routing when observable;
+- optional historical inputs such as PR #5, clearly marked non-canonical.
 
-No product write before dependency acceptance is established.
+No product write before canonical sufficiency is assessed.
 
-If PR #5 remains draft/unmerged and required loader-input conventions are absent from canonical accepted source, return `KNOWLEDGE_FOUNDATION_NOT_ACCEPTED` and STOP. Do not manufacture a schema from the draft.
+Output a **canonical sufficiency decision**:
+
+```text
+SUFFICIENT_TO_FREEZE
+or
+MISSING_ACCEPTED_SEMANTICS: <exact unresolved fields/behavior>
+```
+
+If missing semantics affect public/runtime behavior, stop with the appropriate blocker rather than guessing.
 
 ---
 
 # Phase 1 — Loader contract discovery
 
-After dependency gate passes, use read-only medium-tier lanes to identify the smallest accepted loader surface.
+Using canonical accepted source only, determine the smallest loader surface:
 
-Determine from accepted source, not imagination:
-
-- artifact kinds required in this slice: expected Profile / Rule / Workflow / Knowledge only if current PLAN/foundation confirms them;
+- artifact kinds required in this slice;
 - accepted file locations/discovery roots;
-- accepted frontmatter/schema fields;
-- required identity fields and source identity;
-- optional versus required fields;
-- ordering/precedence semantics actually defined;
+- accepted fields and file form;
+- required identity/source provenance;
+- optional vs required fields;
+- ordering/precedence only when defined;
 - duplicate/conflict behavior;
 - unknown field/version behavior;
-- path/scope safety expectations;
-- whether files are Markdown, YAML frontmatter, YAML, or another accepted representation.
+- path/scope safety expectations.
 
-Create a concise contract proposal. Every field must cite accepted target evidence or be marked unresolved.
-
-Unresolved behavior that affects public/runtime contracts is a blocker, not a license to guess.
+Every material field must cite accepted target evidence or be marked unresolved.
 
 ---
 
 # Phase 2 — Freeze M6-A acceptance contract
 
-Independent medium-tier reviewer approves the contract before implementation.
+Independent medium-tier reviewer approves before implementation.
 
 Freeze:
 
 ```text
-loader artifact kinds
+artifact kinds
 input roots/file forms
 normalized record shape
-source identity/provenance shape
+source identity/provenance
 validation/error semantics
 duplicate/conflict semantics
-deterministic ordering rule
+deterministic ordering
 allowed source/test files
 forbidden scope
 focused tests
@@ -193,49 +189,43 @@ repository verification
 repair budget
 ```
 
-The contract must explicitly state what M6-A does **not** implement.
-
-No Context Builder behavior may be smuggled into loader acceptance.
+Explicitly state that Context Builder is not part of M6-A.
 
 ---
 
 # Phase 3 — Implement minimal loader foundation
 
-Use an allowed medium-tier implementation worker.
+Use an allowed medium-tier worker.
 
-Implementation principles:
-
-- place authoritative runtime implementation under the current accepted `@axitcode/agent` boundary unless canonical architecture says otherwise;
-- expose the smallest API required by frozen acceptance;
-- preserve provider neutrality;
-- preserve exact source identity needed for later context/audit;
-- deterministic output for identical filesystem input;
+- implementation belongs under current accepted `@axitcode/agent` boundary unless canonical architecture says otherwise;
+- smallest API satisfying frozen acceptance;
+- provider-neutral;
+- deterministic for identical filesystem input;
 - explicit structured validation errors;
+- source identity preserved;
 - no implicit network access;
 - no tool/Harness permission semantics;
-- no Context Builder/token budgeting/relevance ranking yet;
-- no runtime side effect other than bounded file reads required by the loader.
+- no Context Builder/token budgeting/relevance ranking;
+- only bounded file reads required by loader.
 
-Do not port Game-Studios implementation code unless it independently fits Axit-Code's accepted contracts. Prefer re-deriving a native implementation from semantic requirements.
+Re-derive an Axit-Code-native implementation from accepted semantics; do not port Game-Studios implementation wholesale.
 
 ---
 
 # Phase 4 — Contract and negative-path tests
 
-Required deterministic coverage should include only cases justified by the frozen contract, typically:
+Cover only frozen behavior, normally including:
 
-- one valid artifact of each accepted kind;
+- valid accepted artifact(s);
 - stable normalized output/source identity;
 - deterministic discovery/order;
 - missing required field;
-- unsupported schema/version when versioning exists;
+- unsupported schema/version when versioning is accepted;
 - duplicate identifier/conflict;
-- malformed frontmatter/document;
+- malformed document/frontmatter when applicable;
 - unknown/unaccepted artifact behavior;
-- precedence behavior only if accepted source defines it;
-- proof that loader metadata does not grant tools/permissions.
-
-Do not add speculative test matrices for fields the accepted foundation does not define.
+- precedence only if canonical source defines it;
+- proof loader metadata does not grant tools/permissions.
 
 ---
 
@@ -247,30 +237,30 @@ REQUIRED:
 
 - frozen acceptance assertions pass;
 - focused `@axitcode/agent` tests pass;
-- build + typecheck for affected workspace pass;
-- root `npm run verify` passes when current repository policy still defines it as canonical health check;
-- diff remains within frozen loader/test scope plus M6-A execution metadata;
-- no Context Builder/Harness/Tool/Run Ledger/M6-B implementation appeared;
-- loader output preserves source identity and does not claim authority beyond input source;
+- affected build/typecheck pass;
+- root `npm run verify` passes when still canonical repository health check;
+- diff stays within frozen loader/test scope plus execution metadata;
+- no M6-B/Harness/Tool/Run Ledger work appears;
+- source identity is preserved;
 - no unauthorized model escalation.
 
-If bounded FAIL, separate medium-tier repair worker may repair within frozen scope, then verifier reacquires affected evidence. Maximum two loops for same required failure.
+Bounded FAIL may use separate medium-tier repair worker; maximum two loops for same required failure.
 
 ---
 
-# Phase 6 — REAL fixture/use demonstration
+# Phase 6 — REAL declarative use demonstration
 
-Use at least one accepted real declarative artifact from Axit-Code as a loader fixture/use case; do not rely exclusively on synthetic toy input.
+Use at least one **accepted canonical declarative artifact** from Axit-Code as a real loader input if one exists after canonical discovery.
 
-The demonstration proves only loader acquisition/normalization. It must not claim the agent runtime is already building full model context or executing profiles/workflows.
+If the canonical product direction authorizes loader work but no accepted real artifact exists, do not silently promote a stale draft artifact to canonical. Report the exact missing fixture/foundation decision and block if required by frozen acceptance.
 
-If no accepted real declarative artifact exists after dependency resolution, the loader foundation is premature; stop rather than inventing one.
+The demonstration proves loader acquisition/normalization only, not Context Builder or execution behavior.
 
 ---
 
 # Phase 7 — Productization gap analysis
 
-Classify observed next needs without implementing them:
+Classify next needs without implementing them:
 
 ```text
 NO_CHANGE
@@ -281,8 +271,6 @@ VERIFICATION_INPUT
 RUN_LEDGER_INPUT
 FUTURE_PROFILE_RUNTIME_INPUT
 ```
-
-Only repeated or acceptance-critical loader gaps may modify M6-A. Everything else becomes input to later M6 slices.
 
 No automatic M6-B start.
 
@@ -304,40 +292,38 @@ repair loops
 human model overrides
 ```
 
-Use **terminal end-to-end** as the primary milestone latency metric.
-
-Review whether lane count was proportional to task complexity. Optimize decomposition/handoffs before considering a larger child model.
+Use terminal end-to-end as primary latency metric.
 
 ---
 
 # Phase 9 — Closure and stop
 
-Persist report + retrospective + contract/fixture manifest in the chosen M6-A execution metadata location.
+Persist report + retrospective + contract/fixture manifest.
 
-Closure sequence is mandatory:
+Mandatory sequence:
 
 ```text
 draft closure artifacts
   -> fresh independent closure verifier returns actual verdict
-  -> persist that actual verdict into durable artifacts
+  -> persist actual verdict
   -> fresh read-only post-verdict consistency audit
   -> MILESTONE_DONE when permitted
   -> STOP for human review
 ```
 
-Do not pre-write a predicted PASS and treat it as persisted verifier output.
+Do not pre-write predicted PASS as final verifier evidence.
 
 Terminal schema:
 
 ```text
 Status: MILESTONE_DONE | FAILED | HARD_BLOCKER
 Milestone: M6-A Loader Foundation
-Dependency foundation: ACCEPTED | BLOCKED
+Canonical sufficiency: SUFFICIENT | BLOCKED
 Frozen loader contract: PASS | FAIL | BLOCKED
 Implementation: PASS | FAIL | BLOCKED
 Focused verification: PASS | FAIL | BLOCKED
 Repository verification: PASS | FAIL | BLOCKED
-REAL declarative fixture: PASS | FAIL | BLOCKED
+REAL declarative fixture: PASS | FAIL | BLOCKED | NOT_REQUIRED
 Child route: PREFERRED_LUNA | COMPAT_TERRA | CONTROL_FINDING
 Terminal wall-clock: <duration or unavailable>
 Child lanes: <count>
