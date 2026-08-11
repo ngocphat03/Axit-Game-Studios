@@ -2,7 +2,7 @@
 
 Status: alignment-map
 
-This is the human/assistant roadmap alignment map, not an executable plan. Execution is authorized only by `.axit/state/active.md` plus an accepted milestone-specific plan.
+This is the human/assistant roadmap alignment map, not an executable plan. Execution is authorized only by `.axit/state/active.md` plus an accepted milestone-specific runbook/contract.
 
 ## Operating contract
 
@@ -17,13 +17,13 @@ child Sol = forbidden without explicit current human override
 
 Also:
 
-- parallelize only materially independent read-heavy work;
-- serialize overlapping writes and editor/runtime mutations;
-- do not spawn a new child merely for every phase/checkpoint;
+- parallelize only materially independent work;
+- serialize overlapping writes/editor mutations;
+- avoid per-checkpoint child churn;
 - independently verify accepted outcomes;
-- persist the **actual** closure-verifier verdict after it returns;
+- persist the actual closure-verifier verdict after it returns;
 - run a fresh post-verdict consistency audit;
-- record terminal end-to-end wall-clock for long-run comparisons;
+- record trustworthy terminal wall-clock when observable;
 - stop for human promotion review.
 
 ## M0 — Foundation Contracts
@@ -92,16 +92,7 @@ Promotion review:
 .axit/milestones/M5-project-bootstrap-knowledge-plane/promotion-review.md
 ```
 
-Proved:
-
-- minimal pointer-first bootstrap in a materially different real repository;
-- canonical product truth remained target-owned (`docs/PLAN.md`);
-- independent bootstrap review PASS;
-- fresh-context continuity PASS without chat replay;
-- one frozen REAL Axit-Code task PASS;
-- focused tests 10/10 and repository verification PASS;
-- medium-tier delegated execution via `COMPAT_TERRA` with zero human model overrides;
-- final closure PASS after metadata-only persistence repair.
+Proved minimal pointer-first bootstrap, target-owned canonical truth, fresh-context continuity, one REAL bounded task, target verification, medium-tier delegation, and independent closure.
 
 Performance sample:
 
@@ -110,65 +101,103 @@ terminal end-to-end = 26m 02s
 execution-to-preclosure = 22m 12s
 child lanes = 19
 peak useful parallelism = 4
-replacements = 0
-REAL repair loops = 0
 ```
-
-Nineteen lanes is retained as an orchestration-overhead signal, not a hard failure threshold.
 
 ## M6 — Axit-Code Productization
 
-Status: DECOMPOSED / IN PROGRESS BY HUMAN-ACCEPTED SLICES
+Status: IN PROGRESS BY BOUNDED HUMAN-ACCEPTED SLICES
 
-Goal: migrate proven semantics into the actual Axit-Code runtime without copying the Game-Studios filesystem or growing multiple subsystems at once.
+Goal: migrate proven semantics into the actual Axit-Code runtime without copying Game-Studios filesystem contracts wholesale or growing multiple subsystems at once.
 
 ### M6-A — Loader Foundation
 
-Status: DESIGNED_DEPENDENCY_GATED
+Status: HUMAN_PROMOTED on 2026-08-11
 
-Plan:
+Promotion review:
 
 ```text
-.axit/milestones/M6A-loader-foundation/plan.md
+.axit/milestones/M6A-loader-foundation/promotion-review.md
 ```
+
+Canonical target contract:
+
+```text
+ngocphat03/Axit-Code@release:docs/decisions/ADR-002-loader-contract-v1.md
+```
+
+Validated implementation branch:
+
+```text
+ngocphat03/Axit-Code@feature/m6a-loader
+```
+
+Proved:
+
+```text
+.agents Markdown acquisition
+-> strict Loader Contract v1 validation
+-> normalized typed records + repo-relative source identity
+-> deterministic ordering
+-> explicit duplicate/error behavior
+-> no success catalog on ERROR
+```
+
+Evidence:
+
+```text
+focused tests = 16/16 PASS
+package build/typecheck = PASS
+root npm run verify = PASS
+canonical fixture = PASS
+closure verifier = PASS
+post-verdict audit = PASS
+```
+
+The first closure verifier caught an inline-`#` strict-parser defect; bounded repair 1/2 fixed it and regression coverage passed. A later closure-artifact-only terminal-newline mismatch was corrected and re-audited without product rerun.
+
+Human promotion does not itself merge the product branch into Axit-Code `release`.
+
+### M6-B — Context Builder Foundation
+
+Status: DESIGNED_INTEGRATION_GATED / NOT AUTHORIZED FOR EXECUTION
 
 Selection review:
 
 ```text
-.axit/milestones/M6A-loader-foundation/selection-review.md
+.axit/milestones/M6B-context-builder/selection-review.md
+```
+
+Plan:
+
+```text
+.axit/milestones/M6B-context-builder/plan.md
 ```
 
 Goal:
 
 ```text
-accepted Profile / Rule / Workflow / Knowledge source
-  -> deterministic parse/validate
-  -> normalized typed records
-  -> source identity/provenance
-  -> explicit conflict/error semantics
+explicit accepted context inputs
++ promoted M6-A artifact records
+-> deterministic source-aware context
+-> provenance-preserving normalized representation
+-> explicit omission/truncation diagnostics when accepted
 ```
 
-M6-A deliberately excludes Context Builder, Harness, Tool Gateway, Run Ledger, provider integration, CLI orchestration, Unity integration and M6-B.
+Canonical execution flow places Context Builder after profile/context acquisition and requires provenance, relevance discipline, secret minimization, non-policy treatment of source/Markdown, and recorded truncation strategy.
 
-Current dependency gate: Axit-Code PR #5 (`docs: establish AxitCode and Game Design rules`) is open/draft/unmerged and explicitly positions its rule/catalog foundation before loader implementation. Do not auto-merge or treat it as canonical. Human review must accept, revise or supersede the foundation before M6-A long execution.
-
-If accepted loader-input conventions remain unavailable at readiness:
+Before any M6-B execution, the chosen writable Axit-Code baseline must contain the promoted M6-A implementation plus ADR-002/fixture and pass target-native verification. Otherwise:
 
 ```text
-HARD_BLOCKER: KNOWLEDGE_FOUNDATION_NOT_ACCEPTED
+HARD_BLOCKER: M6A_PRODUCT_BASELINE_NOT_INTEGRATED
 ```
 
-### M6-B — Context Builder
+M6-B Phase 0 must discover and freeze the exact minimal contract before product writes. Reference resolution, profile selection, relevance/token-budget behavior, allowed tool-descriptor inclusion, and diagnostics are questions to resolve from canonical evidence rather than assumptions.
 
-Status: mockup / NOT AUTHORIZED
-
-Goal: consume proven loader records to construct minimal, source-aware model context with explicit identity and deterministic tests.
-
-Do not design implementation details until M6-A is promoted.
+Do not automatically include semantic/vector search, Harness/Tool Gateway, Run Ledger, provider execution, planning-loop changes, CLI orchestration, Unity integration, Capability/Binding runtime, or M6-C+.
 
 ### Later M6 slices
 
-Future bounded slices may cover Harness/Tool Gateway, Verification, Run Ledger, provider/runtime integration, CLI orchestration, Capability/Binding resolution and Unity host integration only when their prerequisites are proven.
+Future bounded slices may cover Harness/Tool Gateway, Verification, Run Ledger, provider/runtime integration, CLI orchestration, Capability/Binding resolution and Unity host integration only when prerequisites are proven.
 
 Do not bundle them automatically.
 
@@ -187,9 +216,10 @@ Goal: prove long-running recovery, resumability, evidence trust, model-routing c
 5. Did context survive without chat replay?
 6. Did the run create unnecessary framework growth?
 7. Did child lanes stay on the allowed medium tier unless explicitly human-overridden?
-8. What were terminal wall-clock, child count, peak useful parallelism, replacements, repair loops, and model overrides?
-9. Was child-lane count proportional to actual independent work, or did orchestration churn dominate?
-10. Which incident needs a permanent rule/regression?
+8. What timing/lane/repair/model data is trustworthy, and what is unavailable?
+9. Was child-lane count proportional to actual independent work?
+10. Which incident needs permanent regression protection?
 11. Is the next slice still the smallest valuable next capability?
+12. Is the promoted product diff actually integrated on the next slice's selected baseline?
 
 Do not silently rewrite a milestone goal after execution starts.
