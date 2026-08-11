@@ -1,7 +1,7 @@
 # M6-A Selection Review
 
 Date: 2026-08-11
-Status: accepted-for-design / dependency-gated
+Status: accepted-for-design / ready-for-canonical-discovery
 
 ## Decision
 
@@ -15,40 +15,33 @@ M6-A — Profile / Rule / Workflow / Knowledge Loader Foundation
 
 Do **not** combine Context Builder, Harness, Tool Gateway, Run Ledger, Unity integration, provider integration, or CLI run orchestration into M6-A.
 
-Context Builder is a later M6 slice after loader contracts are proven.
+## Canonical basis
 
-## Why this slice
+Current `Axit-Code/release` `docs/PLAN.md` remains canonical and explicitly says Phase 1 Slice 2 should implement a profile loader and context builder from files with schema/diagnostics/tests.
 
-Axit-Code's merged Agent Foundation work explicitly identifies Phase 1 Slice 2 as schema/loader work for declarative agent knowledge before Context Builder. Current open draft PR #5 — `docs: establish AxitCode and Game Design rules` — also states that its rule foundation is intended to precede the loader.
+M6-A intentionally takes only the **loader foundation** portion first; Context Builder remains M6-B.
 
-This matches Game-Studios evidence that knowledge/rules should be user-owned, pointer-first, provider-neutral, and separate from runtime permission policy.
+## PR #5 reassessment
 
-## Current dependency finding
+PR #5 `docs: establish AxitCode and Game Design rules` was created and last updated on 2026-08-07. At 2026-08-11 review it remains open/draft/unmerged, has no review comments, and its branch has diverged from current `release`.
 
-At selection time:
+Therefore PR #5 is **historical design input, not a readiness dependency and not canonical truth**.
 
-```text
-Axit-Code PR #5
-state: open
-mode: draft
-merged: false
-purpose: rule catalog/foundation before loader
-```
+Rules:
 
-Therefore M6-A is designed but **not yet authorized for long implementation execution**.
+- do not auto-merge/rebase/close PR #5;
+- do not copy its draft frontmatter/taxonomy into runtime merely because it exists;
+- M6-A Phase 0 may read it as optional prior-art context;
+- current `release`, `docs/PLAN.md`, accepted ADRs/architecture, and current product source own readiness decisions.
 
-Do not merge, rebase, close, or silently treat PR #5 as canonical merely to unblock M6-A.
+M6-A may start Phase 0 discovery now.
 
-If current Axit-Code `release` still lacks an accepted loader-input convention at execution readiness, stop with:
+If current canonical sources are insufficient to freeze a loader contract without inventing material schema/taxonomy semantics, then stop for the **actual missing decision**, e.g. `PRODUCT_INTENT`, `PUBLIC_CONTRACT_DECISION`, or `KNOWLEDGE_FOUNDATION_NOT_ACCEPTED` with evidence describing exactly what canonical input is missing.
 
-```text
-HARD_BLOCKER: KNOWLEDGE_FOUNDATION_NOT_ACCEPTED
-```
-
-Human review decides whether PR #5 should be merged, revised, superseded, or intentionally bypassed with a new accepted foundation.
+Do not block merely because PR #5 is unmerged.
 
 ## Productization boundary
 
 M6-A migrates **semantics**, not the Game-Studios filesystem.
 
-Do not copy the Game-Studios `.axit` tree into Axit-Code runtime. Reuse only proven invariants that fit Axit-Code's canonical product architecture.
+Do not copy the Game-Studios `.axit` tree into Axit-Code runtime. Reuse only proven invariants that fit Axit-Code's current canonical product architecture.
