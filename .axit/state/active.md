@@ -1,7 +1,7 @@
 # Axit Workspace Active State
 
 Updated: 2026-08-11
-Status: M6A-ready-for-phase0-canonical-discovery
+Status: M6A-phase0-materialized-awaiting-fresh-target-session
 
 ## Roadmap state
 
@@ -11,38 +11,47 @@ M2 — Autonomous Bounded Development: HUMAN_PROMOTED
 M3 — Unity Execution Coverage: HUMAN_PROMOTED
 M4 — Cross-System Workspace: DEFERRED_WAITING_REAL_SECOND_SYSTEM
 M5 — Project Bootstrap & Knowledge Plane: HUMAN_PROMOTED
-M6-A — Loader Foundation: READY_FOR_PHASE0_CANONICAL_DISCOVERY
+M6-A — Loader Foundation: PHASE0_MATERIALIZED
 M6-B+ — NOT_AUTHORIZED
 ```
 
-M6-A plan:
+Game-Studios control plan:
 
 ```text
 .axit/milestones/M6A-loader-foundation/plan.md
 ```
 
-Selection review:
+Target Axit-Code Phase 0 runbook:
 
 ```text
-.axit/milestones/M6A-loader-foundation/selection-review.md
+ngocphat03/Axit-Code@release:.codex/m6a/runbook.md
 ```
 
-## Corrected readiness rule
+## Phase 0 purpose
 
-Axit-Code PR #5 is **not** a mandatory dependency.
+The currently authorized run is discovery-only. It must determine whether current canonical Axit-Code sources are sufficient to freeze a minimal loader contract without guessing.
 
-Review on 2026-08-11 found:
+Terminal decision:
 
 ```text
-PR #5 last updated: 2026-08-07
-state: open / draft / unmerged
-review comments: none
-branch vs current release: diverged
+SUFFICIENT_TO_FREEZE
 ```
 
-Treat PR #5 only as optional historical design input. Do not auto-merge/rebase/close it and do not treat its draft taxonomy/frontmatter as canonical.
+or:
 
-M6-A Phase 0 is authorized to start from current Axit-Code canonical truth:
+```text
+MISSING_ACCEPTED_SEMANTICS
+```
+
+with exact evidence-backed missing decisions.
+
+No loader implementation is authorized in this run.
+
+## Canonical readiness rule
+
+PR #5 is not a mandatory dependency. It is historical draft prior art only.
+
+Canonical M6-A discovery truth is current Axit-Code:
 
 ```text
 release
@@ -52,9 +61,29 @@ current package/source/tests
 accepted declarative artifacts, if any
 ```
 
-Current canonical PLAN explicitly places profile loader/context loading with schema/diagnostics/tests in Phase 1 Slice 2. M6-A takes only the loader foundation; Context Builder remains later.
+Do not promote draft PR taxonomy/frontmatter to canonical. Do not block merely because PR #5 is unmerged.
 
-If canonical sources are insufficient to freeze material loader semantics without guessing, stop for the exact missing accepted decision. Do not block merely because PR #5 is unmerged.
+## Target execution bootstrap
+
+Axit-Code `release` now contains:
+
+```text
+AGENTS.md
+.codex/config.toml
+.codex/agents/axit-verifier.toml
+.codex/m6a/runbook.md
+```
+
+Fresh sessions are routed to M6-A Phase 0 only.
+
+Phase 0 may write only:
+
+```text
+.codex/m6a/results/phase0-report.md
+.codex/m6a/results/phase0-evidence.md
+```
+
+Product/source/test/schema/package/documentation changes are forbidden until Phase 0 is reviewed and a future loader contract is explicitly frozen.
 
 ## Model / cost policy
 
@@ -65,26 +94,22 @@ child compatibility fallback = gpt-5.6-terra / medium when Luna is unavailable
 child Sol = forbidden without explicit current human override
 ```
 
-M5 demonstrated `COMPAT_TERRA` successfully. No silent Sol fallback.
+Current target config uses Terra/medium compatibility fallback because Luna was not exposed by the observed child runtime. No silent Sol fallback.
 
 ## Stable execution rules
 
 - Primary orchestrates; children do delegatable work.
-- Spawn lanes only for materially independent work or required verifier independence.
+- Use a small number of materially independent lanes; do not spawn one child per checklist item.
 - Preserve unrelated filesystem state.
-- Actual final verifier verdict must be persisted after it returns, then consistency-audited before `MILESTONE_DONE`.
-- Use terminal end-to-end duration as primary latency metric.
+- Final verifier's actual verdict must be persisted after it returns, then consistency-audited.
 - No speculative Profile/Rule/Workflow/Knowledge schema decisions.
-- No M6-B, Harness, Tool Gateway, Run Ledger, provider, CLI orchestration, Unity integration, or Capability/Binding work in M6-A.
+- No M6-B, Context Builder, Harness, Tool Gateway, Run Ledger, provider, CLI orchestration, Unity integration, or Capability/Binding work.
 
 ## Next action
 
-Run M6-A Phase 0 from a fresh trusted Axit-Code session using current canonical `release` truth. Phase 0 must return either:
+1. Pull/sync local `ngocphat03/Axit-Code` `release`.
+2. Open a fresh trusted Codex session at Axit-Code repository root.
+3. Execute `.codex/m6a/runbook.md` continuously through its Phase 0 terminal result.
+4. Push/share the Phase 0 result branch only after the local run has finished, then stop for human/assistant review.
 
-```text
-SUFFICIENT_TO_FREEZE
-```
-
-or an evidence-backed exact missing canonical decision.
-
-Do not wait on PR #5 solely because it exists. Do not start M6-B automatically.
+Do not start loader implementation or M6-B automatically.
