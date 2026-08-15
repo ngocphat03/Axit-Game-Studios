@@ -1,53 +1,53 @@
-# Axit Capability Spec v1
+# Đặc tả Axit Capability v1 (Axit Capability Spec v1)
 
-## Purpose
+## Mục đích (Purpose)
 
-A Capability is a **semantic operation that can acquire evidence or perform a controlled execution step** for Axit.
+Một Capability là một **thao tác mang tính ngữ nghĩa có thể thu thập bằng chứng hoặc thực hiện một bước thực thi có kiểm soát** cho Axit.
 
-Capabilities answer:
+Capability trả lời câu hỏi:
 
-> What can the runtime observe or execute to obtain evidence?
+> Runtime có thể quan sát hoặc thực thi điều gì để thu thập bằng chứng?
 
-They do not answer:
+Chúng không trả lời các câu hỏi:
 
-- who owns a decision -> Profile;
-- what procedure to follow -> Skill;
-- how multiple procedures compose -> Workflow;
-- whether evidence is sufficient -> `verify-change`;
-- which provider/tool transports the operation -> runtime binding;
-- whether an operation is authorized -> Runtime/Harness policy.
+- ai sở hữu quyết định -> Profile;
+- quy trình nào cần tuân theo -> Skill;
+- kết hợp nhiều quy trình ra sao -> Workflow;
+- bằng chứng đã đủ hay chưa -> `verify-change`;
+- provider/công cụ nào truyền tải thao tác -> runtime binding;
+- thao tác có được cấp quyền hay không -> Runtime/Harness policy.
 
-The separation is intentional:
+Sự phân tách này là có chủ đích:
 
 ```text
 Skill / Workflow
-    -> asks for evidence
-        -> semantic Capability
+    -> yêu cầu bằng chứng (asks for evidence)
+        -> Capability ngữ nghĩa
             -> runtime binding
-                -> MCP / CLI / Axit host / editor automation / other transport
-                    -> evidence
-                        -> verify-change judgment
+                -> MCP / CLI / Axit host / editor automation / transport khác
+                    -> bằng chứng (evidence)
+                        -> đánh giá của verify-change
 ```
 
-A Capability id must remain stable even when the underlying transport changes.
+Mã định danh Capability (Capability id) phải duy trì tính ổn định ngay cả khi transport bên dưới thay đổi.
 
-## Canonical capability sets
+## Các tập hợp Capability chuẩn mực (Canonical capability sets)
 
-Reusable semantic capability sets live under:
+Các tập hợp capability ngữ nghĩa có thể tái sử dụng nằm dưới:
 
 ```text
 .axit/capabilities/<domain>/<set>.yaml
 ```
 
-Example:
+Ví dụ:
 
 ```text
 .axit/capabilities/unity/evidence.yaml
 ```
 
-A capability set groups operations that share a domain and purpose. It is not a tool configuration file.
+Một tập hợp capability nhóm các thao tác có chung domain và mục đích. Nó không phải là một file cấu hình công cụ.
 
-Recommended top-level shape:
+Cấu trúc cấp cao nhất được khuyến nghị:
 
 ```yaml
 spec_version: axit.capability-set/v1
@@ -66,13 +66,13 @@ capabilities:
       cannot_establish: []
 ```
 
-Only fields exercised by a real capability set should be added to v1.
+Chỉ những trường được sử dụng bởi một tập hợp capability thực tế mới nên được thêm vào v1.
 
-## Capability identity
+## Định danh Capability (Capability identity)
 
-Capability ids describe **semantic intent**, not tool syntax.
+Capability id mô tả **ý đồ ngữ nghĩa (semantic intent)**, không mô tả cú pháp công cụ.
 
-Good:
+Tốt:
 
 ```text
 unity.compile
@@ -80,7 +80,7 @@ unity.prefab.inspect
 unity.playmode.verify
 ```
 
-Avoid:
+Tránh:
 
 ```text
 mcp.unity.execute_menu_item
@@ -88,15 +88,15 @@ unity-cli.batchmode-command
 coplay.get_prefab
 ```
 
-Provider/tool names belong in runtime bindings, not canonical capability ids.
+Tên provider/công cụ thuộc về runtime binding, không thuộc về capability id chuẩn mực.
 
-## Capability ID resolution
+## Phân giải Capability ID
 
-When planning, requesting, or reporting a Capability, use **only ids explicitly declared by the affected System's active capability sets**.
+Khi lên kế hoạch, yêu cầu hoặc báo cáo một Capability, **chỉ sử dụng các id được khai báo rõ ràng bởi tập hợp capability đang hoạt động của System bị ảnh hưởng**.
 
-Do not invent, alias, rename, abbreviate, or synthesize capability ids, including friendly or project-specific names that merely sound appropriate.
+Tuyệt đối không tự ý bịa ra, đặt bí danh, đổi tên, viết tắt hoặc tổng hợp các capability id, bao gồm cả những tên gọi thân thiện hoặc đặc thù dự án nghe có vẻ phù hợp.
 
-For example, if the active set declares:
+Ví dụ, nếu tập hợp đang hoạt động khai báo:
 
 ```text
 unity.prefab.inspect
@@ -104,7 +104,7 @@ unity.component.inspect
 unity.serialized-fields.inspect
 ```
 
-then names such as these are invalid unless they are separately declared in an active set:
+thì các tên như sau là không hợp lệ trừ khi chúng được khai báo riêng trong một tập hợp đang hoạt động:
 
 ```text
 player_prefab.resolve_asset
@@ -112,42 +112,42 @@ prefab.inspect_serialized_component
 configuration.compare_to_accepted_contract
 ```
 
-A natural-language evidence need is not automatically a Capability.
+Nhu cầu bằng chứng bằng ngôn ngữ tự nhiên không tự động trở thành một Capability.
 
-If required evidence has no matching declared Capability:
+Nếu bằng chứng cần thiết không khớp với Capability đã khai báo nào:
 
-1. state that no matching Axit Capability is currently declared;
-2. describe the missing evidence need in ordinary language;
-3. use legitimate non-capability project evidence or validation routes when they can satisfy the criterion;
-4. otherwise surface a **capability gap** or unavailable evidence need;
-5. do not fabricate an id to make the evidence plan look complete.
+1. nêu rõ rằng hiện chưa có Axit Capability phù hợp nào được khai báo;
+2. mô tả nhu cầu bằng chứng còn thiếu bằng ngôn ngữ thông thường;
+3. sử dụng các bằng chứng hoặc luồng xác thực dự án hợp lệ không phải capability khi chúng có thể thỏa mãn tiêu chí;
+4. nếu không, hãy báo cáo **khoảng trống capability (capability gap)** hoặc nhu cầu bằng chứng chưa khả dụng;
+5. không bịa ra một id để làm cho kế hoạch bằng chứng trông có vẻ hoàn chỉnh.
 
-Project mechanisms remain ordinary evidence until they are deliberately accepted into a Capability set. For example, a standalone deterministic C# test command is not `unity.tests.run` merely because it tests Unity-project code; `unity.tests.run` applies only when the selected evidence is actually a Unity test suite represented by that Capability contract.
+Các cơ chế dự án vẫn là bằng chứng thông thường cho đến khi chúng được chấp nhận một cách có chủ đích vào một tập hợp Capability. Ví dụ: một lệnh test C# tất định độc lập không tự nhiên trở thành `unity.tests.run` chỉ vì nó test code của dự án Unity; `unity.tests.run` chỉ áp dụng khi bằng chứng được chọn thực sự là một bộ test Unity được đại diện bởi hợp đồng Capability đó.
 
-## Operation classes
+## Các lớp thao tác (Operation classes)
 
-v1 uses two operation classes:
+v1 sử dụng hai lớp thao tác:
 
-- `inspect` — observe existing source/editor/runtime state without intentionally starting a behavioral execution;
-- `execute` — run a bounded check or controlled runtime action to produce evidence.
+- `inspect` — quan sát trạng thái source/editor/runtime hiện có mà không chủ ý khởi chạy một hành vi thực thi;
+- `execute` — chạy một kiểm tra có giới hạn hoặc hành động runtime có kiểm soát để tạo ra bằng chứng.
 
-This describes intent only. It does not grant permission.
+Điều này chỉ mô tả ý định. Nó không tự động cấp quyền.
 
-## Side-effect classes
+## Các lớp tác dụng phụ (Side-effect classes)
 
-A capability declares the smallest expected side-effect class:
+Một capability khai báo lớp tác dụng phụ nhỏ nhất dự kiến:
 
-- `read-only` — inspect state without intentionally changing project/runtime state;
-- `derived-artifacts` — may create caches, logs, test/build outputs, or other reproducible derived files;
-- `controlled-runtime` — may enter/drive a bounded runtime/editor state such as Play Mode and then return evidence.
+- `read-only` — kiểm tra trạng thái mà không chủ ý thay đổi trạng thái dự án/runtime;
+- `derived-artifacts` — có thể tạo cache, logs, đầu ra test/build, hoặc các file phái sinh có thể tái tạo khác;
+- `controlled-runtime` — có thể bước vào/điều khiển trạng thái runtime/editor có giới hạn như Play Mode rồi trả về bằng chứng.
 
-A future mutation capability may require additional classes, but evidence v1 does not introduce source-writing capability semantics.
+Một capability thay đổi trong tương lai có thể yêu cầu thêm lớp tác dụng phụ, nhưng bằng chứng v1 không đưa vào ngữ nghĩa capability ghi source code.
 
-Runtime/Harness policy remains authoritative. Declaring a Capability never bypasses approval, path, command, or environment restrictions.
+Chính sách Runtime/Harness vẫn giữ vai trò chính thức. Việc khai báo một Capability không bao giờ bỏ qua các giới hạn về phê duyệt, đường dẫn, câu lệnh, hoặc môi trường.
 
-## Evidence contract
+## Hợp đồng bằng chứng (Evidence contract)
 
-Each capability should state:
+Mỗi capability nên nêu rõ:
 
 ```yaml
 evidence:
@@ -157,89 +157,89 @@ evidence:
     - ...
 ```
 
-`can_establish` describes observations the capability can legitimately contribute when successfully acquired.
+`can_establish` mô tả các quan sát mà capability có thể đóng góp hợp lệ khi thu thập thành công.
 
-`cannot_establish` prevents overclaiming. For example, successful compilation does not prove gameplay behavior, and prefab inspection does not prove the runtime instantiated object behaves correctly.
+`cannot_establish` ngăn chặn các tuyên bố vượt quá thực tế. Ví dụ: biên dịch thành công không chứng minh được hành vi gameplay, và inspect prefab không chứng minh được đối tượng runtime được khởi tạo hoạt động chính xác.
 
-Do not turn capability documentation into acceptance criteria. The accepted task and project rules still define what must be proven.
+Không biến tài liệu capability thành tiêu chí chấp nhận. Tác vụ được chấp thuận và các quy tắc dự án vẫn định nghĩa những gì phải được chứng minh.
 
-## Evidence vs verdict
+## Bằng chứng so với Kết luận (Evidence vs verdict)
 
-Capability output is **evidence**, never the final verdict.
+Đầu ra của Capability là **bằng chứng**, không bao giờ là kết luận cuối cùng.
 
-`verify-change` still decides:
+`verify-change` vẫn quyết định:
 
-- which criterion matters;
-- which evidence is `REQUIRED` or `SUPPORTING`;
-- whether the current evidence proves, fails, or leaves the criterion unresolved;
-- the final `PASS`, `FAIL`, or `BLOCKED` verdict.
+- tiêu chí nào quan trọng;
+- bằng chứng nào là `REQUIRED` (bắt buộc) hay `SUPPORTING` (bổ trợ);
+- liệu bằng chứng hiện tại chứng minh, làm thất bại hay để ngỏ tiêu chí;
+- kết luận cuối cùng `PASS`, `FAIL`, hoặc `BLOCKED`.
 
-Examples:
+Ví dụ:
 
 ```text
-Criterion: scripts must compile
-unity.compile observes compile errors
-=> evidence can demonstrate FAIL
+Tiêu chí: scripts phải compile thành công
+unity.compile quan sát thấy compile errors
+=> bằng chứng có thể chứng minh FAIL
 ```
 
 ```text
-Criterion: deterministic damage arithmetic is correct
-focused deterministic tests already prove it
-unity.playmode.verify unavailable
-=> runtime evidence may remain SUPPORTING rather than blocking PASS
+Tiêu chí: phép tính số học sát thương tất định là chính xác
+các test tất định tập trung đã chứng minh điều đó
+unity.playmode.verify không khả dụng
+=> bằng chứng runtime có thể giữ vai trò SUPPORTING thay vì chặn kết luận PASS
 ```
 
 ```text
-Criterion: feature works in Unity Play Mode
-unity.playmode.verify unavailable
-=> REQUIRED evidence unavailable -> BLOCKED unless another required failure is already demonstrated
+Tiêu chí: tính năng hoạt động trong Unity Play Mode
+unity.playmode.verify không khả dụng
+=> bằng chứng REQUIRED không khả dụng -> BLOCKED trừ khi một lỗi bắt buộc khác đã được chứng minh
 ```
 
-Do not make a Capability globally `REQUIRED` merely because it exists.
+Không biến một Capability thành `REQUIRED` toàn cục chỉ vì nó tồn tại.
 
-## Acquisition failure vs product failure
+## Lỗi thu thập so với Lỗi sản phẩm (Acquisition failure vs product failure)
 
-Keep these distinct:
+Giữ các trường hợp này tách biệt rõ ràng:
 
-1. **Evidence demonstrates target failure** — for example the Unity compiler ran and reported a compile error in the affected code. This may prove a required criterion `FAILED`.
-2. **Capability is unavailable** — no usable runtime binding, required editor instance, environment, permission, or dependency exists. This is missing evidence, not proof the product is broken.
-3. **Acquisition mechanism errors** — the binding/tool failed before a trustworthy target observation was produced. Treat this as an evidence acquisition problem unless the output itself proves a product failure.
+1. **Bằng chứng chứng minh sản phẩm thất bại (target failure)** — ví dụ trình biên dịch Unity đã chạy và báo lỗi compile trong code bị ảnh hưởng. Điều này có thể chứng minh một tiêu chí bắt buộc bị `FAILED`.
+2. **Capability không khả dụng (unavailable)** — không có runtime binding khả dụng, thiếu phiên bản editor bắt buộc, thiếu môi trường, quyền hạn, hoặc dependency. Đây là thiếu bằng chứng, không phải bằng chứng chứng minh sản phẩm bị hỏng.
+3. **Cơ chế thu thập bị lỗi (acquisition mechanism errors)** — binding/công cụ bị lỗi trước khi tạo ra quan sát đáng tin cậy. Coi đây là sự cố thu thập bằng chứng trừ khi bản thân đầu ra chứng minh sản phẩm bị lỗi.
 
-The runtime binding should preserve enough detail for the verifier to distinguish these cases.
+Runtime binding nên lưu giữ đủ chi tiết để verifier phân biệt các trường hợp này.
 
-## Runtime binding separation
+## Tách biệt Runtime binding
 
-Canonical Capability definitions do not contain provider/tool calls.
+Định nghĩa Capability chuẩn mực không chứa các lời gọi provider/công cụ.
 
-A runtime binding maps:
+Một runtime binding ánh xạ:
 
 ```text
-semantic capability id
-    -> available execution transport
+mã capability ngữ nghĩa (semantic capability id)
+    -> transport thực thi khả dụng (available execution transport)
 ```
 
-Possible transports include:
+Các transport có thể bao gồm:
 
 - Unity MCP;
 - Axit Unity host;
 - Unity CLI/batch mode;
-- local test/build commands;
+- các lệnh test/build cục bộ;
 - editor automation;
-- future remote execution providers.
+- các provider thực thi từ xa trong tương lai.
 
-Bindings may differ by developer machine or runtime environment without changing Skills, Workflows, Profiles, or capability ids.
+Bindings có thể khác nhau tùy theo máy của lập trình viên hoặc môi trường runtime mà không làm thay đổi Skills, Workflows, Profiles, hoặc capability ids.
 
-Do not materialize a binding catalog before a real transport is connected and tested.
+Không cụ thể hóa danh mục binding trước khi transport thực tế được kết nối và kiểm thử.
 
-## System capability routing
+## Điều hướng Capability theo System
 
-A System may declare which semantic capability sets apply through the optional sidecar:
+Một System có thể khai báo tập hợp capability ngữ nghĩa nào được áp dụng thông qua file sidecar tùy chọn:
 
 ```text
 .axit/systems/<system-id>/capabilities.yaml
 ```
 
-Minimal shape:
+Cấu trúc tối thiểu:
 
 ```yaml
 spec_version: axit.system-capabilities/v1
@@ -248,56 +248,56 @@ capability_sets:
   - .axit/capabilities/unity/evidence.yaml
 ```
 
-The sidecar means the semantic capability set is relevant to the System. It does **not** mean every capability is currently executable.
+File sidecar có nghĩa là tập hợp capability ngữ nghĩa có liên quan tới System. Nó **không** có nghĩa là mọi capability hiện đều có thể thực thi được.
 
-Availability depends on runtime bindings and environment state.
+Tính khả dụng phụ thuộc vào runtime bindings và trạng thái môi trường.
 
-Root routing should read this sidecar only when evidence acquisition for that System is relevant. Do not preload capability catalogs for ordinary design or architecture-only work.
+Điều hướng gốc chỉ nên đọc sidecar này khi việc thu thập bằng chứng cho System đó là phù hợp. Không nạp trước danh mục capability cho các công việc thiết kế hoặc chỉ thuần kiến trúc thông thường.
 
-## Capability selection
+## Lựa chọn Capability
 
-When a Skill/Workflow needs evidence:
+Khi một Skill/Workflow cần bằng chứng:
 
-1. identify the accepted criterion;
-2. choose the smallest evidence type that can establish it;
-3. inspect the affected System's declared capability sets when execution/editor evidence is relevant;
-4. choose the narrowest **declared** semantic Capability that can acquire the evidence;
-5. if no declared Capability matches, use legitimate non-capability evidence when sufficient or report the evidence need as a capability gap without inventing an id;
-6. let runtime/Harness resolve availability, permissions, and transport binding;
-7. return acquired evidence to the owning Skill/Workflow;
-8. keep verdict semantics in `verify-change`.
+1. xác định tiêu chí đã được chấp thuận;
+2. chọn loại bằng chứng nhỏ nhất có thể xác lập tiêu chí đó;
+3. kiểm tra các tập hợp capability đã khai báo của System bị ảnh hưởng khi bằng chứng thực thi/editor là phù hợp;
+4. chọn Capability ngữ nghĩa hẹp nhất **đã được khai báo** có thể thu thập bằng chứng;
+5. nếu không có Capability khai báo nào khớp, hãy sử dụng bằng chứng hợp lệ không phải capability khi đã đủ hoặc báo cáo nhu cầu bằng chứng như một khoảng trống capability mà không tự ý bịa id;
+6. để runtime/Harness phân giải tính khả dụng, quyền hạn, và transport binding;
+7. trả lại bằng chứng đã thu thập cho Skill/Workflow sở hữu;
+8. giữ ngữ nghĩa kết luận nằm trong `verify-change`.
 
-Do not call broader runtime checks when narrower deterministic evidence is sufficient.
+Không gọi các kiểm tra runtime rộng hơn khi bằng chứng tất định hẹp hơn đã đủ.
 
-## Scope ownership
+## Phân định phạm vi sở hữu (Scope ownership)
 
-Reusable engine/domain capabilities belong under `.axit/capabilities/`.
+Các capability engine/domain có thể tái sử dụng thuộc về `.axit/capabilities/`.
 
-System-local facts such as project-specific scene names, prefab paths, test suites, or conventions belong in System Rules/Architecture/Knowledge or source/tests.
+Các thông tin cục bộ theo System như tên scene đặc thù dự án, đường dẫn prefab, bộ test, hoặc quy ước thuộc về System Rules/Architecture/Knowledge hoặc source/tests.
 
-Example:
+Ví dụ:
 
 ```text
 unity.prefab.inspect
-    = reusable Capability
+    = Capability có thể tái sử dụng
 
-"Player.prefab must have DamageableBodyPart"
-    = project/System criterion or architecture fact
+"Player.prefab phải có DamageableBodyPart"
+    = Tiêu chí dự án/System hoặc thông tin kiến trúc
 ```
 
-Do not create one capability id per game feature.
+Không tạo mỗi tính năng game một capability id.
 
-## Capability quality test
+## Bài kiểm tra chất lượng Capability
 
-Before accepting a capability into a reusable set, ask:
+Trước khi chấp nhận một capability vào tập hợp tái sử dụng, hãy tự hỏi:
 
-1. Is this an observable/executable semantic operation rather than a procedure or responsibility?
-2. Can its id survive a change from MCP to another transport?
-3. Does it produce evidence that a verifier can interpret without granting it verdict authority?
-4. Are its side effects clear enough for Runtime/Harness policy?
-5. Does `cannot_establish` prevent common overclaims?
-6. Is it reusable across materially different projects in the same domain?
-7. Can system/project specifics stay outside the capability definition?
-8. Is the id explicitly declared rather than synthesized during task planning?
+1. Đây có phải là một thao tác ngữ nghĩa có thể quan sát/thực thi thay vì một quy trình hay trách nhiệm không?
+2. Id của nó có thể tồn tại khi thay đổi từ MCP sang transport khác không?
+3. Nó có tạo ra bằng chứng mà verifier có thể diễn giải mà không trao cho nó quyền đưa ra kết luận không?
+4. Tác dụng phụ của nó có đủ rõ ràng cho chính sách Runtime/Harness không?
+5. `cannot_establish` có ngăn chặn được các tuyên bố vượt quá thực tế phổ biến không?
+6. Nó có thể tái sử dụng trên các dự án khác biệt thực tế trong cùng domain không?
+7. Các chi tiết đặc thù của system/project có thể nằm ngoài định nghĩa capability không?
+8. Id có được khai báo rõ ràng thay vì được tổng hợp tùy tiện trong khi lên kế hoạch tác vụ không?
 
-If not, keep the behavior in the owning Skill, System context, runtime binding, ordinary project validation route, or tool layer instead.
+Nếu không, hãy giữ hành vi đó nằm trong Skill sở hữu, ngữ cảnh System, runtime binding, luồng xác thực dự án thông thường, hoặc tầng công cụ.

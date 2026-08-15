@@ -1,291 +1,269 @@
-# Game Studio Agent Architecture -- Quick Start Guide
+# Kiến trúc Game Studio Agent -- Hướng dẫn Khởi động Nhanh (Quick Start Guide)
 
-## What Is This?
+## Đây là gì?
 
-This is a complete Claude Code agent architecture for game development. It
-organizes 49 specialized AI agents into a studio hierarchy that mirrors
-real game development teams, with defined responsibilities, delegation
-rules, and coordination protocols. It includes engine-specialist agents
-for Godot, Unity, and Unreal — each with dedicated sub-specialists for
-major engine subsystems. All design agents and templates are grounded in
-established game design theory (MDA Framework, Self-Determination Theory,
-Flow State, Bartle Player Types). Use whichever engine set matches your project.
+Đây là một kiến trúc agent toàn diện của Claude Code dành cho phát triển game. Nó tổ chức 49 AI agent chuyên biệt thành một hệ thống phân cấp studio mô phỏng các đội ngũ làm game thực tế, với trách nhiệm được xác định rõ ràng, quy tắc ủy quyền và các giao thức điều phối. Hệ thống bao gồm các agent chuyên trách engine cho Godot, Unity, và Unreal — mỗi engine đều có các chuyên viên phụ trách các hệ thống con quan trọng. Tất cả các agent thiết kế và template đều được xây dựng dựa trên lý thuyết thiết kế game vững chắc (MDA Framework, Self-Determination Theory, Flow State, Bartle Player Types). Hãy sử dụng bộ engine phù hợp với dự án của bạn.
 
-## How to Use
+## Cách sử dụng
 
-### 1. Understand the Hierarchy
+### 1. Hiểu rõ hệ thống phân cấp (Hierarchy)
 
-There are three tiers of agents:
+Hệ thống gồm 3 phân tầng agent:
 
-- **Tier 1 (Opus)**: Directors who make high-level decisions
-  - `creative-director` -- vision and creative conflict resolution
-  - `technical-director` -- architecture and technology decisions
-  - `producer` -- scheduling, coordination, and risk management
+- **Phân tầng 1 (Tier 1 - Opus)**: Các giám đốc đưa ra quyết định cấp cao
+  - `creative-director` -- tầm nhìn sáng tạo và giải quyết xung đột ý tưởng
+  - `technical-director` -- kiến trúc và quyết định công nghệ
+  - `producer` -- lịch trình, điều phối và quản lý rủi ro
 
-- **Tier 2 (Sonnet)**: Department leads who own their domain
-  - `game-designer`, `lead-programmer`, `art-director`, `audio-director`,
-    `narrative-director`, `qa-lead`, `release-manager`, `localization-lead`
+- **Phân tầng 2 (Tier 2 - Sonnet)**: Các trưởng bộ phận nắm quyền sở hữu lĩnh vực của mình
+  - `game-designer`, `lead-programmer`, `art-director`, `audio-director`, `narrative-director`, `qa-lead`, `release-manager`, `localization-lead`
 
-- **Tier 3 (Sonnet/Haiku)**: Specialists who execute within their domain
-  - Designers, programmers, artists, writers, testers, engineers
+- **Phân tầng 3 (Tier 3 - Sonnet/Haiku)**: Các chuyên viên thực thi nhiệm vụ trong phạm vi của mình
+  - Nhà thiết kế, lập trình viên, họa sĩ, nhà văn, tester, kỹ sư
 
-### 2. Pick the Right Agent for the Job
+### 2. Chọn đúng Agent cho công việc
 
-Ask yourself: "What department would handle this in a real studio?"
+Hãy tự hỏi: "Bộ phận nào sẽ xử lý việc này trong một studio thực tế?"
 
-| I need to... | Use this agent |
-|-------------|---------------|
-| Design a new mechanic | `game-designer` |
-| Write combat code | `gameplay-programmer` |
-| Create a shader | `technical-artist` |
-| Write dialogue | `writer` |
-| Plan the next sprint | `producer` |
-| Review code quality | `lead-programmer` |
-| Write test cases | `qa-tester` |
-| Design a level | `level-designer` |
-| Fix a performance problem | `performance-analyst` |
-| Set up CI/CD | `devops-engineer` |
-| Design a loot table | `economy-designer` |
-| Resolve a creative conflict | `creative-director` |
-| Make an architecture decision | `technical-director` |
-| Manage a release | `release-manager` |
-| Prepare strings for translation | `localization-lead` |
-| Test a mechanic idea quickly | `prototyper` |
-| Review code for security issues | `security-engineer` |
-| Check accessibility compliance | `accessibility-specialist` |
-| Get Unreal Engine advice | `unreal-specialist` |
-| Get Unity advice | `unity-specialist` |
-| Get Godot advice | `godot-specialist` |
-| Design GAS abilities/effects | `ue-gas-specialist` |
-| Define BP/C++ boundaries | `ue-blueprint-specialist` |
-| Implement UE replication | `ue-replication-specialist` |
-| Build UMG/CommonUI widgets | `ue-umg-specialist` |
-| Design DOTS/ECS architecture | `unity-dots-specialist` |
-| Write Unity shaders/VFX | `unity-shader-specialist` |
-| Manage Addressable assets | `unity-addressables-specialist` |
-| Build UI Toolkit/UGUI screens | `unity-ui-specialist` |
-| Write idiomatic GDScript | `godot-gdscript-specialist` |
-| Write Godot C# code | `godot-csharp-specialist` |
-| Create Godot shaders | `godot-shader-specialist` |
-| Build GDExtension modules | `godot-gdextension-specialist` |
-| Plan live events and seasons | `live-ops-designer` |
-| Write patch notes for players | `community-manager` |
-| Brainstorm a new game idea | Use `/brainstorm` skill |
+| Tôi cần... | Hãy sử dụng agent này |
+|---|---|
+| Thiết kế một cơ chế mới | `game-designer` |
+| Viết code chiến đấu (combat) | `gameplay-programmer` |
+| Tạo shader | `technical-artist` |
+| Viết lời thoại | `writer` |
+| Lên kế hoạch sprint tiếp theo | `producer` |
+| Đánh giá chất lượng code | `lead-programmer` |
+| Viết test cases | `qa-tester` |
+| Thiết kế màn chơi | `level-designer` |
+| Khắc phục sự cố hiệu năng | `performance-analyst` |
+| Thiết lập CI/CD | `devops-engineer` |
+| Thiết kế bảng loot đồ | `economy-designer` |
+| Giải quyết xung đột sáng tạo | `creative-director` |
+| Đưa ra quyết định kiến trúc | `technical-director` |
+| Quản lý bản phát hành | `release-manager` |
+| Chuẩn bị chuỗi ngôn ngữ để dịch | `localization-lead` |
+| Thử nghiệm nhanh một ý tưởng cơ chế | `prototyper` |
+| Đánh giá code về mặt bảo mật | `security-engineer` |
+| Kiểm tra tuân thủ khả năng tiếp cận | `accessibility-specialist` |
+| Xin tư vấn Unreal Engine | `unreal-specialist` |
+| Xin tư vấn Unity | `unity-specialist` |
+| Xin tư vấn Godot | `godot-specialist` |
+| Thiết kế kỹ năng/hiệu ứng GAS trong Unreal | `ue-gas-specialist` |
+| Xác định ranh giới Blueprint/C++ | `ue-blueprint-specialist` |
+| Triển khai replication Unreal | `ue-replication-specialist` |
+| Xây dựng widget UMG/CommonUI | `ue-umg-specialist` |
+| Thiết kế kiến trúc DOTS/ECS trong Unity | `unity-dots-specialist` |
+| Viết shader/VFX Unity | `unity-shader-specialist` |
+| Quản lý tài nguyên Addressables | `unity-addressables-specialist` |
+| Xây dựng màn hình UI Toolkit/UGUI | `unity-ui-specialist` |
+| Viết code GDScript chuẩn quy ước | `godot-gdscript-specialist` |
+| Viết code C# trong Godot | `godot-csharp-specialist` |
+| Tạo shader trong Godot | `godot-shader-specialist` |
+| Xây dựng module GDExtension | `godot-gdextension-specialist` |
+| Lên kế hoạch sự kiện và mùa giải live-ops | `live-ops-designer` |
+| Viết patch notes cho người chơi | `community-manager` |
+| Brainstorm ý tưởng game mới | Dùng skill `/brainstorm` |
 
-### 3. Use Slash Commands for Common Tasks
+### 3. Sử dụng các lệnh Slash Command cho công việc phổ biến
 
-| Command | What it does |
-|---------|-------------|
-| `/start` | First-time onboarding — asks where you are, guides you to the right workflow |
-| `/help` | Context-aware "what do I do next?" — reads your current phase and artifacts |
-| `/project-stage-detect` | Analyze project state, detect stage, identify gaps |
-| `/setup-engine` | Configure engine + version, populate reference docs |
-| `/adopt` | Brownfield audit and migration plan for existing projects |
-| `/brainstorm` | Guided game concept ideation from scratch |
-| `/map-systems` | Decompose concept into systems, map dependencies, guide per-system GDDs |
-| `/design-system` | Guided, section-by-section GDD authoring for a single game system |
-| `/quick-design` | Lightweight spec for small changes — tuning, tweaks, minor additions |
-| `/review-all-gdds` | Cross-GDD consistency and game design theory review |
-| `/propagate-design-change` | Find ADRs and stories affected by a GDD change |
-| `/art-bible` | Guided, section-by-section Art Bible authoring — creates visual identity spec before asset production |
-| `/asset-spec` | Generate per-asset visual specifications and AI generation prompts from GDDs or character profiles |
-| `/ux-design` | Author UX specs (screen/flow, HUD, interaction patterns) |
-| `/ux-review` | Validate UX specs for accessibility and GDD alignment |
-| `/create-architecture` | Master architecture document for the game |
-| `/architecture-decision` | Creates an ADR |
-| `/architecture-review` | Validate all ADRs, dependency ordering, GDD traceability |
-| `/create-control-manifest` | Flat programmer rules sheet from Accepted ADRs |
-| `/create-epics` | Translate GDDs + ADRs into epics (one per architectural module) |
-| `/create-stories` | Break a single epic into implementable story files |
-| `/dev-story` | Read a story and implement it — routes to the correct programmer agent |
-| `/sprint-plan` | Creates or updates sprint plans |
-| `/sprint-status` | Quick 30-line sprint snapshot |
-| `/story-readiness` | Validate a story is implementation-ready before pickup |
-| `/story-done` | End-of-story completion review — verifies acceptance criteria |
-| `/estimate` | Produces structured effort estimates |
-| `/design-review` | Reviews a design document |
-| `/code-review` | Reviews code for quality and architecture |
-| `/balance-check` | Analyzes game balance data |
-| `/asset-audit` | Audits assets for compliance |
-| `/content-audit` | GDD-specified content vs. implemented — find gaps |
-| `/scope-check` | Detect scope creep against plan |
-| `/perf-profile` | Performance profiling and bottleneck ID |
-| `/tech-debt` | Scan, track, and prioritize tech debt |
-| `/gate-check` | Validate phase readiness (PASS/CONCERNS/FAIL) |
-| `/consistency-check` | Scan all GDDs for cross-document inconsistencies (conflicting stats, names, rules) |
-| `/security-audit` | Audit for security vulnerabilities: save tampering, cheat vectors, network exploits, data exposure |
-| `/reverse-document` | Generate design/architecture docs from existing code |
-| `/milestone-review` | Reviews milestone progress |
-| `/retrospective` | Runs sprint/milestone retrospective |
-| `/bug-report` | Structured bug report creation |
-| `/playtest-report` | Creates or analyzes playtest feedback |
-| `/onboard` | Generates onboarding docs for a role |
-| `/release-checklist` | Validates pre-release checklist |
-| `/launch-checklist` | Complete launch readiness validation |
-| `/changelog` | Generates changelog from git history |
-| `/patch-notes` | Generate player-facing patch notes |
-| `/hotfix` | Emergency fix with audit trail |
-| `/day-one-patch` | Prepare a focused day-one patch for known issues discovered after gold master |
-| `/prototype` | Concept prototype — validate core idea before writing GDDs (Phase 1) |
-| `/vertical-slice` | Production-quality end-to-end build — validate full game loop (Phase 4) |
-| `/localize` | Localization scan, extract, validate |
-| `/team-combat` | Orchestrate full combat team pipeline |
-| `/team-narrative` | Orchestrate full narrative team pipeline |
-| `/team-ui` | Orchestrate full UI team pipeline |
-| `/team-release` | Orchestrate full release team pipeline |
-| `/team-polish` | Orchestrate full polish team pipeline |
-| `/team-audio` | Orchestrate full audio team pipeline |
-| `/team-level` | Orchestrate full level creation pipeline |
-| `/team-live-ops` | Orchestrate live-ops team for seasons, events, and post-launch content |
-| `/team-qa` | Orchestrate full QA team cycle — test plan, test cases, smoke check, sign-off |
-| `/qa-plan` | Generate a QA test plan for a sprint or feature |
-| `/bug-triage` | Re-prioritize open bugs, assign to sprints, surface systemic trends |
-| `/smoke-check` | Run critical path smoke test gate before QA hand-off (PASS/FAIL) |
-| `/soak-test` | Generate a soak test protocol for extended play sessions |
-| `/regression-suite` | Map coverage to GDD critical paths, flag gaps, maintain regression suite |
-| `/test-setup` | Scaffold test framework + CI pipeline for the project's engine (run once) |
-| `/test-helpers` | Generate engine-specific test helper libraries and factory functions |
-| `/test-flakiness` | Detect flaky tests from CI history, flag for quarantine or fix |
-| `/test-evidence-review` | Quality review of test files and manual evidence — ADEQUATE/INCOMPLETE/MISSING |
-| `/skill-test` | Validate skill files for compliance and correctness (static / spec / audit) |
-| `/skill-improve` | Improve a skill using a test-fix-retest loop — diagnose, propose fix, rewrite, verify |
+| Lệnh | Chức năng |
+|---|---|
+| `/start` | Khởi động lần đầu — hỏi bạn đang ở đâu, hướng dẫn luồng công việc phù hợp |
+| `/help` | Nhận biết ngữ cảnh "tôi cần làm gì tiếp theo?" — đọc giai đoạn và sản phẩm hiện tại |
+| `/project-stage-detect` | Phân tích trạng thái dự án, phát hiện giai đoạn, tìm khoảng trống tài liệu |
+| `/setup-engine` | Cấu hình engine + phiên bản, điền tài liệu tham chiếu |
+| `/adopt` | Audit và lập kế hoạch migration cho dự án cũ có sẵn |
+| `/brainstorm` | Lên ý tưởng concept game có hướng dẫn từ số 0 |
+| `/map-systems` | Phân rã concept thành các hệ thống, lập bản đồ phụ thuộc, hướng dẫn làm GDD |
+| `/design-system` | Soạn thảo GDD từng phần có hướng dẫn cho một hệ thống game đơn lẻ |
+| `/quick-design` | Bản đặc tả tinh gọn cho các thay đổi nhỏ — cân bằng, sửa đổi nhỏ |
+| `/review-all-gdds` | Đánh giá tính nhất quán chéo và lý thuyết thiết kế game trên tất cả GDD |
+| `/propagate-design-change` | Tìm các ADR và story bị ảnh hưởng bởi một thay đổi trong GDD |
+| `/art-bible` | Soạn thảo Art Bible từng phần có hướng dẫn — tạo đặc tả nhận diện hình ảnh |
+| `/asset-spec` | Tạo đặc tả hình ảnh từng asset và prompt sinh AI từ GDD hoặc hồ sơ nhân vật |
+| `/ux-design` | Soạn thảo đặc tả UX (màn hình/luồng, HUD, mẫu tương tác) |
+| `/ux-review` | Xác thực các đặc tả UX về khả năng tiếp cận và độ khớp GDD |
+| `/create-architecture` | Tạo tài liệu kiến trúc tổng thể cho game |
+| `/architecture-decision` | Tạo một bản ghi ADR |
+| `/architecture-review` | Xác thực tất cả ADR, thứ tự phụ thuộc, truy vết GDD |
+| `/create-control-manifest` | Tạo bảng quy tắc lập trình phẳng từ các ADR đã Accepted |
+| `/create-epics` | Chuyển đổi GDD + ADR thành các epic (mỗi module một epic) |
+| `/create-stories` | Phân rã một epic thành các file story có thể code |
+| `/dev-story` | Đọc một story và code — điều phối tới đúng agent lập trình |
+| `/sprint-plan` | Tạo hoặc cập nhật kế hoạch sprint |
+| `/sprint-status` | Ảnh chụp nhanh sprint 30 dòng nhanh chóng |
+| `/story-readiness` | Xác thực story đã sẵn sàng trước khi nhận làm |
+| `/story-done` | Đánh giá hoàn thành story — xác minh tiêu chí chấp nhận |
+| `/estimate` | Đưa ra ước lượng nỗ lực có cấu trúc |
+| `/design-review` | Đánh giá một tài liệu thiết kế |
+| `/code-review` | Đánh giá code về mặt chất lượng và kiến trúc |
+| `/balance-check` | Phân tích dữ liệu cân bằng game |
+| `/asset-audit` | Kiểm toán asset về độ tuân thủ quy chuẩn |
+| `/content-audit` | So sánh số lượng nội dung trong GDD vs thực tế triển khai |
+| `/scope-check` | Phát hiện phình to quy mô so với kế hoạch |
+| `/perf-profile` | Đo đạc hiệu năng và xác định điểm nghẽn |
+| `/tech-debt` | Quét, theo dõi và sắp xếp ưu tiên nợ kỹ thuật |
+| `/gate-check` | Xác thực tính sẵn sàng để chuyển giai đoạn (PASS/CONCERNS/FAIL) |
+| `/consistency-check` | Quét toàn bộ GDD để tìm mâu thuẫn chéo giữa các tài liệu |
+| `/security-audit` | Kiểm toán lỗ hổng bảo mật: can thiệp save, gian lận, mạng, lộ dữ liệu |
+| `/reverse-document` | Tạo tài liệu thiết kế/kiến trúc từ code có sẵn |
+| `/milestone-review` | Đánh giá tiến độ milestone |
+| `/retrospective` | Chạy buổi tổng kết cải tiến sprint/milestone |
+| `/bug-report` | Tạo báo cáo bug có cấu trúc |
+| `/playtest-report` | Tạo hoặc phân tích phản hồi playtest |
+| `/onboard` | Tạo tài liệu onboarding cho một vai trò |
+| `/release-checklist` | Xác thực checklist trước khi phát hành |
+| `/launch-checklist` | Xác thực toàn diện tính sẵn sàng ra mắt |
+| `/changelog` | Tự động tạo changelog từ lịch sử git |
+| `/patch-notes` | Tạo patch notes hướng tới người chơi |
+| `/hotfix` | Sửa lỗi khẩn cấp kèm audit trail |
+| `/day-one-patch` | Chuẩn bị bản vá ngày đầu cho các lỗi đã biết sau gold master |
+| `/prototype` | Prototype ý tưởng — kiểm chứng ý tưởng cốt lõi trước khi viết GDD (Giai đoạn 1) |
+| `/vertical-slice` | Bản build chất lượng cao end-to-end — kiểm chứng trọn vẹn game loop (Giai đoạn 4) |
+| `/localize` | Quét, trích xuất và xác thực bản địa hóa |
+| `/team-combat` | Điều phối toàn bộ nhóm tính năng chiến đấu |
+| `/team-narrative` | Điều phối toàn bộ nhóm cốt truyện |
+| `/team-ui` | Điều phối toàn bộ nhóm giao diện UI |
+| `/team-release` | Điều phối toàn bộ nhóm phát hành |
+| `/team-polish` | Điều phối toàn bộ nhóm đánh bóng |
+| `/team-audio` | Điều phối toàn bộ nhóm âm thanh |
+| `/team-level` | Điều phối toàn bộ nhóm thiết kế màn chơi |
+| `/team-live-ops` | Điều phối nhóm vận hành trực tuyến cho mùa giải và sự kiện |
+| `/team-qa` | Điều phối chu kỳ QA đầy đủ — kế hoạch, test cases, smoke check, ký duyệt |
+| `/qa-plan` | Tạo kế hoạch kiểm thử QA cho một sprint hoặc tính năng |
+| `/bug-triage` | Đánh giá lại ưu tiên bug, phân bổ vào sprint, nhận diện xu hướng |
+| `/smoke-check` | Chạy smoke test các luồng quan trọng trước khi bàn giao QA (PASS/FAIL) |
+| `/soak-test` | Tạo quy trình kiểm thử độ ổn định dài hạn |
+| `/regression-suite` | Ánh xạ độ bao phủ tới GDD, cảnh báo khoảng trống, duy trì bộ test hồi quy |
+| `/test-setup` | Dựng khung test framework + pipeline CI cho engine của dự án |
+| `/test-helpers` | Tạo thư viện trợ giúp kiểm thử đặc thù theo engine |
+| `/test-flakiness` | Phát hiện test chập chờn từ lịch sử CI |
+| `/test-evidence-review` | Đánh giá chất lượng file test và bằng chứng thủ công |
+| `/skill-test` | Xác thực file skill về tính tuân thủ và độ chính xác |
+| `/skill-improve` | Cải tiến skill bằng vòng lặp test-fix-retest |
 
-### 4. Use Templates for New Documents
+### 4. Sử dụng Template cho tài liệu mới
 
-Templates are in `.claude/docs/templates/`:
+Các template nằm trong `.claude/docs/templates/`:
 
-- `game-design-document.md` -- for new mechanics and systems
-- `architecture-decision-record.md` -- for technical decisions
-- `architecture-traceability.md` -- maps GDD requirements to ADRs to story IDs
-- `risk-register-entry.md` -- for new risks
-- `narrative-character-sheet.md` -- for new characters
-- `test-plan.md` -- for feature test plans
-- `sprint-plan.md` -- for sprint planning
-- `milestone-definition.md` -- for new milestones
-- `level-design-document.md` -- for new levels
-- `game-pillars.md` -- for core design pillars
-- `art-bible.md` -- for visual style reference
-- `technical-design-document.md` -- for per-system technical designs
-- `post-mortem.md` -- for project/milestone retrospectives
-- `sound-bible.md` -- for audio style reference
-- `release-checklist-template.md` -- for platform release checklists
-- `changelog-template.md` -- for player-facing patch notes
-- `release-notes.md` -- for player-facing release notes
-- `incident-response.md` -- for live incident response playbooks
-- `game-concept.md` -- for initial game concepts (MDA, SDT, Flow, Bartle)
-- `pitch-document.md` -- for pitching the game to stakeholders
-- `economy-model.md` -- for virtual economy design (sink/faucet model)
-- `faction-design.md` -- for faction identity, lore, and gameplay role
-- `systems-index.md` -- for systems decomposition and dependency mapping
-- `project-stage-report.md` -- for project stage detection output
-- `design-doc-from-implementation.md` -- for reverse-documenting existing code into GDDs
-- `architecture-doc-from-code.md` -- for reverse-documenting code into architecture docs
-- `concept-doc-from-prototype.md` -- for reverse-documenting prototypes into concept docs
-- `ux-spec.md` -- for per-screen UX specifications (layout zones, states, events)
-- `hud-design.md` -- for whole-game HUD philosophy, zones, and element specs
-- `accessibility-requirements.md` -- for project-wide accessibility tier and feature matrix
-- `interaction-pattern-library.md` -- for standard UI controls and game-specific patterns
-- `player-journey.md` -- for 6-phase emotional arc and retention hooks by time scale
-- `difficulty-curve.md` -- for difficulty axes, onboarding ramp, and cross-system interactions
-- `test-evidence.md` -- template for recording manual test evidence (screenshots, walkthrough notes)
+- `game-design-document.md` -- cho các cơ chế và hệ thống mới
+- `architecture-decision-record.md` -- cho các quyết định kỹ thuật
+- `architecture-traceability.md` -- ánh xạ yêu cầu GDD tới ADR và story ID
+- `risk-register-entry.md` -- cho các rủi ro mới
+- `narrative-character-sheet.md` -- cho các nhân vật mới
+- `test-plan.md` -- cho kế hoạch test tính năng
+- `sprint-plan.md` -- cho lập kế hoạch sprint
+- `milestone-definition.md` -- cho các milestone mới
+- `level-design-document.md` -- cho các màn chơi mới
+- `game-pillars.md` -- cho các trụ cột thiết kế cốt lõi
+- `art-bible.md` -- cho tài liệu tham chiếu phong cách mỹ thuật
+- `technical-design-document.md` -- cho thiết kế kỹ thuật từng hệ thống
+- `post-mortem.md` -- cho tổng kết sau dự án / milestone
+- `sound-bible.md` -- cho tài liệu tham chiếu phong cách âm thanh
+- `release-checklist-template.md` -- cho checklist phát hành nền tảng
+- `changelog-template.md` -- cho changelog
+- `release-notes.md` -- cho ghi chú phát hành tới người chơi
+- `incident-response.md` -- cho sổ tay xử lý sự cố trực tiếp
+- `game-concept.md` -- cho concept game ban đầu (MDA, SDT, Flow, Bartle)
+- `pitch-document.md` -- cho tài liệu thuyết trình với các bên liên quan
+- `economy-model.md` -- cho thiết kế kinh tế ảo (sink/faucet)
+- `faction-design.md` -- cho bản sắc phe phái, cốt truyện và vai trò gameplay
+- `systems-index.md` -- cho phân rã hệ thống và ánh xạ phụ thuộc
+- `project-stage-report.md` -- cho báo cáo phát hiện giai đoạn dự án
+- `design-doc-from-implementation.md` -- cho tài liệu hóa ngược code thành GDD
+- `architecture-doc-from-code.md` -- cho tài liệu hóa ngược code thành tài liệu kiến trúc
+- `concept-doc-from-prototype.md` -- cho tài liệu hóa ngược prototype thành tài liệu concept
+- `ux-spec.md` -- cho đặc tả UX từng màn hình (vùng bố cục, trạng thái, sự kiện)
+- `hud-design.md` -- cho triết lý HUD toàn game, các phân vùng và đặc tả thành phần
+- `accessibility-requirements.md` -- cho ma trận tính năng và phân tầng tiếp cận toàn dự án
+- `interaction-pattern-library.md` -- cho các điều khiển UI tiêu chuẩn và mẫu đặc thù của game
+- `player-journey.md` -- cho hành trình cảm xúc 6 giai đoạn và điểm giữ chân theo thang thời gian
+- `difficulty-curve.md` -- cho các trục độ khó, đường dốc làm quen và tương tác đa hệ thống
+- `test-evidence.md` -- template ghi nhận bằng chứng kiểm thử thủ công
 
-Also in `.claude/docs/templates/collaborative-protocols/` (used by agents, not typically edited directly):
+Ngoài ra trong `.claude/docs/templates/collaborative-protocols/` (được sử dụng bởi các agent):
 
-- `design-agent-protocol.md` -- question-options-draft-approval cycle for design agents
-- `implementation-agent-protocol.md` -- story pickup through /story-done cycle for programming agents
-- `leadership-agent-protocol.md` -- cross-department delegation and escalation for director-tier agents
+- `design-agent-protocol.md` -- chu kỳ hỏi-lựa chọn-bản thảo-phê duyệt cho agent thiết kế
+- `implementation-agent-protocol.md` -- chu kỳ nhận story đến /story-done cho agent lập trình
+- `leadership-agent-protocol.md` -- ủy quyền liên bộ phận và báo cáo cho agent cấp giám đốc
 
-### 5. Follow the Coordination Rules
+### 5. Tuân thủ Quy tắc điều phối
 
-1. Work flows down the hierarchy: Directors -> Leads -> Specialists
-2. Conflicts escalate up the hierarchy
-3. Cross-department work is coordinated by the `producer`
-4. Agents do not modify files outside their domain without delegation
-5. All decisions are documented
+1. Luồng công việc đi từ trên xuống: Giám đốc -> Trưởng bộ phận -> Chuyên viên
+2. Xung đột báo cáo ngược lên cấp trên
+3. Công việc liên bộ phận do `producer` điều phối
+4. Agent không chỉnh sửa file ngoài lĩnh vực của mình khi chưa được ủy quyền
+5. Mọi quyết định đều phải được ghi nhận thành tài liệu
 
-## First Steps for a New Project
+## Các bước đầu tiên cho Dự án mới
 
-**Don't know where to begin?** Run `/start`. It asks where you are and routes
-you to the right workflow. No assumptions about your game, engine, or experience level.
+**Chưa biết bắt đầu từ đâu?** Chạy `/start`. Lệnh sẽ hỏi bạn đang ở đâu và điều hướng tới quy trình phù hợp. Không áp đặt giả định về game, engine hay kinh nghiệm của bạn.
 
-If you already know what you need, jump directly to the relevant path:
+Nếu bạn đã biết mình cần gì, hãy chọn trực tiếp luồng tương ứng:
 
-### Path A: "I have no idea what to build"
+### Nhánh A: "Tôi chưa có ý tưởng sẽ làm game gì"
 
-1. **Run `/start`** (or `/brainstorm open`) — guided creative exploration:
-   what excites you, what you've played, your constraints
-   - Generates 3 concepts, helps you pick one, defines core loop and pillars
-   - Produces a game concept document and recommends an engine
-2. **Set up the engine** — Run `/setup-engine` (uses the brainstorm recommendation)
-   - Configures CLAUDE.md, detects knowledge gaps, populates reference docs
-   - Creates `.claude/docs/technical-preferences.md` with naming conventions,
-     performance budgets, and engine-specific defaults
-   - If the engine version is newer than the LLM's training data, it fetches
-     current docs from the web so agents suggest correct APIs
-3. **Validate the concept** — Run `/design-review design/gdd/game-concept.md`
-4. **Decompose into systems** — Run `/map-systems` to map all systems and dependencies
-5. **Design each system** — Run `/design-system [system-name]` (or `/map-systems next`)
-   to write GDDs in dependency order
-6. **Prototype the mechanic** — Run `/prototype [core-mechanic]` (1–3 days — before writing GDDs)
-7. **Design each system** — Run `/design-system [system-name]` to write GDDs, informed by prototype findings
-8. **Plan the first sprint** — After architecture and `/vertical-slice`, run `/sprint-plan new`
-9. Start building
+1. **Chạy `/start`** (hoặc `/brainstorm open`) — khám phá sáng tạo có hướng dẫn: điều gì làm bạn hứng thú, bạn đã chơi game gì, các ràng buộc của bạn
+   - Sinh ra 3 concept, giúp bạn chọn 1, xác định vòng lặp cốt lõi và các trụ cột
+   - Tạo tài liệu concept game và khuyến nghị engine phù hợp
+2. **Thiết lập engine** — Chạy `/setup-engine` (dùng khuyến nghị từ brainstorm)
+   - Cấu hình CLAUDE.md, phát hiện khoảng trống kiến thức, điền tài liệu tham chiếu
+   - Tạo `.claude/docs/technical-preferences.md` với quy ước đặt tên, ngân sách hiệu năng
+3. **Xác thực concept** — Chạy `/design-review design/gdd/game-concept.md`
+4. **Phân rã thành các hệ thống** — Chạy `/map-systems` để lập bản đồ các hệ thống và phụ thuộc
+5. **Thiết kế từng hệ thống** — Chạy `/design-system [tên-hệ-thống]` (hoặc `/map-systems next`) để viết GDD theo thứ tự phụ thuộc
+6. **Làm prototype cơ chế** — Chạy `/prototype [cơ-chế-cốt-lõi]` (1–3 ngày — trước khi viết GDD chi tiết)
+7. **Thiết kế từng hệ thống** — Chạy `/design-system [tên-hệ-thống]` để viết GDD dựa trên phát hiện từ prototype
+8. **Lập kế hoạch sprint đầu tiên** — Sau khi có kiến trúc và `/vertical-slice`, chạy `/sprint-plan new`
+9. Bắt đầu xây dựng game
 
-### Path B: "I know what I want to build"
+### Nhánh B: "Tôi đã biết rõ mình muốn làm game gì"
 
-If you already have a game concept and engine choice:
+Nếu bạn đã có concept game và lựa chọn engine:
 
-1. **Set up the engine** — Run `/setup-engine [engine] [version]`
-   (e.g., `/setup-engine godot 4.6`) — also creates technical preferences
-2. **Write the Game Pillars** — delegate to `creative-director`
-3. **Decompose into systems** — Run `/map-systems` to enumerate systems and dependencies
-4. **Design each system** — Run `/design-system [system-name]` for GDDs in dependency order
-5. **Create the initial ADR** — Run `/architecture-decision`
-6. **Create the first milestone** in `production/milestones/`
-7. **Plan the first sprint** — Run `/sprint-plan new`
-8. Start building
+1. **Thiết lập engine** — Chạy `/setup-engine [engine] [version]` (ví dụ: `/setup-engine unity 6000.0`)
+2. **Viết các Trụ cột Game** — ủy quyền cho `creative-director`
+3. **Phân rã thành các hệ thống** — Chạy `/map-systems` để liệt kê hệ thống và phụ thuộc
+4. **Thiết kế từng hệ thống** — Chạy `/design-system [tên-hệ-thống]` để viết GDD theo thứ tự phụ thuộc
+5. **Tạo ADR ban đầu** — Chạy `/architecture-decision`
+6. **Tạo milestone đầu tiên** trong `production/milestones/`
+7. **Lập kế hoạch sprint đầu tiên** — Chạy `/sprint-plan new`
+8. Bắt đầu xây dựng game
 
-### Path C: "I know the game but not the engine"
+### Nhánh C: "Tôi đã có ý tưởng game nhưng chưa chọn engine"
 
-If you have a concept but don't know which engine fits:
+1. **Chạy `/setup-engine`** không truyền đối số — hệ thống sẽ hỏi về nhu cầu của game (2D/3D, nền tảng, quy mô nhóm, ngôn ngữ ưa thích) và đề xuất engine phù hợp
+2. Làm theo Nhánh B từ bước 2 trở đi
 
-1. **Run `/setup-engine`** with no arguments — it will ask about your game's
-   needs (2D/3D, platforms, team size, language preferences) and recommend
-   an engine based on your answers
-2. Follow Path B from step 2 onward
+### Nhánh D: "Tôi đã có dự án sẵn từ trước"
 
-### Path D: "I have an existing project"
+Nếu bạn đã có sẵn tài liệu thiết kế, prototype hoặc code:
 
-If you have design docs, prototypes, or code already:
+1. **Chạy `/start`** (hoặc `/project-stage-detect`) — phân tích những gì đang có, tìm khoảng trống và đề xuất bước tiếp theo
+2. **Chạy `/adopt`** nếu bạn có GDD, ADR, hoặc story sẵn — audit định dạng và lập kế hoạch migration để điền các khoảng trống mà không ghi đè code cũ
+3. **Cấu hình engine nếu cần** — Chạy `/setup-engine` nếu chưa cấu hình
+4. **Xác thực tính sẵn sàng của giai đoạn** — Chạy `/gate-check` để biết bạn đang ở đâu
+5. **Lập kế hoạch sprint tiếp theo** — Chạy `/sprint-plan new`
 
-1. **Run `/start`** (or `/project-stage-detect`) — analyzes what exists,
-   identifies gaps, and recommends next steps
-2. **Run `/adopt`** if you have existing GDDs, ADRs, or stories — audits
-   internal format compliance and builds a numbered migration plan to fill gaps
-   without overwriting your existing work
-3. **Configure engine if needed** — Run `/setup-engine` if not yet configured
-4. **Validate phase readiness** — Run `/gate-check` to see where you stand
-5. **Plan the next sprint** — Run `/sprint-plan new`
-
-## File Structure Reference
+## Cấu trúc file tham khảo
 
 ```
-CLAUDE.md                          -- Master config (read this first, ~60 lines)
+CLAUDE.md                          -- Cấu hình chính (đọc file này đầu tiên, ~60 dòng)
 .claude/
-  settings.json                    -- Claude Code hooks and project settings
-  agents/                          -- 49 agent definitions (YAML frontmatter)
-  skills/                          -- 73 slash command definitions (YAML frontmatter)
-  hooks/                           -- 12 hook scripts (.sh) wired by settings.json
-  rules/                           -- 11 path-specific rule files
+  settings.json                    -- Cấu hình Claude Code hooks và cài đặt dự án
+  agents/                          -- 49 định nghĩa agent (YAML frontmatter)
+  skills/                          -- 73 định nghĩa lệnh slash command (YAML frontmatter)
+  hooks/                           -- 12 script hook (.sh) được kết nối bởi settings.json
+  rules/                           -- 11 file quy tắc đặc thù theo đường dẫn
   docs/
-    quick-start.md                 -- This file
-    technical-preferences.md       -- Project-specific standards (populated by /setup-engine)
-    coding-standards.md            -- Coding and design doc standards
-    coordination-rules.md          -- Agent coordination rules
-    context-management.md          -- Context budgets and compaction instructions
-    directory-structure.md         -- Project directory layout
-    workflow-catalog.yaml          -- 7-phase pipeline definition (read by /help)
-    setup-requirements.md          -- System prerequisites (Git Bash, jq, Python)
-    settings-local-template.md     -- Personal settings.local.json guide
-    templates/                     -- 41 document templates
+    quick-start.md                 -- File hướng dẫn này
+    technical-preferences.md       -- Tiêu chuẩn đặc thù dự án (điền bởi /setup-engine)
+    coding-standards.md            -- Tiêu chuẩn code và tài liệu thiết kế
+    coordination-rules.md          -- Quy tắc điều phối agent
+    context-management.md          -- Ngân sách ngữ cảnh và hướng dẫn nén context
+    directory-structure.md         -- Bố cục thư mục dự án
+    workflow-catalog.yaml          -- Định nghĩa pipeline 7 giai đoạn (được đọc bởi /help)
+    setup-requirements.md          -- Yêu cầu hệ thống tiên quyết (Git Bash, jq, Python)
+    settings-local-template.md     -- Hướng dẫn cấu hình settings.local.json cá nhân
+    templates/                     -- 41 template tài liệu
 ```

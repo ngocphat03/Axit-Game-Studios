@@ -1,12 +1,12 @@
-# Axit Workspace and System Spec v1
+# Đặc tả Axit Workspace và System v1 (Axit Workspace and System Spec v1)
 
-## Purpose
+## Mục đích (Purpose)
 
-Axit treats the repository root as the **product workspace** when multiple interacting components live in one repository and Codex is normally opened from that root.
+Axit coi thư mục gốc của repository là **product workspace** khi nhiều thành phần tương tác cùng tồn tại trong một repository và Codex thông thường được mở từ thư mục gốc đó.
 
-The workspace may contain a game client, backend, CMS, workers, tools, or other services under `src/`. These are **Systems**, not separate Axit projects by default.
+Workspace có thể chứa game client, backend, CMS, workers, công cụ, hoặc các services khác dưới `src/`. Đây là các **Systems**, không phải là các dự án Axit riêng biệt theo mặc định.
 
-The model is:
+Mô hình phân tầng:
 
 ```text
 Axit Core
@@ -15,9 +15,9 @@ Axit Core
           -> Source + executable contracts + tests
 ```
 
-This layout lets Codex trace behavior across real provider/consumer boundaries instead of reasoning from one isolated source tree.
+Bố cục này cho phép Codex truy vết hành vi xuyên suốt các ranh giới thực tế giữa provider và consumer thay vì suy luận từ một cây mã nguồn cô lập.
 
-## Canonical layout
+## Bố cục chuẩn mực (Canonical layout)
 
 ```text
 AGENTS.md
@@ -56,130 +56,130 @@ tests/
 └── e2e/
 ```
 
-Only directories that are actually needed should be materialized. Empty system extension catalogs are preferred over speculative agents/skills.
+Chỉ những thư mục thực sự cần thiết mới nên được tạo ra. Việc để danh mục mở rộng của system trống được ưu tiên hơn là tạo ra các agent/skill mang tính suy đoán.
 
-## Root-first Codex routing
+## Điều hướng Codex từ thư mục gốc (Root-first Codex routing)
 
-`AGENTS.md` is the lightweight root router.
+`AGENTS.md` là bộ điều hướng gốc tinh gọn.
 
-When a task names or touches a source path, Codex should:
+Khi một tác vụ nhắc đến hoặc chạm vào một đường dẫn mã nguồn, Codex nên:
 
-1. read `.axit/workspace.yaml`;
-2. map the affected source path to one or more registered Systems;
-3. read only the relevant system manifests/rules/architecture;
-4. read root integration/architecture registries when the task crosses system boundaries;
-5. load Core Profiles/Skills/Workflows only when their responsibility/procedure is required.
+1. đọc `.axit/workspace.yaml`;
+2. ánh xạ đường dẫn nguồn bị ảnh hưởng tới một hoặc nhiều System đã đăng ký;
+3. chỉ đọc các manifest/rules/architecture của system liên quan;
+4. đọc các registry kiến trúc/tích hợp gốc khi tác vụ vượt qua ranh giới giữa các system;
+5. chỉ nạp Core Profiles/Skills/Workflows khi trách nhiệm/quy trình của chúng thực sự cần thiết.
 
-Do not rely on changing the Codex working directory to activate a nested project context.
+Không phụ thuộc vào việc thay đổi thư mục làm việc (working directory) của Codex để kích hoạt ngữ cảnh dự án lồng nhau.
 
-Do not recursively preload `.axit/`.
+Không nạp trước đệ quy toàn bộ thư mục `.axit/`.
 
-## Workspace manifest
+## Manifest của Workspace
 
-Canonical file:
+File chuẩn mực:
 
 ```text
 .axit/workspace.yaml
 ```
 
-The workspace manifest is routing context, not a product requirements document or architecture dump.
+Manifest của workspace là ngữ cảnh điều hướng, không phải là tài liệu yêu cầu sản phẩm hay nơi xả dữ liệu kiến trúc.
 
-It should identify:
+Nó nên xác định:
 
-- workspace id/name/summary;
-- source root;
-- shared Axit Core;
-- workspace registries and active state;
-- registered Systems and their source/context paths;
-- optional workspace-level extensions;
-- repository-level contract/integration/e2e validation roots.
+- id/tên/mô tả tóm tắt của workspace;
+- thư mục gốc chứa mã nguồn;
+- Axit Core dùng chung;
+- các registry của workspace và trạng thái đang hoạt động (active state);
+- các System đã đăng ký và đường dẫn source/context của chúng;
+- các phần mở rộng cấp workspace tùy chọn;
+- các thư mục kiểm thử xác thực hợp đồng/tích hợp/e2e cấp repository.
 
-A System should not be registered until its source root or intended boundary is sufficiently known.
+Một System không nên được đăng ký cho đến khi thư mục nguồn hoặc ranh giới dự kiến của nó được biết rõ ràng.
 
-## System manifest
+## Manifest của System
 
-Canonical file:
+File chuẩn mực:
 
 ```text
 .axit/systems/<system-id>/system.yaml
 ```
 
-A System is one coherent runtime/application/tool boundary inside the product workspace, for example:
+Một System là một ranh giới runtime/ứng dụng/công cụ nhất quán bên trong product workspace, ví dụ:
 
 - Unity game client;
 - backend API;
-- CMS/admin application;
+- ứng dụng CMS/admin;
 - matchmaking service;
 - worker/processor;
-- shared protocol/package when it owns executable behavior.
+- giao thức/package dùng chung khi nó sở hữu hành vi có thể thực thi.
 
-The System manifest should identify:
+Manifest của System nên xác định:
 
-- stable system id/name/kind;
-- source root;
-- runtime/framework identity when useful;
-- local rules, architecture, and knowledge paths;
-- interfaces it provides/consumes when known;
-- validation routes;
-- reviewed system-specific extensions;
-- facts still intentionally unconfirmed.
+- id/tên/loại ổn định của system;
+- thư mục gốc chứa mã nguồn;
+- runtime/framework khi hữu ích;
+- đường dẫn rules, architecture, và knowledge cục bộ;
+- các interface nó cung cấp/sử dụng khi đã biết;
+- các luồng xác thực (validation routes);
+- các phần mở rộng đặc thù của system đã được đánh giá;
+- các thông tin hiện chưa được xác nhận có chủ đích.
 
-Do not put full API docs or large framework references in `system.yaml`.
+Không đưa toàn bộ tài liệu API hoặc tài liệu tham chiếu framework khổng lồ vào `system.yaml`.
 
-## Workspace vs System ownership
+## Quyền sở hữu giữa Workspace và System
 
-Use the narrowest correct owner.
+Sử dụng phạm vi sở hữu hẹp nhất và chính xác nhất.
 
-System-local examples:
+Ví dụ cục bộ theo System:
 
-- Unity damage processing order;
-- a backend module dependency rule;
-- CMS form conventions;
-- a service-specific retry policy.
+- thứ tự xử lý sát thương trong Unity;
+- quy tắc phụ thuộc module backend;
+- quy ước biểu mẫu CMS;
+- chính sách thử lại đặc thù theo service.
 
-Workspace/cross-system examples:
+Ví dụ cấp Workspace / liên hệ thống:
 
-- backend is authoritative owner of inventory state;
-- Unity and CMS consume the same PlayerProfile API;
-- CMS writes inventory only through an admin API;
-- a shared protocol version must remain compatible across providers and consumers.
+- backend là bên nắm quyền sở hữu chính thức trạng thái kho đồ;
+- Unity và CMS cùng sử dụng chung PlayerProfile API;
+- CMS chỉ ghi vào kho đồ thông qua admin API;
+- phiên bản giao thức dùng chung phải duy trì tính tương thích giữa providers và consumers.
 
-Do not promote a local decision into workspace architecture merely because it is important inside one System.
+Không nâng một quyết định cục bộ lên thành kiến trúc workspace chỉ vì nó quan trọng bên trong một System đơn lẻ.
 
-## Workspace architecture registry
+## Registry kiến trúc Workspace
 
-Canonical file:
+File chuẩn mực:
 
 ```text
 .axit/registry/architecture.yaml
 ```
 
-Record only shared/high-risk architecture truth such as:
+Chỉ ghi lại các chân lý kiến trúc dùng chung / rủi ro cao như:
 
-- authoritative state ownership across Systems;
-- cross-system dependency direction;
-- public boundary decisions;
-- persistence/network topology shared by multiple Systems;
-- workspace performance/security constraints;
-- forbidden cross-system patterns.
+- quyền sở hữu trạng thái chính thức xuyên suốt các System;
+- hướng phụ thuộc liên hệ thống;
+- các quyết định ranh giới công khai;
+- cấu trúc persistence/mạng dùng chung bởi nhiều System;
+- ràng buộc hiệu năng/bảo mật cấp workspace;
+- các mẫu thiết kế liên hệ thống bị cấm.
 
-System-local architecture belongs under:
+Kiến trúc cục bộ của System thuộc về:
 
 ```text
 .axit/systems/<system-id>/architecture.yaml
 ```
 
-## Integration registry
+## Registry tích hợp (Integration registry)
 
-Canonical file:
+File chuẩn mực:
 
 ```text
 .axit/registry/integrations.yaml
 ```
 
-The integration registry maps real provider/consumer relationships.
+Registry tích hợp ánh xạ các mối quan hệ provider/consumer thực tế.
 
-A useful integration entry may contain:
+Một mục tích hợp hữu ích có thể chứa:
 
 ```yaml
 id: player-profile
@@ -194,46 +194,46 @@ tests:
   - tests/contracts/player-profile
 ```
 
-The registry points to executable truth; it is not another schema source.
+Registry trỏ tới chân lý có thể thực thi; nó không phải là một nguồn schema khác.
 
-## Contract source-of-truth rule
+## Quy tắc Nguồn sự thật của hợp đồng (Contract source-of-truth rule)
 
-Never duplicate an executable cross-system contract into `.axit` when a real source already exists.
+Tuyệt đối không sao chép trùng lặp một hợp đồng liên hệ thống có thể thực thi vào trong `.axit` khi nguồn thực tế đã tồn tại.
 
-Examples of executable truth:
+Ví dụ về chân lý có thể thực thi:
 
-- OpenAPI documents;
-- protobuf/schema files;
-- generated client contracts;
-- shared protocol code;
-- database migrations/schema;
-- serializer fixtures or compatibility snapshots when they are intentionally canonical.
+- Tài liệu OpenAPI;
+- File protobuf/schema;
+- Hợp đồng client được tạo tự động;
+- Code giao thức dùng chung;
+- Database migrations/schema;
+- Dữ liệu mẫu serializer hoặc snapshot tính tương thích khi chúng là chuẩn mực.
 
-`.axit` records **where the contract is, who owns it, who consumes it, and how it is verified**.
+`.axit` ghi lại **hợp đồng nằm ở đâu, ai sở hữu nó, ai sử dụng nó, và nó được xác minh như thế nào**.
 
-This prevents stale AI documentation from becoming a second incompatible API definition.
+Điều này ngăn tài liệu AI lỗi thời trở thành một định nghĩa API thứ hai không tương thích.
 
-## Cross-system reasoning
+## Suy luận liên hệ thống (Cross-system reasoning)
 
-For a failure such as a Unity deserialize error, the expected reasoning path is:
+Đối với một lỗi như lỗi deserialize trong Unity, luồng suy luận kỳ vọng là:
 
 ```text
-consumer failure
-  -> consuming code/model
+lỗi phía consumer
+  -> code/model phía consumer
   -> integration registry
-  -> executable provider contract
-  -> provider implementation
-  -> other consumers when relevant
-  -> contract/integration tests
+  -> hợp đồng provider có thể thực thi
+  -> triển khai phía provider
+  -> các consumer khác khi liên quan
+  -> tests hợp đồng/tích hợp
 ```
 
-Do not assume the consumer or provider is wrong before comparing both sides against the accepted contract.
+Không vội giả định bên consumer hay bên provider sai trước khi so sánh cả hai phía với hợp đồng đã được chấp thuận.
 
-## Cross-system validation
+## Xác thực liên hệ thống (Cross-system validation)
 
-Repository-level tests should live outside one System when they validate a boundary shared by multiple Systems.
+Các bài test cấp repository nên nằm ngoài một System khi chúng xác thực ranh giới dùng chung giữa nhiều System.
 
-Typical roots:
+Các thư mục điển hình:
 
 ```text
 tests/contracts/
@@ -241,22 +241,22 @@ tests/integration/
 tests/e2e/
 ```
 
-Examples:
+Ví dụ:
 
-- backend response conforms to OpenAPI and Unity deserializes it;
-- CMS and Unity consume compatible enum values;
-- an API migration keeps old clients compatible when required;
-- backend + worker + database produce the expected observable workflow.
+- phản hồi backend tuân thủ OpenAPI và Unity deserialize thành công;
+- CMS và Unity cùng sử dụng các giá trị enum tương thích;
+- migration API duy trì tính tương thích với các client cũ khi cần;
+- backend + worker + database tạo ra workflow quan sát được như mong đợi.
 
-`verify-change` still decides whether a particular check is REQUIRED or SUPPORTING for the accepted criterion.
+`verify-change` vẫn quyết định liệu một kiểm tra cụ thể là REQUIRED hay SUPPORTING cho tiêu chí đã chấp thuận.
 
-## Core relationship
+## Mối quan hệ với Core
 
-The reviewed Axit Core remains workspace-agnostic.
+Axit Core đã đánh giá duy trì tính độc lập với workspace.
 
-Systems may add local Rules/Knowledge and, only when demonstrated, system-specific Skills/Workflows/Profiles.
+Các System có thể bổ sung Rules/Knowledge cục bộ và chỉ thêm các Skill/Workflow/Profile đặc thù của system khi đã được chứng minh cần thiết.
 
-Prefer this order:
+Ưu tiên theo thứ tự:
 
 ```text
 Rule / Registry fact
@@ -266,74 +266,36 @@ Rule / Registry fact
   -> System Profile
 ```
 
-Create a new Profile only for a durable responsibility gap, not because a System corresponds to a traditional job title.
+Chỉ tạo một Profile mới cho một khoảng trống trách nhiệm bền vững, không phải vì một System tương ứng với một chức danh công việc truyền thống.
 
-## Extension locations
+## Trạng thái đang hoạt động (Active state)
 
-When a real gap is demonstrated, use:
-
-```text
-.axit/systems/<system-id>/profiles/<id>/PROFILE.md
-.axit/systems/<system-id>/skills/<id>/SKILL.md
-.axit/systems/<system-id>/workflows/<id>/WORKFLOW.md
-.axit/systems/<system-id>/knowledge/
-```
-
-Workspace-level extensions may exist when the procedure/responsibility truly spans Systems:
-
-```text
-.axit/workspace/profiles/
-.axit/workspace/skills/
-.axit/workspace/workflows/
-.axit/workspace/knowledge/
-```
-
-Do not create these directories until a real need appears.
-
-Only active Skills should be projected into `.agents/skills/` for Codex discovery.
-
-## Active state
-
-Canonical file:
+File chuẩn mực:
 
 ```text
 .axit/state/active.md
 ```
 
-Keep workspace-level resumable state compact:
+Giữ trạng thái có thể tiếp tục ở cấp workspace luôn tinh gọn:
 
-- current bounded task;
-- affected Systems;
-- accepted decisions;
-- current implementation/verification state;
-- blockers and next action.
+- tác vụ có giới hạn hiện tại;
+- các System bị ảnh hưởng;
+- các quyết định đã được chấp thuận;
+- trạng thái triển khai/xác minh hiện tại;
+- các điểm nghẽn và hành động tiếp theo.
 
-System-specific durable facts belong in system architecture/rules/knowledge, not in the task checkpoint.
+Các thông tin bền vững đặc thù của system thuộc về system architecture/rules/knowledge, không nằm trong checkpoint của tác vụ.
 
-## Precedence
+## Thứ tự ưu tiên (Precedence)
 
-For a bounded task, interpret sources in this order:
+Đối với một tác vụ có giới hạn, diễn giải các nguồn theo thứ tự sau:
 
 ```text
-user request / accepted scope
-  -> executable source/contracts and accepted workspace/system registries
-  -> applicable Rules and active specialization
-  -> Axit Core responsibility/procedure
-  -> local implementation choices
+yêu cầu người dùng / phạm vi được chấp thuận
+  -> source/contracts có thể thực thi và registries workspace/system đã chấp thuận
+  -> Rules áp dụng và chuyên môn hóa đang hoạt động
+  -> Trách nhiệm/quy trình của Axit Core
+  -> Các lựa chọn triển khai cục bộ
 ```
 
-If executable source truth and a registry disagree, surface the discrepancy instead of silently trusting stale metadata.
-
-## Quality test
-
-Before adding workspace/system metadata, ask:
-
-1. Does this help route or verify real work?
-2. Is it owned at the correct workspace/system scope?
-3. Is an executable source already the better source of truth?
-4. Can the need be represented by a small Rule/Registry/Knowledge entry instead of a Skill/Profile?
-5. Does it support root-first reasoning across interacting Systems?
-6. Does it avoid duplicating source contracts?
-7. Will Codex be able to load it on demand instead of preloading the workspace?
-
-If not, keep the structure simpler.
+Nếu chân lý trong mã nguồn có thể thực thi và registry không khớp nhau, hãy báo cáo sự khác biệt thay vì âm thầm tin tưởng metadata đã lỗi thời.

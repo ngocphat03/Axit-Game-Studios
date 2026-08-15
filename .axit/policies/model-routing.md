@@ -1,105 +1,105 @@
-# Axit Model Routing & Cost Policy
+# Chính sách định tuyến Model & Chi phí của Axit (Axit Model Routing & Cost Policy)
 
-Status: active
+Trạng thái: active
 
-This policy controls model allocation for Axit continuous milestones and delegated work. Its goal is to maximize total useful throughput and evidence quality per unit of cost, not to maximize model size on every lane.
+Chính sách này kiểm soát việc phân bổ model cho các milestone chạy liên tục và công việc được ủy quyền trong Axit. Mục tiêu là tối đa hóa tổng thông lượng hữu ích và chất lượng bằng chứng trên mỗi đơn vị chi phí, không phải tối đa hóa kích thước model trên mọi luồng công việc (lane).
 
-## Default role allocation
+## Phân bổ vai trò mặc định
 
 ```text
 primary orchestrator = gpt-5.6-sol / xhigh
 all child lanes       = gpt-5.6-luna / medium
 ```
 
-`all child lanes` includes, without exception by role name:
+`all child lanes` (tất cả các luồng con) bao gồm đầy đủ, không có ngoại lệ theo tên vai trò:
 
-- explorers and scouts;
-- implementation workers;
-- test/build/evidence workers;
-- Unity/MCP acquisition workers;
-- repair/recovery agents;
-- independent verifiers;
-- closure verifiers;
-- report/retrospective authors;
-- any custom project sub-agent unless a current explicit human override says otherwise.
+- các agent thám hiểm và khảo sát (explorers / scouts);
+- các worker triển khai code (implementation workers);
+- các worker chạy test/build/thu thập bằng chứng;
+- các worker thu thập dữ liệu Unity/MCP;
+- các agent sửa chữa/phục hồi (repair/recovery agents);
+- các verifier độc lập (independent verifiers);
+- các verifier đóng milestone (closure verifiers);
+- tác giả viết báo cáo / tổng kết (report/retrospective authors);
+- bất kỳ sub-agent dự án tùy chỉnh nào trừ khi có chỉ thị ghi đè rõ ràng hiện tại từ con người.
 
-The primary thread remains orchestration-only when delegation is available. A child does not become eligible for a larger model merely because its task is verification, recovery, or closure.
+Luồng chính (primary thread) chỉ giữ vai trò điều phối khi tính năng phân quyền khả dụng. Một luồng con không đương nhiên được cấp model lớn hơn chỉ vì nhiệm vụ của nó là xác minh, phục hồi hoặc đóng milestone.
 
-## No silent escalation
+## Không tự ý leo thang model (No silent escalation)
 
-A child lane must not autonomously change from Luna to Terra/Sol or raise reasoning above `medium`.
+Một luồng con không được tự ý chuyển từ Luna sang Terra/Sol hoặc tăng mức độ suy luận (reasoning) vượt quá mức `medium`.
 
-When a child is incomplete, slow, or wrong, use this order:
+Khi một luồng con chưa hoàn thành, chạy chậm, hoặc sai sót, hãy tuân theo thứ tự sau:
 
 ```text
-sharpen/distill task context
-  -> steer or resume the same Luna/medium lane
-  -> replace with a fresh Luna/medium lane when needed
-  -> decompose the task into smaller checkable lanes
-  -> reacquire current evidence
+làm sắc bén / tinh lọc ngữ cảnh tác vụ
+  -> điều chỉnh hướng dẫn hoặc tiếp tục chính luồng Luna/medium đó
+  -> thay thế bằng một luồng Luna/medium mới khi cần
+  -> phân rã tác vụ thành các luồng nhỏ hơn có thể kiểm tra được
+  -> thu thập lại bằng chứng hiện tại
 ```
 
-Do not solve a child failure by silently buying a larger model.
+Không giải quyết lỗi của luồng con bằng cách âm thầm mua model lớn hơn.
 
-If the accepted recovery/replacement budget is exhausted and the required lane is still unresolved, surface the unresolved lane through the milestone's existing failure/blocker semantics. Do not auto-escalate model class or reasoning effort.
+Nếu ngân sách phục hồi/thay thế được chấp thuận đã cạn kiệt và luồng bắt buộc vẫn chưa thể giải quyết, hãy báo cáo luồng chưa giải quyết đó thông qua ngữ nghĩa failure/blocker hiện có của milestone. Không tự động leo thang lớp model hoặc mức suy luận.
 
-## Human override boundary
+## Ranh giới ghi đè của con người (Human override boundary)
 
-Only an explicit current user instruction may authorize a child model/reasoning override.
+Chỉ có chỉ dẫn rõ ràng hiện tại của người dùng mới có quyền cho phép ghi đè model/suy luận của luồng con.
 
-A bounded override must record:
+Một lần ghi đè có giới hạn phải ghi nhận:
 
-- lane and reason;
-- requested model/reasoning;
-- scope/duration;
-- result;
-- whether the override should expire after the lane/milestone.
+- luồng công việc và lý do;
+- model/mức suy luận được yêu cầu;
+- phạm vi / thời lượng;
+- kết quả;
+- việc ghi đè có hết hạn sau luồng/milestone đó hay không.
 
-An override expires at the end of its stated scope. It must not silently become the new workspace default.
+Một lệnh ghi đè sẽ hết hạn khi kết thúc phạm vi đã nêu. Tuyệt đối không để nó âm thầm trở thành giá trị mặc định mới của workspace.
 
-## Parallelism policy
+## Chính sách chạy song song (Parallelism policy)
 
-Use concurrency to reduce wall-clock time only when lanes are materially independent.
+Chỉ sử dụng tính năng đồng thời để giảm thời gian thực tế (wall-clock time) khi các luồng hoàn toàn độc lập với nhau.
 
-- Parallelize read-only exploration, candidate discovery, static analysis, and independent evidence review when useful.
-- Serialize overlapping product writes, Runtime Binding writes, state/report writes, and Unity/editor mutations.
-- Do not spawn agents merely to fill available slots.
-- Close completed or obsolete lanes promptly so useful work can reuse capacity.
-- Prefer distilled handoffs over replaying entire conversation or milestone history.
+- Chạy song song việc khám phá chỉ đọc, tìm kiếm ứng viên, phân tích tĩnh, và đánh giá bằng chứng độc lập khi thấy hữu ích.
+- Tuần tự hóa các thao tác ghi sản phẩm chồng chéo, ghi Runtime Binding, ghi state/báo cáo, và các đột biến Unity/editor.
+- Không khởi tạo agent chỉ để lấp đầy các slot trống khả dụng.
+- Đóng kịp thời các luồng đã hoàn thành hoặc lỗi thời để công việc hữu ích có thể tái sử dụng năng lực xử lý.
+- Ưu tiên bàn giao ngữ cảnh tinh gọn thay vì phát lại toàn bộ lịch sử hội thoại hoặc lịch sử milestone.
 
-The configured session thread limit is a ceiling, not a target.
+Giới hạn số luồng của phiên làm việc là mức trần tối đa, không phải mục tiêu cần đạt.
 
-## Context-efficiency policy
+## Chính sách hiệu quả ngữ cảnh (Context-efficiency policy)
 
-Child prompts should contain the smallest complete context needed to act correctly:
+Prompt của luồng con phải chứa ngữ cảnh đầy đủ tối thiểu cần thiết để hành động chính xác:
 
-- exact accepted objective/criterion;
-- allowed and forbidden scope;
-- direct file/artifact pointers;
-- relevant current evidence/state;
-- expected compact output schema.
+- mục tiêu/tiêu chí chính xác đã được chấp thuận;
+- phạm vi được phép và bị cấm;
+- con trỏ trỏ trực tiếp tới file/sản phẩm;
+- bằng chứng/trạng thái hiện tại có liên quan;
+- schema đầu ra tinh gọn kỳ vọng.
 
-Do not recursively preload `.axit/`, replay full chat history, or send unrelated milestone transcripts to a child.
+Không nạp trước đệ quy toàn bộ thư mục `.axit/`, không phát lại toàn bộ lịch sử chat, hoặc gửi các bản ghi chép milestone không liên quan cho luồng con.
 
-For continuity/replacement, distill only the last useful result, current state, unresolved work, changed files, and evidence that must be reacquired.
+Để duy trì tính liên tục/thay thế, chỉ trích xuất kết quả hữu ích gần nhất, trạng thái hiện tại, công việc chưa giải quyết, các file đã thay đổi, và bằng chứng bắt buộc phải thu thập lại.
 
-## Verification quality under Luna/medium
+## Chất lượng xác minh dưới Luna/medium
 
-Independent verification is established by responsibility and evidence independence, not by using a more expensive model.
+Việc xác minh độc lập được thiết lập bởi tính độc lập về trách nhiệm và bằng chứng, không phải bằng cách sử dụng một model đắt tiền hơn.
 
-A verifier must still:
+Một verifier vẫn phải:
 
-- use fresh context rather than trusting a worker verdict;
-- reacquire or inspect current REQUIRED evidence;
-- preserve REQUIRED/SUPPORTING and PASS/FAIL/BLOCKED semantics;
-- remain read-only when its role requires it;
-- reject stale evidence and overclaiming.
+- sử dụng ngữ cảnh mới thay vì tin tưởng kết luận của worker;
+- thu thập lại hoặc kiểm tra bằng chứng BẮT BUỘC (REQUIRED) hiện tại;
+- bảo toàn ngữ nghĩa REQUIRED/SUPPORTING và PASS/FAIL/BLOCKED;
+- duy trì trạng thái chỉ đọc khi vai trò yêu cầu;
+- từ chối bằng chứng lỗi thời và các tuyên bố vượt quá thực tế.
 
-If a criterion is too broad for reliable verification, decompose it into explicit checkable assertions rather than increasing the verifier model automatically.
+Nếu một tiêu chí quá rộng để xác minh đáng tin cậy, hãy phân rã nó thành các xác nhận rõ ràng có thể kiểm tra được thay vì tự động tăng model của verifier.
 
-## Configuration enforcement
+## Thực thi cấu hình (Configuration enforcement)
 
-Project defaults must remain aligned with this policy:
+Các giá trị mặc định của dự án phải duy trì sự liên kết với chính sách này:
 
 ```toml
 model = "gpt-5.6-sol"
@@ -110,13 +110,13 @@ default_subagent_model = "gpt-5.6-luna"
 default_subagent_reasoning_effort = "medium"
 ```
 
-Custom sub-agent definitions must also use `gpt-5.6-luna` / `medium` unless an explicit bounded human override applies.
+Các định nghĩa sub-agent tùy chỉnh cũng phải sử dụng `gpt-5.6-luna` / `medium` trừ khi có lệnh ghi đè rõ ràng có giới hạn từ con người.
 
-Long autonomous milestones must record the effective primary and child model/reasoning when observable. Configured intent must not be presented as observed runtime truth.
+Các milestone tự động chạy dài phải ghi lại model/mức suy luận thực tế được quan sát của primary và child. Ý định cấu hình không được coi là chân lý runtime được quan sát.
 
-## Performance accounting
+## Kế toán hiệu năng (Performance accounting)
 
-Each long milestone report/retrospective should record, when observable:
+Mỗi báo cáo/tổng kết milestone dài cần ghi nhận, khi có thể quan sát:
 
 ```text
 primary model/reasoning
@@ -125,9 +125,9 @@ child lanes spawned
 sub-agent replacements
 repair/recovery loops
 wall-clock duration
-model overrides (expected: 0 unless explicitly human-authorized)
+model overrides (kỳ vọng: 0 trừ khi có ủy quyền rõ ràng từ con người)
 ```
 
-A closure verifier must flag an unapproved child model/reasoning escalation as a control finding even when product evidence otherwise passes.
+Một closure verifier phải đánh dấu việc tự ý leo thang model/suy luận của luồng con chưa được phê duyệt như một vi phạm kiểm soát (control finding) ngay cả khi bằng chứng sản phẩm đạt yêu cầu.
 
-Performance tuning should first improve decomposition, context size, parallel read lanes, serialization boundaries, and recovery behavior. Do not treat larger child models as the default performance fix.
+Việc tinh chỉnh hiệu năng trước tiên phải cải thiện khâu phân rã tác vụ, kích thước ngữ cảnh, các luồng đọc song song, ranh giới tuần tự hóa và hành vi phục hồi. Không coi việc dùng model con lớn hơn là giải pháp sửa lỗi hiệu năng mặc định.

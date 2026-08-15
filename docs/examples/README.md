@@ -1,357 +1,257 @@
-# Collaborative Session Examples
+# Các ví dụ về phiên làm việc cộng tác (Collaborative Session Examples)
 
-This directory contains realistic, end-to-end session transcripts showing how the Game Studio Agent Architecture works in practice. Each example demonstrates the **collaborative workflow** where agents ask questions, present options, and wait for user approval rather than autonomously generating content.
-
----
-
-## Visual Reference
-
-**New to the system? Start here:**
-[Skill Flow Diagrams](skill-flow-diagrams.md) — visual maps of all 7 phases and how skills chain together.
+Thư mục này chứa các bản ghi chép (transcripts) phiên làm việc thực tế, end-to-end, minh họa cách thức hoạt động của Kiến trúc Game Studio Agent trong thực tế. Mỗi ví dụ thể hiện **quy trình làm việc cộng tác (collaborative workflow)** nơi các agent đặt câu hỏi, đưa ra các lựa chọn, và chờ sự phê duyệt của người dùng thay vì tự ý sinh nội dung một cách đơn phương.
 
 ---
 
-## 📚 **Available Examples**
+## Tham chiếu trực quan (Visual Reference)
 
-### CORE WORKFLOW
-
-### [Skill Flow Diagrams](skill-flow-diagrams.md)
-**Type:** Visual Reference
-**Complexity:** All levels
-
-Full pipeline overview (zero to ship), plus detailed chain diagrams for:
-design-system, story lifecycle, UX pipeline, and brownfield onboarding.
-**Start here if you want to understand how the pieces fit together.**
+**Bạn mới làm quen với hệ thống? Hãy bắt đầu tại đây:**
+[Sơ đồ luồng Skill (Skill Flow Diagrams)](skill-flow-diagrams.md) — bản đồ trực quan về toàn bộ 7 giai đoạn và cách các skill liên kết với nhau.
 
 ---
 
-### [Session: Authoring a GDD with /design-system](session-design-system-skill.md)
-**Type:** Design (skill-driven)
-**Skill:** `/design-system`
-**Duration:** ~60 minutes (14 turns)
-**Complexity:** Medium
+## 📚 **Các ví dụ hiện có**
 
-**Scenario:**
-Dev runs `/design-system movement` after `/map-systems` produced the systems index. The skill loads context from the game concept and dependency GDDs, runs a technical feasibility pre-check, then guides through all 8 GDD sections one at a time — drafting, approving, and writing each section to disk before moving to the next.
+### WORKFLOW CỐT LÕI
 
-**Key Moments:**
-- Technical feasibility pre-check flags Jolt physics default change (Godot 4.6)
-- Incremental writing: each section on disk immediately after approval
-- Session crash during section 5 → agent resumes from first empty section
-- Dependency signals (stamina, inventory) surfaced during the Dependencies section
-- Ends with explicit handoff: "run `/design-review` before the next system"
+### [Sơ đồ luồng Skill (Skill Flow Diagrams)](skill-flow-diagrams.md)
+**Loại:** Tham chiếu trực quan  
+**Độ phức tạp:** Mọi cấp độ  
 
-**Learn:**
-- How `/design-system` is different from asking an agent to "write a GDD"
-- How the section-by-section cycle prevents 30k-token context bloat
-- How incremental file writing survives session crashes
-- How the skill surfaces downstream dependency contracts
+Tổng quan toàn bộ pipeline (từ số 0 đến phát hành), kèm theo các sơ đồ chuỗi chi tiết cho:
+design-system, vòng đời story, pipeline UX, và tiếp nhận dự án cũ (brownfield).  
+**Bắt đầu từ đây nếu bạn muốn hiểu cách các thành phần khớp nối với nhau.**
 
 ---
 
-### [Session: Full Story Lifecycle](session-story-lifecycle.md)
-**Type:** Full Workflow
-**Skills:** `/story-readiness` → implementation → `/story-done`
-**Duration:** ~50 minutes (13 turns)
-**Complexity:** Medium
+### [Phiên làm việc: Soạn thảo GDD với /design-system](session-design-system-skill.md)
+**Loại:** Thiết kế (định hướng bởi skill)  
+**Skill:** `/design-system`  
+**Thời lượng:** ~60 phút (14 lượt thoại)  
+**Độ phức tạp:** Trung bình  
 
-**Scenario:**
-Dev picks up a story from the sprint backlog. `/story-readiness` catches a roll-direction ambiguity before any code is written. After implementation, `/story-done` verifies 9 acceptance criteria, identifies 2 deferred criteria (inventory not integrated yet), and closes the story with notes.
+**Kịch bản:**
+Lập trình viên chạy `/design-system movement` sau khi `/map-systems` đã tạo ra systems index. Skill tải ngữ cảnh từ concept game và các GDD phụ thuộc, chạy kiểm tra sơ bộ tính khả thi kỹ thuật, sau đó dẫn dắt qua toàn bộ 8 phần của GDD từng phần một — soạn thảo, phê duyệt và ghi từng phần vào đĩa trước khi chuyển sang phần tiếp theo.
 
-**Key Moments:**
-- `/story-readiness` catches spec ambiguity in Turn 2 — resolved before implementation starts
-- ADR status check: story would be BLOCKED if ADR was still Proposed
-- Manifest version check: confirms story's guidance hasn't drifted from current architecture
-- Deferred criteria tracked (not lost) when integration not yet possible
-- `sprint-status.yaml` updated at story close, next ready story surfaced automatically
+**Các khoảnh khắc chính:**
+- Kiểm tra tính khả thi kỹ thuật phát hiện thay đổi mặc định của Jolt physics (Godot 4.6)
+- Ghi file tăng dần (Incremental writing): mỗi phần được lưu trên đĩa ngay sau khi duyệt
+- Phiên làm việc bị crash ở phần 5 → agent khôi phục tiếp tục từ phần trống đầu tiên
+- Các tín hiệu phụ thuộc (stamina, inventory) được hiển thị trong mục Phụ thuộc (Dependencies)
+- Kết thúc bằng việc bàn giao rõ ràng: "chạy `/design-review` trước khi làm hệ thống tiếp theo"
 
-**Learn:**
-- Why `/story-readiness` prevents late-implementation ambiguity
-- How deferred criteria work (COMPLETE WITH NOTES vs. BLOCKED)
-- How TR-ID references prevent false deviation flags
-- The full loop from backlog → implemented → closed
-
----
-
-### [Session: Gate Check and Phase Transition](session-gate-check-phase-transition.md)
-**Type:** Phase Gate
-**Skill:** `/gate-check`
-**Duration:** ~20 minutes (7 turns)
-**Complexity:** Low
-
-**Scenario:**
-Dev completes the Systems Design phase and runs `/gate-check` to advance. The gate finds all 6 MVP GDDs complete, cross-review passed with one low-severity concern. Gate passes, `stage.txt` updated, and the agent provides a specific ordered checklist for Technical Setup.
-
-**Key Moments:**
-- Gate validates artifact presence AND internal completeness (8 sections per GDD)
-- CONCERNS ≠ FAIL: low-severity cross-review note passes the gate
-- stage.txt update changes what `/help`, `/sprint-status`, and all skills see going forward
-- Agent surfaces the cross-review concern as a concrete ADR to write next
-- Next phase checklist is specific and ordered, not generic
-
-**Learn:**
-- What a gate check actually validates (not just "do files exist?")
-- How PASS/CONCERNS/FAIL verdicts work
-- Why stage.txt is the authority for phase tracking
-- What changes after a phase transition
+**Những gì bạn học được:**
+- `/design-system` khác biệt thế nào so với việc chỉ bảo agent "viết một GDD"
+- Chu kỳ từng phần ngăn chặn việc phình to ngữ cảnh 30k token ra sao
+- Ghi file tăng dần giúp sống sót qua các sự cố crash phiên làm việc thế nào
+- Skill làm nổi bật các hợp đồng phụ thuộc hạ nguồn như thế nào
 
 ---
 
-### [Session: UX Pipeline — /ux-design → /ux-review → /team-ui](session-ux-pipeline.md)
-**Type:** UX Design Pipeline
-**Skills:** `/ux-design`, `/ux-review`, `/team-ui`
-**Duration:** ~90 minutes (16 turns)
-**Complexity:** Medium-High
+### [Phiên làm việc: Vòng đời Story hoàn chỉnh](session-story-lifecycle.md)
+**Loại:** Toàn bộ Workflow  
+**Skills:** `/story-readiness` → triển khai code → `/story-done`  
+**Thời lượng:** ~50 phút (13 lượt thoại)  
+**Độ phức tạp:** Trung bình  
 
-**Scenario:**
-Dev designs the HUD and inventory screen. `/ux-design` reads the player journey and GDDs to ground decisions in player emotional state. `/ux-review` catches a blocking accessibility gap (no keyboard alternative to drag-drop) and an advisory colorblind issue. After fixes, `/team-ui` accepts the handoff.
+**Kịch bản:**
+Lập trình viên nhận một story từ sprint backlog. `/story-readiness` phát hiện điểm mơ hồ về hướng lăn (roll-direction) trước khi bất kỳ dòng code nào được viết. Sau khi triển khai xong, `/story-done` xác minh 9 tiêu chí chấp nhận, xác định 2 tiêu chí bị hoãn lại (do inventory chưa tích hợp), và đóng story kèm ghi chú.
 
-**Key Moments:**
-- HUD philosophy choice (diegetic vs. persistent vs. tactical) grounded in survival genre conventions
-- `/ux-review` distinguishes BLOCKING (stops handoff) vs. ADVISORY (can fix in visual pass)
-- Accessibility caught before implementation, not during QA
-- Keyboard alternative added in one turn; review re-runs and passes
-- `/team-ui` checks for a passing `/ux-review` before starting visual design
+**Các khoảnh khắc chính:**
+- `/story-readiness` bắt lỗi mơ hồ trong đặc tả ở Lượt 2 — được giải quyết trước khi code bắt đầu
+- Kiểm tra trạng thái ADR: story sẽ bị BLOCKED nếu ADR vẫn đang ở trạng thái Proposed
+- Kiểm tra phiên bản Manifest: xác nhận chỉ dẫn của story không bị trôi lệch so với kiến trúc hiện tại
+- Tiêu chí hoãn lại được theo dõi (không bị mất) khi việc tích hợp chưa khả thi
+- `sprint-status.yaml` được cập nhật khi đóng story, story sẵn sàng tiếp theo tự động hiển thị
 
-**Learn:**
-- How `/ux-design` uses player journey context to ground UI decisions
-- What `/ux-review` actually checks (not just "does a spec exist?")
-- The difference between HUD doc (`design/ux/hud.md`) and per-screen specs
-- How accessibility issues are handled at design time vs. implementation time
-
----
-
-### [Session: Brownfield Onboarding with /adopt](session-adopt-brownfield.md)
-**Type:** Brownfield Adoption
-**Skill:** `/adopt`
-**Duration:** ~30 minutes (8 turns)
-**Complexity:** Low-Medium
-
-**Scenario:**
-Dev has 3 months of existing code and rough design notes but nothing in the right format. `/adopt` audits format compliance (not just file existence), classifies 4 gaps by severity, builds an ordered 7-step migration plan, and immediately fixes the BLOCKING gap (missing systems index) by inferring it from the codebase.
-
-**Key Moments:**
-- FORMAT audit distinguishes "file exists" from "file has required internal structure"
-- BLOCKING gap identified: missing systems index prevents 4+ skills from running
-- Migration plan is ordered: blocking gaps first, then high, then medium
-- Systems index bootstrapped from code structure — brownfield code contains the answer
-- Retrofit mode vs. new authoring: `/design-system retrofit` fills gaps without overwriting
-
-**Learn:**
-- The difference between `/adopt` and `/project-stage-detect`
-- How format compliance is checked (section detection, not just file presence)
-- How brownfield projects can onboard without losing existing work
-- When to use retrofit mode vs. full authoring
+**Những gì bạn học được:**
+- Vì sao `/story-readiness` ngăn chặn sự mơ hồ muộn màng trong khâu triển khai
+- Cách thức hoạt động của các tiêu chí hoãn lại (COMPLETE WITH NOTES vs. BLOCKED)
+- Cách tham chiếu mã TR-ID ngăn chặn cảnh báo sai lệch không đáng có
+- Vòng lặp trọn vẹn từ backlog → triển khai → đóng story
 
 ---
 
-### FOUNDATIONAL EXAMPLES
+### [Phiên làm việc: Kiểm tra cổng và Chuyển giao giai đoạn](session-gate-check-phase-transition.md)
+**Loại:** Cổng giai đoạn (Phase Gate)  
+**Skill:** `/gate-check`  
+**Thời lượng:** ~20 phút (7 lượt thoại)  
+**Độ phức tạp:** Thấp  
 
-### [Session: Designing the Crafting System](session-design-crafting-system.md)
-**Type:** Design
-**Agent:** game-designer
-**Duration:** ~45 minutes (12 turns)
-**Complexity:** Medium
+**Kịch bản:**
+Lập trình viên hoàn thành giai đoạn Thiết kế Hệ thống và chạy `/gate-check` để tiến bước. Cổng kiểm tra thấy tất cả 6 GDD MVP đã hoàn thiện, đánh giá chéo đã vượt qua với một lưu ý mức độ thấp. Cổng PASS, `stage.txt` được cập nhật, và agent cung cấp checklist có thứ tự cụ thể cho Thiết lập Kỹ thuật.
 
-**Scenario:**
-Solo dev needs to design a crafting system that serves Pillar 2 ("Emergent Discovery Through Experimentation"). The agent guides them through question/answer, presents 3 design options with game theory analysis, incorporates user modifications, and iteratively drafts the GDD with approval at each step.
+**Các khoảnh khắc chính:**
+- Cổng xác thực sự hiện diện của tài liệu VÀ tính hoàn thiện nội bộ (đủ 8 phần mỗi GDD)
+- CONCERNS ≠ FAIL: ghi chú đánh giá chéo mức độ thấp vẫn vượt qua cổng
+- Cập nhật `stage.txt` thay đổi những gì `/help`, `/sprint-status`, và tất cả các skill nhìn thấy về sau
+- Agent biến lưu ý đánh giá chéo thành một ADR cụ thể cần viết tiếp theo
+- Checklist giai đoạn tiếp theo rất cụ thể và có thứ tự, không chung chung
 
-**Key Collaborative Moments:**
-- Agent asks 5 clarifying questions upfront
-- Presents 3 distinct options with pros/cons + MDA alignment
-- User modifies recommended option, agent incorporates immediately
-- Edge case flagged proactively ("what if non-recipe combo?")
-- Each GDD section shown for approval before moving to next
-- Explicit "May I write to [file]?" before creating file
-
-**Learn:**
-- How design agents ask about goals, constraints, references
-- How to present options using game design theory (MDA, SDT, Bartle)
-- How to iterate on drafts section-by-section
-- When to delegate to specialists (systems-designer, economy-designer)
+**Những gì bạn học được:**
+- Kiểm tra cổng thực sự xác thực những gì (không chỉ là "file có tồn tại không?")
+- Cách thức hoạt động của các kết luận PASS/CONCERNS/FAIL
+- Tại sao `stage.txt` là căn cứ chính thức để theo dõi giai đoạn
+- Những gì thay đổi sau khi chuyển giai đoạn
 
 ---
 
-### [Session: Implementing Combat Damage Calculation](session-implement-combat-damage.md)
-**Type:** Implementation
-**Agent:** gameplay-programmer
-**Duration:** ~30 minutes (10 turns)
-**Complexity:** Low-Medium
+### [Phiên làm việc: Pipeline UX — /ux-design → /ux-review → /team-ui](session-ux-pipeline.md)
+**Loại:** UX Design Pipeline  
+**Skills:** `/ux-design`, `/ux-review`, `/team-ui`  
+**Thời lượng:** ~90 phút (16 lượt thoại)  
+**Độ phức tạp:** Trung bình - Cao  
 
-**Scenario:**
-User has a complete design doc and wants the damage calculation implemented. Agent reads the spec, identifies 7 ambiguities/gaps, asks clarifying questions, proposes architecture for approval, implements with rule enforcement, and proactively writes tests.
+**Kịch bản:**
+Lập trình viên thiết kế HUD và màn hình túi đồ. `/ux-design` đọc hành trình người chơi và GDD để neo các quyết định vào trạng thái cảm xúc của người chơi. `/ux-review` phát hiện khoảng trống accessibility nghiêm trọng (không có phương án bàn phím thay thế cho kéo-thả) và một vấn đề mù màu mức khuyến cáo. Sau khi sửa, `/team-ui` tiếp nhận bàn giao.
 
-**Key Collaborative Moments:**
-- Agent reads design doc first, identifies 7 spec ambiguities
-- Architecture proposed with code samples BEFORE implementation
-- User requests type safety, agent refines and re-proposes
-- Rules catch issues (hardcoded values), agent fixes transparently
-- Tests written proactively following verification-driven development
-- Agent offers options for next steps rather than assuming
+**Các khoảnh khắc chính:**
+- Lựa chọn triết lý HUD (diegetic vs. persistent vs. tactical) gắn liền với thể loại sinh tồn
+- `/ux-review` phân biệt rõ BLOCKING (dừng bàn giao) vs. ADVISORY (có thể sửa ở đợt làm đồ họa)
+- Lỗi Accessibility được phát hiện trước khi code, không phải đợi đến khâu QA
+- Bổ sung phương án bàn phím thay thế trong 1 lượt; review chạy lại và vượt qua
+- `/team-ui` kiểm tra kết quả `/ux-review` đã PASS trước khi bắt đầu thiết kế hình ảnh
 
-**Learn:**
-- How implementation agents clarify specs before coding
-- How to propose architecture with code samples for approval
-- How rules enforce standards automatically
-- How to handle spec gaps (ask, don't assume)
-- Verification-driven development (tests prove it works)
+**Những gì bạn học được:**
+- Cách `/ux-design` sử dụng ngữ cảnh hành trình người chơi để đưa ra quyết định UI
+- `/ux-review` thực sự kiểm tra những gì (không chỉ là "đặc tả có tồn tại không?")
+- Sự khác biệt giữa tài liệu HUD tổng quan (`design/ux/hud.md`) và đặc tả từng màn hình
+- Cách các vấn đề accessibility được xử lý ở khâu thiết kế so với khâu triển khai
 
 ---
 
-### [Session: Scope Crisis - Strategic Decision Making](session-scope-crisis-decision.md)
-**Type:** Strategic Decision
-**Agent:** creative-director
-**Duration:** ~25 minutes (8 turns)
-**Complexity:** High
+### [Phiên làm việc: Tiếp nhận dự án có sẵn với /adopt](session-adopt-brownfield.md)
+**Loại:** Tiếp nhận dự án có sẵn (Brownfield Adoption)  
+**Skill:** `/adopt`  
+**Thời lượng:** ~30 phút (8 lượt thoại)  
+**Độ phức tạp:** Thấp - Trung bình  
 
-**Scenario:**
-Solo dev faces crisis: Alpha milestone in 2 weeks, crafting system needs 3 weeks, investor demo is make-or-break. Creative director gathers context, frames the decision, presents 3 strategic options with honest trade-off analysis, makes recommendation but defers to user, then documents decision with ADR and demo script.
+**Kịch bản:**
+Lập trình viên có 3 tháng code sẵn và các ghi chú thiết kế sơ sài nhưng chưa đúng định dạng. `/adopt` audit tính tuân thủ định dạng (không chỉ sự tồn tại của file), phân loại 4 khoảng trống theo mức độ nghiêm trọng, xây dựng kế hoạch migration 7 bước có thứ tự, và lập tức khắc phục khoảng trống BLOCKING (thiếu systems index) bằng cách suy luận từ codebase.
 
-**Key Collaborative Moments:**
-- Agent reads context docs before proposing solutions
-- Asks 5 questions to understand decision constraints
-- Frames decision properly (what's at stake, evaluation criteria)
-- Presents 3 options with risk analysis and historical precedent
-- Makes strong recommendation but explicitly: "this is your call"
-- Documents decision + provides demo script to support user
+**Các khoảnh khắc chính:**
+- FORMAT audit phân biệt "file có tồn tại" với "file có cấu trúc nội bộ bắt buộc"
+- Xác định khoảng trống BLOCKING: thiếu systems index khiến hơn 4 skill không thể chạy
+- Kế hoạch migration có thứ tự: khoảng trống chặn trước, sau đó đến mức cao, rồi trung bình
+- Systems index được khởi tạo từ cấu trúc code — code cũ chứa sẵn câu trả lời
+- Chế độ Retrofit so với tạo mới: `/design-system retrofit` bổ sung khoảng trống mà không ghi đè
 
-**Learn:**
-- How leadership agents frame strategic decisions
-- How to present options with trade-off analysis
-- How to use game dev precedent and theory in recommendations
-- How to document decisions (ADRs)
-- How to cascade decisions to affected departments
+**Những gì bạn học được:**
+- Sự khác biệt giữa `/adopt` và `/project-stage-detect`
+- Cách kiểm tra tuân thủ định dạng (phát hiện các mục, không chỉ kiểm tra có file)
+- Cách các dự án cũ có thể onboarding mà không làm mất code/tài liệu hiện có
+- Khi nào dùng chế độ retrofit so với tạo mới hoàn toàn
 
 ---
 
-### [Reverse Documentation Workflow](reverse-document-workflow-example.md)
-**Type:** Brownfield Documentation
-**Agent:** game-designer
-**Duration:** ~20 minutes
-**Complexity:** Low
+### CÁC VÍ DỤ NỀN TẢNG
 
-**Scenario:**
-Developer built a skill tree system but never wrote a design doc. Agent reads the code, infers the design intent, asks clarifying questions about ambiguous decisions, and produces a retroactive GDD.
+### [Phiên làm việc: Thiết kế hệ thống chế tạo (Crafting System)](session-design-crafting-system.md)
+**Loại:** Thiết kế  
+**Agent:** `game-designer`  
+**Thời lượng:** ~45 phút (12 lượt thoại)  
+**Độ phức tạp:** Trung bình  
+
+**Kịch bản:**
+Solo dev cần thiết kế hệ thống chế tạo phục vụ Trụ cột 2 ("Khám phá bất ngờ thông qua thử nghiệm"). Agent dẫn dắt qua hỏi/đáp, trình bày 3 phương án thiết kế kèm phân tích lý thuyết game, tiếp thu các chỉnh sửa của người dùng, và soạn thảo GDD tăng dần có phê duyệt ở từng bước.
+
+**Các khoảnh khắc cộng tác chính:**
+- Agent đặt trước 5 câu hỏi làm rõ
+- Trình bày 3 phương án khác biệt kèm ưu/nhược điểm + độ khớp MDA
+- Người dùng chỉnh sửa phương án được khuyến nghị, agent cập nhật ngay lập tức
+- Chủ động cảnh báo trường hợp biên ("nếu kết hợp không ra công thức thì sao?")
+- Từng phần GDD được trình bày để phê duyệt trước khi chuyển sang phần tiếp
+- Hỏi rõ ràng "Tôi có thể ghi vào [file] không?" trước khi tạo file
 
 ---
 
-## 🎯 **What These Examples Demonstrate**
+### [Phiên làm việc: Triển khai tính toán sát thương chiến đấu](session-implement-combat-damage.md)
+**Loại:** Triển khai code (Implementation)  
+**Agent:** `gameplay-programmer`  
+**Thời lượng:** ~30 phút (10 lượt thoại)  
+**Độ phức tạp:** Thấp - Trung bình  
 
-All examples follow the **collaborative workflow pattern:**
+**Kịch bản:**
+Người dùng có tài liệu thiết kế hoàn chỉnh và muốn triển khai tính toán sát thương. Agent đọc đặc tả, xác định 7 điểm mơ hồ/khoảng trống, đặt câu hỏi làm rõ, đề xuất kiến trúc để duyệt, triển khai code kèm thực thi quy tắc, và chủ động viết test.
+
+**Các khoảnh khắc cộng tác chính:**
+- Agent đọc tài liệu thiết kế trước, xác định 7 điểm đặc tả chưa rõ
+- Đề xuất kiến trúc kèm mẫu code TRƯỚC KHI triển khai
+- Người dùng yêu cầu type safety, agent tinh chỉnh và đề xuất lại
+- Rules bắt lỗi (giá trị hardcode), agent sửa chữa minh bạch
+- Chủ động viết test theo phương pháp Verification-Driven Development
+- Agent đưa ra các lựa chọn cho bước tiếp theo thay vì tự ý suy đoán
+
+---
+
+### [Phiên làm việc: Khủng hoảng quy mô - Ra quyết định chiến lược](session-scope-crisis-decision.md)
+**Loại:** Quyết định chiến lược  
+**Agent:** `creative-director`  
+**Thời lượng:** ~25 phút (8 lượt thoại)  
+**Độ phức tạp:** Cao  
+
+**Kịch bản:**
+Solo dev đối mặt khủng hoảng: Milestone Alpha chỉ còn 2 tuần, hệ thống chế tạo cần 3 tuần, bản demo cho nhà đầu tư mang tính sống còn. Creative director thu thập ngữ cảnh, đóng khung quyết định, trình bày 3 phương án chiến lược kèm phân tích đánh đổi trung thực, đưa ra khuyến nghị nhưng trao quyền cho người dùng, sau đó ghi nhận quyết định bằng ADR và kịch bản demo.
+
+**Các khoảnh khắc cộng tác chính:**
+- Agent đọc tài liệu ngữ cảnh trước khi đề xuất giải pháp
+- Đặt 5 câu hỏi để hiểu các ràng buộc quyết định
+- Đóng khung quyết định chuẩn mực (những gì đang bị đe dọa, tiêu chí đánh giá)
+- Trình bày 3 phương án kèm phân tích rủi ro và tiền lệ lịch sử
+- Đưa ra khuyến nghị mạnh mẽ nhưng nhấn mạnh rõ: "đây là quyết định của bạn"
+- Ghi nhận quyết định + cung cấp kịch bản demo hỗ trợ người dùng
+
+---
+
+### [Workflow tài liệu hóa ngược (Reverse Documentation)](reverse-document-workflow-example.md)
+**Loại:** Tài liệu hóa dự án cũ (Brownfield)  
+**Agent:** `game-designer`  
+**Thời lượng:** ~20 phút  
+**Độ phức tạp:** Thấp  
+
+**Kịch bản:**
+Lập trình viên đã xây dựng hệ thống cây kỹ năng nhưng chưa từng viết design doc. Agent đọc code, suy luận ý đồ thiết kế, hỏi các câu hỏi làm rõ về các quyết định còn mơ hồ, và tạo ra GDD hồi tố (retroactive GDD).
+
+---
+
+## 🎯 **Những gì các ví dụ này chứng minh**
+
+Tất cả các ví dụ đều tuân theo **mô hình quy trình cộng tác:**
 
 ```
-Question → Options → Decision → Draft → Approval
+Hỏi (Question) → Lựa chọn (Options) → Quyết định (Decision) → Bản thảo (Draft) → Phê duyệt (Approval)
 ```
 
-> **Note:** These examples show the collaborative pattern as conversational text.
-> In practice, agents now use the `AskUserQuestion` tool at decision points to
-> present structured option pickers (with labels, descriptions, and multi-select).
-> The pattern is **Explain → Capture**: agents explain their analysis in
-> conversation first, then present a structured UI picker for the user's decision.
+> **Lưu ý:** Các ví dụ này minh họa mô hình cộng tác dưới dạng văn bản hội thoại.
+> Trong thực tế, các agent hiện sử dụng công cụ `AskUserQuestion` tại các điểm quyết định để
+> hiển thị các bộ chọn phương án có cấu trúc (kèm nhãn, mô tả và chọn nhiều).
+> Mô hình là **Giải thích → Ghi nhận (Explain → Capture)**: agent giải thích phân tích trong
+> hội thoại trước, sau đó hiển thị UI picker có cấu trúc để người dùng ra quyết định.
 
-### ✅ **Collaborative Behaviors Shown:**
+### ✅ **Các hành vi cộng tác được thể hiện:**
 
-1. **Agents Ask Before Assuming**
-   - Design agents ask about goals, constraints, references
-   - Implementation agents clarify spec ambiguities
-   - Leadership agents gather full context before recommending
-
-2. **Agents Present Options, Not Dictates**
-   - 2-4 options with pros/cons
-   - Reasoning based on theory, precedent, project pillars
-   - Recommendation made, but user decides
-
-3. **Agents Show Work Before Finalizing**
-   - Design drafts shown section-by-section
-   - Architecture proposals shown before implementation
-   - Strategic analysis presented before decisions
-
-4. **Agents Get Approval Before Writing Files**
-   - Explicit "May I write to [file]?" before using Write/Edit tools
-   - Multi-file changes list all affected files first
-   - User says "Yes" before any file is created
-
-5. **Agents Iterate on Feedback**
-   - User modifications incorporated immediately
-   - No defensiveness when user changes recommendations
-   - Celebrate when user improves agent's suggestion
+1. **Agent hỏi trước khi giả định**
+2. **Agent đưa ra các lựa chọn, không áp đặt**
+3. **Agent trình bày công việc trước khi hoàn tất**
+4. **Agent xin phê duyệt trước khi ghi file**
+5. **Agent lặp lại dựa trên phản hồi**
 
 ---
 
-## 📖 **How to Use These Examples**
+## 📖 **Cách sử dụng các ví dụ này**
 
-### For New Users:
-Read these examples BEFORE your first session. They show realistic expectations for how agents work:
-- Agents are consultants, not autonomous executors
-- You make all creative/strategic decisions
-- Agents provide expert guidance and options
-
-### For Understanding Specific Workflows:
-- **New to the system?** → Read skill-flow-diagrams.md first
-- **Running /design-system for the first time?** → Read session-design-system-skill.md
-- **Picking up a story?** → Read session-story-lifecycle.md
-- **Finishing a phase?** → Read session-gate-check-phase-transition.md
-- **Starting UI work?** → Read session-ux-pipeline.md
-- **Have an existing project?** → Read session-adopt-brownfield.md
-- **Designing a system (agent-driven)?** → Read session-design-crafting-system.md
-- **Implementing code?** → Read session-implement-combat-damage.md
-- **Making strategic decisions?** → Read session-scope-crisis-decision.md
-
-### For Training:
-If you're teaching someone to use this system, walk through one example turn-by-turn to show:
-- What good questions look like
-- How to evaluate presented options
-- When to approve vs. request changes
-- How to maintain creative control while leveraging AI expertise
+### Dành cho người dùng mới:
+Đọc các ví dụ này TRƯỚC phiên làm việc đầu tiên của bạn để thiết lập kỳ vọng thực tế:
+- Agent là chuyên gia tư vấn, không phải người tự ý thực thi đơn phương
+- Bạn đưa ra mọi quyết định sáng tạo / chiến lược
+- Agent cung cấp chỉ dẫn chuyên môn và các lựa chọn
 
 ---
 
-## 🔍 **Common Patterns Across All Examples**
+## 📝 **Tài nguyên bổ sung**
 
-### Turn 1-2: **Understand Before Acting**
-- Agent reads context (design docs, specs, constraints)
-- Agent asks clarifying questions
-- No assumptions or guesses
-
-### Turn 3-5: **Present Options with Reasoning**
-- 2-4 distinct approaches
-- Pros/cons for each
-- Theory/precedent supporting the analysis
-- Recommendation made, decision deferred to user
-
-### Turn 6-8: **Iterate on Drafts**
-- Show work incrementally
-- Incorporate feedback immediately
-- Flag edge cases or ambiguities proactively
-
-### Turn 9-10: **Approval and Completion**
-- "May I write to [file]?"
-- User: "Yes"
-- Agent writes files
-- Agent offers next steps (tests, review, integration)
-
----
-
-## 🚀 **Try It Yourself**
-
-After reading these examples, try this exercise:
-
-1. Pick one of your game systems (combat, inventory, progression, etc.)
-2. Ask the relevant agent to design or implement it
-3. Notice if the agent:
-   - ✅ Asks clarifying questions upfront
-   - ✅ Presents options with reasoning
-   - ✅ Shows drafts before finalizing
-   - ✅ Requests approval before writing files
-
-If the agent skips any of these, remind it:
-> "Please follow the collaborative protocol from docs/COLLABORATIVE-DESIGN-PRINCIPLE.md"
-
----
-
-## 📝 **Additional Resources**
-
-- **Full Principle Documentation:** [docs/COLLABORATIVE-DESIGN-PRINCIPLE.md](../COLLABORATIVE-DESIGN-PRINCIPLE.md)
-- **Workflow Guide:** [docs/WORKFLOW-GUIDE.md](../WORKFLOW-GUIDE.md)
-- **Agent Roster:** [.claude/docs/agent-roster.md](../../.claude/docs/agent-roster.md)
-- **CLAUDE.md (Collaboration Protocol):** [CLAUDE.md](../../CLAUDE.md#collaboration-protocol)
+- **Tài liệu Nguyên tắc đầy đủ:** [docs/COLLABORATIVE-DESIGN-PRINCIPLE.md](../COLLABORATIVE-DESIGN-PRINCIPLE.md)
+- **Hướng dẫn Workflow:** [docs/WORKFLOW-GUIDE.md](../WORKFLOW-GUIDE.md)
+- **Danh sách Agent:** [.claude/docs/agent-roster.md](../../.claude/docs/agent-roster.md)
+- **CLAUDE.md (Giao thức cộng tác):** [CLAUDE.md](../../CLAUDE.md#collaboration-protocol)

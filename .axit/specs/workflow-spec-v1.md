@@ -1,30 +1,30 @@
-# Axit Workflow Spec v1
+# Đặc tả Axit Workflow v1 (Axit Workflow Spec v1)
 
-## Purpose
+## Mục đích (Purpose)
 
-A Workflow is a compact, reusable **composition and transition contract** for a bounded outcome.
+Một Workflow là một **hợp đồng kết hợp và chuyển tiếp** tinh gọn, có thể tái sử dụng cho một kết quả có giới hạn.
 
-A Workflow answers:
+Một Workflow trả lời các câu hỏi:
 
-- When may the flow start?
-- Which accepted Skills or responsibilities participate?
-- In what order do steps run?
-- What result moves the flow forward, loops it, or stops it?
-- What condition means the workflow is complete?
+- Khi nào luồng công việc có thể bắt đầu?
+- Những Skill hoặc trách nhiệm đã được chấp thuận nào tham gia?
+- Các bước chạy theo thứ tự nào?
+- Kết quả nào đưa luồng tiến lên, lặp lại, hoặc dừng lại?
+- Điều kiện nào biểu thị workflow đã hoàn thành?
 
-A Workflow does not duplicate the procedure inside a Skill and does not replace Profile responsibility boundaries.
+Một Workflow không sao chép quy trình bên trong Skill và không thay thế các ranh giới trách nhiệm của Profile.
 
-## Canonical location
+## Vị trí chuẩn mực (Canonical location)
 
 ```text
 .axit/core/workflows/<workflow-id>/WORKFLOW.md
 ```
 
-Workflows are Axit-owned artifacts. They are not Codex Skills and are not exposed through `.agents/skills/`.
+Workflows là sản phẩm do Axit sở hữu. Chúng không phải là Codex Skill và không được hiển thị qua `.agents/skills/`.
 
-Codex may be routed to a Workflow by `AGENTS.md`, a user request, or a future Axit runtime, but the canonical workflow remains under `.axit/`.
+Codex có thể được điều hướng tới một Workflow bởi `AGENTS.md`, yêu cầu của người dùng, hoặc một runtime Axit trong tương lai, nhưng workflow chuẩn mực vẫn nằm dưới `.axit/`.
 
-## Required frontmatter
+## Frontmatter bắt buộc (Required frontmatter)
 
 ```yaml
 ---
@@ -35,104 +35,104 @@ status: validation
 ---
 ```
 
-Required fields:
+Các trường bắt buộc:
 
-- `spec_version` — workflow contract version.
-- `id` — stable lowercase kebab-case identifier.
-- `summary` — one-sentence bounded outcome.
-- `status` — lifecycle state such as `validation` or `active`.
+- `spec_version` — phiên bản hợp đồng workflow.
+- `id` — định danh ổn định viết thường nối dấu gạch ngang kebab-case.
+- `summary` — một câu mô tả kết quả có giới hạn.
+- `status` — trạng thái vòng đời như `validation` hoặc `active`.
 
-Do not add provider, model, tool, or runtime-permission configuration to Workflow frontmatter.
+Không thêm cấu hình provider, model, tool, hoặc quyền hạn runtime vào frontmatter của Workflow.
 
-## Required body sections
+## Các phần thân bài bắt buộc (Required body sections)
 
 ### `# Entry Conditions`
 
-State what must already be true before the Workflow starts.
+Nêu rõ những điều kiện phải đúng trước khi Workflow bắt đầu.
 
-If a missing decision belongs to a Profile responsibility, the Workflow should stop or hand off instead of silently deciding it.
+Nếu một quyết định còn thiếu thuộc về trách nhiệm của Profile, Workflow nên dừng lại hoặc bàn giao thay vì tự ý ra quyết định trong im lặng.
 
 ### `# Participants`
 
-List the accepted Skills or responsibility lenses used by the Workflow.
+Liệt kê các Skill hoặc lăng kính trách nhiệm đã được chấp thuận được Workflow sử dụng.
 
-Reference them by stable ID. Do not copy their procedures into the Workflow.
+Tham chiếu chúng bằng ID ổn định. Không sao chép quy trình của chúng vào trong Workflow.
 
 ### `# Flow`
 
-Describe the ordered composition at a high level.
+Mô tả sự kết hợp có thứ tự ở mức tổng quan.
 
-Each step should invoke or route to an accepted Skill/responsibility and consume the previous step's current output/evidence.
+Mỗi bước nên gọi hoặc điều hướng tới một Skill/trách nhiệm đã được chấp thuận và tiếp nhận đầu ra/bằng chứng hiện tại của bước trước.
 
 ### `# Transitions`
 
-Define how concrete outcomes change workflow state.
+Xác định cách các kết quả cụ thể thay đổi trạng thái workflow.
 
-Examples:
+Ví dụ:
 
-- verification `PASS` -> complete;
-- verification `FAIL` -> bounded repair when the failure remains inside accepted scope;
-- verification `BLOCKED` -> stop until the blocker is resolved.
+- xác minh `PASS` -> hoàn thành;
+- xác minh `FAIL` -> sửa chữa có giới hạn khi lỗi vẫn nằm trong phạm vi được chấp thuận;
+- xác minh `BLOCKED` -> dừng lại cho đến khi điểm nghẽn được giải quyết.
 
-Transitions must not hide scope expansion or material design/architecture decisions inside an automatic loop.
+Các chuyển tiếp không được che giấu việc phình to quy mô hoặc các quyết định thiết kế/kiến trúc quan trọng bên trong một vòng lặp tự động.
 
 ### `# Completion`
 
-Define the evidence-backed condition that means the Workflow has completed successfully.
+Xác định điều kiện có bằng chứng chứng minh rằng Workflow đã hoàn thành thành công.
 
-Do not let an implementation step declare a workflow complete when an independent verification step owns the final verdict.
+Không để một bước triển khai tự tuyên bố workflow hoàn thành khi bước xác minh độc lập mới là bên nắm giữ kết luận cuối cùng.
 
 ### `# Stop / Handoff Conditions`
 
-State when the Workflow exits to another responsibility, waits for evidence/tooling, or stops because scope changed.
+Nêu rõ khi nào Workflow thoát sang trách nhiệm khác, chờ bằng chứng/công cụ, hoặc dừng lại vì phạm vi thay đổi.
 
 ### `# Output`
 
-Define the minimum final artifacts or evidence returned by the Workflow.
+Xác định các sản phẩm hoặc bằng chứng cuối cùng tối thiểu do Workflow trả về.
 
-## Workflow boundaries
+## Ranh giới Workflow
 
-A Core Workflow should:
+Một Core Workflow nên:
 
-1. compose already accepted Core Skills or responsibilities;
-2. remain useful across materially different game projects;
-3. solve one bounded outcome rather than an entire project lifecycle;
-4. avoid duplicating Skill instructions;
-5. keep domain, engine, networking, and project specialization outside Core unless reuse is demonstrated;
-6. make stop/loop/completion semantics explicit;
-7. remain safe when a step is skipped because its responsibility is already resolved elsewhere.
+1. kết hợp các Core Skill hoặc trách nhiệm đã được chấp thuận;
+2. duy trì tính hữu ích trên các dự án game khác biệt thực tế;
+3. giải quyết một kết quả có giới hạn thay vì toàn bộ vòng đời dự án;
+4. tránh sao chép các chỉ dẫn của Skill;
+5. giữ tính chuyên môn hóa theo domain, engine, networking, và dự án nằm ngoài Core trừ khi việc tái sử dụng được chứng minh;
+6. làm rõ ngữ nghĩa dừng/lặp/hoàn thành;
+7. duy trì tính an toàn khi một bước bị bỏ qua vì trách nhiệm của nó đã được giải quyết ở nơi khác.
 
-A Workflow should not:
+Một Workflow không nên:
 
-- become a second copy of a Skill procedure;
-- invent runtime permissions or bypass project approval rules;
-- force design or architecture work into every implementation task;
-- encode sprint/release ceremony as universal game-development behavior;
-- create unbounded retry loops;
-- treat provider-specific agent orchestration as canonical Axit architecture.
+- trở thành bản sao thứ hai của quy trình Skill;
+- tự tạo ra quyền hạn runtime hoặc bỏ qua các quy tắc phê duyệt dự án;
+- ép buộc công việc thiết kế hoặc kiến trúc vào mọi tác vụ triển khai;
+- mã hóa các nghi thức sprint/phát hành thành hành vi phát triển game phổ quát;
+- tạo ra các vòng lặp thử lại vô hạn;
+- coi việc điều phối agent đặc thù của provider là kiến trúc chuẩn mực của Axit.
 
-## Separation of concerns
+## Phân tách trách nhiệm (Separation of concerns)
 
 ```text
-Profile     = responsibility / judgment lens
-Skill       = reusable procedure
-Workflow    = composition + transitions toward one bounded outcome
-Knowledge   = theory / reference / domain guidance
-Rules       = project constraints and approvals
-Registry    = accepted project-wide technical truth
-Runtime     = actual authorization and side-effect enforcement
+Profile     = trách nhiệm / lăng kính đánh giá
+Skill       = quy trình có thể tái sử dụng
+Workflow    = kết hợp + chuyển tiếp hướng tới một kết quả có giới hạn
+Knowledge   = lý thuyết / tham chiếu / chỉ dẫn domain
+Rules       = ràng buộc và phê duyệt của dự án
+Registry    = chân lý kỹ thuật toàn dự án đã được chấp thuận
+Runtime     = thực thi cấp quyền và kiểm soát tác dụng phụ thực tế
 ```
 
-## Core Workflow quality test
+## Bài kiểm tra chất lượng Core Workflow
 
-Before a Workflow enters Core, all answers should be yes:
+Trước khi một Workflow được đưa vào Core, tất cả câu trả lời phải là có:
 
-1. Is the composed outcome repeated across materially different projects or common task types?
-2. Are all referenced Skills/responsibilities already accepted or clearly defined?
-3. Does the Workflow add useful composition/transition semantics instead of merely listing steps?
-4. Are entry, stop, loop, and completion conditions explicit?
-5. Can optional responsibility steps remain outside the Workflow when they are not needed?
-6. Does final completion depend on the correct evidence-owning responsibility?
-7. Is the Workflow small enough to understand without loading unrelated project lifecycle material?
+1. Kết quả kết hợp này có lặp lại trên các dự án khác biệt thực tế hoặc các loại tác vụ phổ biến không?
+2. Tất cả các Skill/trách nhiệm được tham chiếu đã được chấp thuận hoặc định nghĩa rõ ràng chưa?
+3. Workflow có bổ sung ngữ nghĩa kết hợp/chuyển tiếp hữu ích thay vì chỉ liệt kê các bước không?
+4. Điều kiện đầu vào, dừng, lặp và hoàn thành có rõ ràng không?
+5. Các bước trách nhiệm tùy chọn có thể nằm ngoài Workflow khi không cần thiết không?
+6. Việc hoàn thành cuối cùng có phụ thuộc vào đúng trách nhiệm nắm giữ bằng chứng không?
+7. Workflow có đủ nhỏ gọn để hiểu mà không cần nạp các tài liệu vòng đời dự án không liên quan không?
 
-If not, keep the composition informal until real use demonstrates a stable Workflow.
+Nếu không, hãy giữ sự kết hợp ở dạng không chính thức cho đến khi việc sử dụng thực tế chứng minh một Workflow ổn định.

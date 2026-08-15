@@ -1,112 +1,112 @@
 # CCGS Skill Testing Framework
 
-Quality assurance infrastructure for the **Claude Code Game Studios** framework.
-Tests the skills and agents themselves — not any game built with them.
+Hạ tầng đảm bảo chất lượng (QA) cho framework **Claude Code Game Studios**.
+Kiểm thử chính các skill và agent trong hệ thống — không phải kiểm thử tựa game được xây dựng bằng chúng.
 
-> **This folder is self-contained and optional.**
-> Game developers using CCGS don't need it. To remove it entirely:
-> `rm -rf "CCGS Skill Testing Framework"` — nothing in `.claude/` depends on it.
+> **Thư mục này hoạt động độc lập và hoàn toàn tùy chọn.**
+> Các nhà phát triển game sử dụng CCGS không nhất thiết phải dùng nó. Để xóa hoàn toàn:
+> `rm -rf "CCGS Skill Testing Framework"` — không có gì trong `.claude/` bị phụ thuộc vào nó.
 
 ---
 
-## What's in here
+## Cấu trúc thư mục
 
 ```
 CCGS Skill Testing Framework/
-├── README.md              ← you are here
-├── CLAUDE.md              ← tells Claude how to use this framework
-├── catalog.yaml           ← master registry: all 73 skills + 49 agents, coverage tracking
-├── quality-rubric.md      ← category-specific pass/fail metrics for /skill-test category
+├── README.md              ← tài liệu bạn đang đọc
+├── CLAUDE.md              ← hướng dẫn Claude cách sử dụng testing framework này
+├── catalog.yaml           ← danh mục đăng ký tổng: tất cả 73 skills + 49 agents, theo dõi độ bao phủ
+├── quality-rubric.md      ← tiêu chí pass/fail theo danh mục cho lệnh /skill-test category
 │
-├── skills/                ← behavioral spec files for skills (one per skill)
-│   ├── gate/              ← gate category specs
-│   ├── review/            ← review category specs
-│   ├── authoring/         ← authoring category specs
-│   ├── readiness/         ← readiness category specs
-│   ├── pipeline/          ← pipeline category specs
-│   ├── analysis/          ← analysis category specs
-│   ├── team/              ← team category specs
-│   ├── sprint/            ← sprint category specs
-│   └── utility/           ← utility category specs
+├── skills/                ← các file đặc tả hành vi cho skill (mỗi skill một file)
+│   ├── gate/              ← đặc tả danh mục gate
+│   ├── review/            ← đặc tả danh mục review
+│   ├── authoring/         ← đặc tả danh mục authoring
+│   ├── readiness/         ← đặc tả danh mục readiness
+│   ├── pipeline/          ← đặc tả danh mục pipeline
+│   ├── analysis/          ← đặc tả danh mục analysis
+│   ├── team/              ← đặc tả danh mục team
+│   ├── sprint/            ← đặc tả danh mục sprint
+│   └── utility/           ← đặc tả danh mục utility
 │
-├── agents/                ← behavioral spec files for agents (one per agent)
+├── agents/                ← các file đặc tả hành vi cho agent (mỗi agent một file)
 │   ├── directors/         ← creative-director, technical-director, producer, art-director
-│   ├── leads/             ← lead-programmer, narrative-director, audio-director, etc.
-│   ├── specialists/       ← engine/code/shader/UI specialists
-│   ├── godot/             ← Godot-specific specialists
-│   ├── unity/             ← Unity-specific specialists
-│   ├── unreal/            ← Unreal-specific specialists
-│   ├── operations/        ← QA, live-ops, release, localization, etc.
-│   └── creative/          ← writer, world-builder, game-designer, etc.
+│   ├── leads/             ← lead-programmer, narrative-director, audio-director, v.v.
+│   ├── specialists/       ← chuyên viên engine/code/shader/UI
+│   ├── godot/             ← chuyên viên đặc thù Godot
+│   ├── unity/             ← chuyên viên đặc thù Unity
+│   ├── unreal/            ← chuyên viên đặc thù Unreal
+│   ├── operations/        ← QA, live-ops, release, localization, v.v.
+│   └── creative/          ← writer, world-builder, game-designer, v.v.
 │
-├── templates/             ← spec file templates for writing new specs
-│   ├── skill-test-spec.md ← template for skill behavioral specs
-│   └── agent-test-spec.md ← template for agent behavioral specs
+├── templates/             ← template file đặc tả để viết spec mới
+│   ├── skill-test-spec.md ← template đặc tả hành vi cho skill
+│   └── agent-test-spec.md ← template đặc tả hành vi cho agent
 │
-└── results/               ← test run outputs (written by /skill-test spec, gitignored)
+└── results/               ← kết quả chạy test (ghi bởi /skill-test spec, gitignored)
 ```
 
 ---
 
-## How to use it
+## Cách sử dụng
 
-All testing is driven by two skills already in the framework:
+Tất cả các bài kiểm thử đều được điều khiển bởi hai skill đã tích hợp sẵn trong framework:
 
-### Check structural compliance
-
-```
-/skill-test static [skill-name]     # Check one skill (7 checks)
-/skill-test static all              # Check all 73 skills
-```
-
-### Run a behavioral spec test
+### Kiểm tra tuân thủ cấu trúc (Static checks)
 
 ```
-/skill-test spec gate-check         # Evaluate a skill against its written spec
+/skill-test static [skill-name]     # Kiểm tra 1 skill (7 tiêu chí)
+/skill-test static all              # Kiểm tra toàn bộ 73 skills
+```
+
+### Chạy kiểm thử đặc tả hành vi (Behavioral spec test)
+
+```
+/skill-test spec gate-check         # Đánh giá skill đối chiếu với bản đặc tả đã viết
 /skill-test spec design-review
 ```
 
-### Check against category rubric
+### Kiểm tra đối chiếu tiêu chí danh mục (Category rubric)
 
 ```
-/skill-test category gate-check     # Evaluate one skill against its category metrics
-/skill-test category all            # Run rubric checks across all categorized skills
+/skill-test category gate-check     # Đánh giá 1 skill đối chiếu với tiêu chí danh mục của nó
+/skill-test category all            # Chạy kiểm tra rubric trên tất cả các skill đã phân loại
 ```
 
-### See full coverage picture
+### Xem bức tranh toàn cảnh về độ bao phủ (Coverage)
 
 ```
-/skill-test audit                   # Skills + agents: has-spec, last tested, result
+/skill-test audit                   # Skills + agents: có-spec, lần test gần nhất, kết quả
 ```
 
-### Improve a failing skill
+### Cải tiến một skill bị lỗi
 
 ```
-/skill-improve gate-check           # Test → diagnose → propose fix → retest loop
+/skill-improve gate-check           # Vòng lặp: Test → chẩn đoán → đề xuất sửa → test lại
 ```
 
 ---
 
-## Skill categories
+## Các danh mục Skill
 
-| Category | Skills | Key metrics |
-|----------|--------|-------------|
-| `gate` | gate-check | Review mode read, full/lean/solo director panel, no auto-advance |
-| `review` | design-review, architecture-review, review-all-gdds | Read-only, 8-section check, correct verdicts |
-| `authoring` | design-system, quick-design, art-bible, create-architecture, … | Section-by-section May-I-write, skeleton-first |
-| `readiness` | story-readiness, story-done | Blockers surfaced, director gate in full mode |
-| `pipeline` | create-epics, create-stories, dev-story, map-systems, … | Upstream dependency check, handoff path clear |
-| `analysis` | consistency-check, balance-check, code-review, tech-debt, … | Read-only report, verdict keyword, no writes |
-| `team` | team-combat, team-narrative, team-audio, … | All required agents spawned, blocked surfaced |
-| `sprint` | sprint-plan, sprint-status, milestone-review, … | Reads sprint data, status keywords present |
-| `utility` | start, adopt, hotfix, localize, setup-engine, … | Passes static checks |
+| Danh mục | Skills | Các chỉ số chính |
+|---|---|---|
+| `gate` | gate-check | Đọc chế độ review, bảng director full/lean/solo, không tự ý chuyển giai đoạn |
+| `review` | design-review, architecture-review, review-all-gdds | Chỉ đọc, kiểm tra 8 phần, kết luận chính xác |
+| `authoring` | design-system, quick-design, art-bible, create-architecture, … | Ghi từng phần có xin phép May-I-write, tạo khung sườn trước |
+| `readiness` | story-readiness, story-done | Làm nổi bật điểm nghẽn blocker, cổng director ở chế độ full |
+| `pipeline` | create-epics, create-stories, dev-story, map-systems, … | Kiểm tra phụ thuộc thượng nguồn, luồng bàn giao rõ ràng |
+| `analysis` | consistency-check, balance-check, code-review, tech-debt, … | Báo cáo chỉ đọc, từ khóa kết luận, không tự ý ghi file |
+| `team` | team-combat, team-narrative, team-audio, … | Khởi tạo đủ các agent cần thiết, làm nổi bật điểm bị chặn |
+| `sprint` | sprint-plan, sprint-status, milestone-review, … | Đọc dữ liệu sprint, có từ khóa trạng thái |
+| `utility` | start, adopt, hotfix, localize, setup-engine, … | Vượt qua các kiểm tra tĩnh |
 
 ---
 
-## Agent tiers
+## Phân tầng Agent
 
-| Tier | Agents |
-|------|--------|
+| Phân tầng | Agents |
+|---|---|
 | `directors` | creative-director, technical-director, producer, art-director |
 | `leads` | lead-programmer, narrative-director, audio-director, ux-designer, qa-lead, release-manager, localization-lead |
 | `specialists` | gameplay-programmer, engine-programmer, ui-programmer, tools-programmer, network-programmer, ai-programmer, level-designer, sound-designer, technical-artist |
@@ -118,33 +118,31 @@ All testing is driven by two skills already in the framework:
 
 ---
 
-## Updating the catalog
+## Cập nhật catalog
 
-`catalog.yaml` tracks test coverage for every skill and agent. After running a test:
+`catalog.yaml` theo dõi độ bao phủ kiểm thử cho mọi skill và agent. Sau khi chạy test:
 
-- `/skill-test spec [name]` will offer to update `last_spec` and `last_spec_result`
-- `/skill-test category [name]` will offer to update `last_category` and `last_category_result`
-- `last_static` and `last_static_result` are updated manually or via `/skill-improve`
-
----
-
-## Writing a new spec
-
-1. Find the spec template at `templates/skill-test-spec.md`
-2. Copy it to `skills/[category]/[skill-name].md`
-3. Update the `spec:` field in `catalog.yaml` to point to the new file
-4. Run `/skill-test spec [skill-name]` to validate it
+- `/skill-test spec [name]` sẽ đề xuất cập nhật `last_spec` và `last_spec_result`
+- `/skill-test category [name]` sẽ đề xuất cập nhật `last_category` và `last_category_result`
+- `last_static` và `last_static_result` được cập nhật thủ công hoặc qua `/skill-improve`
 
 ---
 
-## Removing this framework
+## Viết một bản đặc tả mới
 
-This folder has no hooks into the main project. To remove:
+1. Tìm template đặc tả tại `templates/skill-test-spec.md`
+2. Sao chép nó sang `skills/[category]/[skill-name].md`
+3. Cập nhật trường `spec:` trong `catalog.yaml` để trỏ tới file mới
+4. Chạy `/skill-test spec [skill-name]` để xác thực
+
+---
+
+## Gỡ bỏ framework này
+
+Thư mục này không gắn hook vào dự án chính. Để gỡ bỏ:
 
 ```bash
 rm -rf "CCGS Skill Testing Framework"
 ```
 
-The skills `/skill-test` and `/skill-improve` will still function — they'll simply
-report that `catalog.yaml` is missing and suggest running `/skill-test audit` to
-initialize it.
+Các skill `/skill-test` và `/skill-improve` vẫn hoạt động — chúng sẽ thông báo thiếu `catalog.yaml` và gợi ý chạy `/skill-test audit` để khởi tạo lại.

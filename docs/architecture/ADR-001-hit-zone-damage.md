@@ -1,27 +1,27 @@
-# ADR-001: Configure damage multipliers per hit zone
+# ADR-001: Cấu hình hệ số nhân sát thương theo từng vùng trúng đòn (hit zone)
 
-- Status: Accepted
-- Date: 2026-08-09
-- Scope: QuickGun combat
+- Trạng thái: Accepted
+- Ngày: 2026-08-09
+- Phạm vi: QuickGun combat
 
-## Context
+## Bối cảnh (Context)
 
-QuickGun already routes projectile collisions through `DamageableBodyPart`, but every body part forwards identical damage. The character prefab exposes separate colliders for the head, hair, and body, so the collision data needed for meaningful hit zones already exists.
+QuickGun hiện đã điều hướng va chạm của đạn qua `DamageableBodyPart`, nhưng mọi bộ phận cơ thể đều chuyển tiếp cùng một lượng sát thương như nhau. Character prefab có các collider tách biệt cho đầu (head), tóc (hair) và thân (body), do đó dữ liệu va chạm cần thiết cho các vùng trúng đòn có ý nghĩa đã tồn tại sẵn.
 
-## Decision
+## Quyết định (Decision)
 
-Each `DamageableBodyPart` owns a serialized, non-negative damage multiplier. A pure `DamageCalculator` applies that multiplier and converts the result to integer health damage. Positive hits deal at least one damage, while invalid non-positive inputs deal zero.
+Mỗi `DamageableBodyPart` sở hữu một hệ số nhân sát thương kiểu serialized, không âm. Một class thuần túy `DamageCalculator` áp dụng hệ số nhân đó và chuyển đổi kết quả thành sát thương máu kiểu số nguyên (integer health damage). Các đòn đánh trúng hợp lệ gây ra ít nhất 1 sát thương, trong khi đầu vào không hợp lệ (không dương) sẽ gây 0 sát thương.
 
-The shared character prefab configures:
+Character prefab dùng chung được cấu hình:
 
-- Head: 2x
-- Hair: 2x
-- Body: 1x
+- Head (Đầu): 2x
+- Hair (Tóc): 2x
+- Body (Thân): 1x
 
-Both player and bot use this prefab, so the same combat rule applies symmetrically.
+Cả người chơi (player) và bot đều dùng chung prefab này, do đó quy tắc chiến đấu được áp dụng đối xứng như nhau.
 
-## Consequences
+## Hệ quả (Consequences)
 
-- Designers can rebalance hit zones in the prefab without code changes.
-- Damage rules are testable without loading a Unity scene.
-- Critical hits currently use the existing hit flash plus a combat log; a dedicated UI/audio cue can be added later without changing the damage contract.
+- Game designer có thể tái cân bằng các vùng trúng đòn trong prefab mà không cần thay đổi code.
+- Các quy tắc sát thương có thể kiểm thử được mà không cần load Unity scene.
+- Đòn đánh chí mạng hiện dùng hiệu ứng lóe sáng (hit flash) có sẵn kèm combat log; có thể bổ sung tín hiệu UI/âm thanh chuyên dụng sau này mà không làm thay đổi hợp đồng tính sát thương.

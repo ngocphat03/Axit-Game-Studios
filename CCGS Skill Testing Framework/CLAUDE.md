@@ -1,31 +1,29 @@
-# CCGS Skill Testing Framework — Claude Instructions
+# CCGS Skill Testing Framework — Hướng dẫn cho Claude
 
-This folder is the quality assurance layer for the Claude Code Game Studios skill/agent
-framework. It is self-contained and separate from any game project.
+Thư mục này là tầng đảm bảo chất lượng (QA layer) cho framework skill/agent của Claude Code Game Studios. Nó hoạt động độc lập và tách biệt khỏi bất kỳ dự án game nào.
 
-## Key files
+## Các file chính
 
-| File | Purpose |
-|------|---------|
-| `catalog.yaml` | Master registry for all 73 skills and 49 agents. Contains category, spec path, and last-test tracking fields. Always read this first when running any test command. |
-| `quality-rubric.md` | Category-specific pass/fail metrics. Read the matching `###` section for the skill's category when running `/skill-test category`. |
-| `skills/[category]/[name].md` | Behavioral spec for a skill — 5 test cases + protocol compliance assertions. |
-| `agents/[tier]/[name].md` | Behavioral spec for an agent — 5 test cases + protocol compliance assertions. |
-| `templates/skill-test-spec.md` | Template for writing new skill spec files. |
-| `templates/agent-test-spec.md` | Template for writing new agent spec files. |
-| `results/` | Written by `/skill-test spec` when results are saved. Gitignored. |
+| File | Mục đích |
+|---|---|
+| `catalog.yaml` | Danh mục đăng ký chính cho tất cả 73 skills và 49 agents. Chứa danh mục, đường dẫn spec, và các trường theo dõi lần test gần nhất. Luôn đọc file này trước tiên khi chạy bất kỳ lệnh test nào. |
+| `quality-rubric.md` | Tiêu chí pass/fail theo từng danh mục cụ thể. Đọc mục `###` tương ứng với danh mục của skill khi chạy `/skill-test category`. |
+| `skills/[category]/[name].md` | Đặc tả hành vi cho một skill — 5 trường hợp kiểm thử (test cases) + các xác nhận tuân thủ giao thức. |
+| `agents/[tier]/[name].md` | Đặc tả hành vi cho một agent — 5 test cases + các xác nhận tuân thủ giao thức. |
+| `templates/skill-test-spec.md` | Template để viết các file đặc tả skill mới. |
+| `templates/agent-test-spec.md` | Template để viết các file đặc tả agent mới. |
+| `results/` | Được ghi bởi `/skill-test spec` khi lưu kết quả. Đã được gitignore. |
 
-## Path conventions
+## Quy ước đường dẫn
 
 - Skill specs: `CCGS Skill Testing Framework/skills/[category]/[name].md`
 - Agent specs: `CCGS Skill Testing Framework/agents/[tier]/[name].md`
 - Catalog: `CCGS Skill Testing Framework/catalog.yaml`
 - Rubric: `CCGS Skill Testing Framework/quality-rubric.md`
 
-The `spec:` field in `catalog.yaml` is the authoritative path for each skill/agent spec.
-Always read it rather than guessing the path.
+Trường `spec:` trong `catalog.yaml` là đường dẫn chính thức cho từng bản đặc tả skill/agent. Luôn đọc từ đó thay vì suy đoán đường dẫn.
 
-## Skill categories
+## Danh mục Skill
 
 ```
 gate        → gate-check
@@ -42,10 +40,10 @@ team        → team-combat, team-narrative, team-audio, team-level, team-ui,
               team-qa, team-release, team-polish, team-live-ops
 sprint      → sprint-plan, sprint-status, milestone-review, retrospective,
               changelog, patch-notes
-utility     → all remaining skills
+utility     → tất cả các skill còn lại
 ```
 
-## Agent tiers
+## Phân tầng Agent
 
 ```
 directors   → creative-director, technical-director, producer, art-director
@@ -66,28 +64,23 @@ creative    → writer, world-builder, game-designer, economy-designer,
               systems-designer, prototyper
 ```
 
-## Workflow for testing a skill
+## Quy trình kiểm thử một skill
 
-1. Read `catalog.yaml` to get the skill's `spec:` path and `category:`
-2. Read the skill at `.claude/skills/[name]/SKILL.md`
-3. Read the spec at the `spec:` path
-4. Evaluate assertions case by case
-5. Offer to write results to `results/` and update `catalog.yaml`
+1. Đọc `catalog.yaml` để lấy đường dẫn `spec:` và `category:` của skill
+2. Đọc skill tại `.claude/skills/[name]/SKILL.md`
+3. Đọc bản đặc tả tại đường dẫn `spec:`
+4. Đánh giá các xác nhận (assertions) theo từng trường hợp
+5. Đề xuất ghi kết quả vào `results/` và cập nhật `catalog.yaml`
 
-## Workflow for improving a skill
+## Quy trình cải tiến một skill
 
-Use `/skill-improve [name]`. It handles the full loop:
-test → diagnose → propose fix → rewrite → retest → keep or revert.
+Sử dụng `/skill-improve [name]`. Lệnh này xử lý toàn bộ vòng lặp:
+test → chẩn đoán → đề xuất sửa → viết lại code → test lại → giữ lại hoặc hoàn tác.
 
-## Spec validity note
+## Lưu ý về tính hợp lệ của bản đặc tả
 
-Specs in this folder describe **current behavior**, not ideal behavior. They were
-written by reading the skills, so they may encode bugs. When a skill misbehaves in
-practice, correct the skill first, then update the spec to match the fixed behavior.
-Treat spec failures as "this needs investigation," not "the skill is definitively wrong."
+Các spec trong thư mục này mô tả **hành vi hiện tại**, không phải hành vi lý tưởng. Chúng được viết bằng cách đọc trực tiếp từ skill, do đó có thể chứa lỗi tiềm ẩn. Khi một skill hoạt động không đúng trong thực tế, hãy sửa skill trước, sau đó cập nhật spec khớp với hành vi đã sửa. Hãy coi các lỗi spec thất bại là "cần điều tra thêm", không phải "skill chắc chắn đã sai".
 
-## This folder is deletable
+## Thư mục này có thể xóa được
 
-Nothing in `.claude/` imports from here. Deleting this folder has no effect on the
-CCGS skills or agents themselves. `/skill-test` and `/skill-improve` will report that
-`catalog.yaml` is missing and guide the user to initialize it.
+Không có thành phần nào trong `.claude/` import từ thư mục này. Việc xóa thư mục này không ảnh hưởng đến bản thân các skill hay agent của CCGS. `/skill-test` và `/skill-improve` sẽ chỉ thông báo thiếu `catalog.yaml` và hướng dẫn người dùng khởi tạo lại.

@@ -1,80 +1,68 @@
-# Security Policy
+# Chính sách bảo mật (Security Policy)
 
-## Supported Versions
+## Các phiên bản được hỗ trợ
 
-Only the `main` branch receives security fixes. Forks and older releases are
-not supported.
+Chỉ có nhánh `main` nhận các bản vá bảo mật. Các bản fork và các bản phát hành cũ hơn không được hỗ trợ.
 
-## Reporting a Vulnerability
+## Báo cáo lỗ hổng bảo mật
 
-**Do not report security vulnerabilities through public GitHub issues.**
+**Tuyệt đối không báo cáo các lỗ hổng bảo mật qua GitHub issues công khai.**
 
-Use GitHub's private vulnerability reporting instead:
+Thay vào đó, hãy sử dụng tính năng báo cáo lỗ hổng bảo mật riêng tư của GitHub:
 
-**[Report a vulnerability →](https://github.com/Donchitos/Claude-Code-Game-Studios/security/advisories/new)**
+**[Báo cáo lỗ hổng bảo mật →](https://github.com/Donchitos/Claude-Code-Game-Studios/security/advisories/new)**
 
-Include as much detail as possible:
-- Description of the vulnerability and what it affects
-- Steps to reproduce
-- Potential impact and attack scenarios
-- Any suggested mitigations
+Vui lòng cung cấp càng nhiều thông tin chi tiết càng tốt:
+- Mô tả lỗ hổng và phạm vi ảnh hưởng
+- Các bước tái hiện
+- Tác động tiềm ẩn và các kịch bản tấn công
+- Bất kỳ giải pháp khắc phục/giảm thiểu (mitigations) nào được đề xuất
 
-**What to expect:**
-- Acknowledgment within **48 hours**
-- Status update within **7 days**
-- Resolution within **90 days** for confirmed vulnerabilities
+**Quy trình phản hồi dự kiến:**
+- Xác nhận đã nhận thông tin trong vòng **48 giờ**
+- Cập nhật tình trạng xử lý trong vòng **7 ngày**
+- Xử lý dứt điểm trong vòng **90 ngày** đối với các lỗ hổng đã được xác nhận
 
-## What Is In Scope
+## Phạm vi áp dụng (What Is In Scope)
 
-CCGS is a **local development tool** — it installs shell hooks and coordinates
-AI agents that run directly on your machine. Security issues are primarily about
-contributed code that executes in users' environments without their awareness.
+CCGS là một **công cụ phát triển cục bộ (local development tool)** — hệ thống cài đặt các shell hook và điều phối các AI agent chạy trực tiếp trên máy của bạn. Các vấn đề bảo mật chủ yếu xoay quanh code đóng góp thực thi trong môi trường của người dùng mà người dùng không hay biết.
 
-### High Severity
-- Hooks (`.claude/hooks/*.sh`) that execute malicious or undisclosed shell
-  commands on user machines
-- Skills or agents that exfiltrate environment variables, API keys, or secrets
-- Prompt injection via skill or agent definitions that causes Claude to bypass
-  safety measures or take unauthorized destructive actions
-- Contributions that silently alter behavior in ways users cannot audit
+### Mức độ nghiêm trọng cao (High Severity)
+- Các hook (`.claude/hooks/*.sh`) thực thi các lệnh shell độc hại hoặc không được công khai trên máy người dùng
+- Các skill hoặc agent đánh cắp biến môi trường, API keys, hoặc các bí mật (secrets)
+- Tấn công Prompt injection thông qua các định nghĩa skill hoặc agent khiến Claude bỏ qua các biện pháp an toàn hoặc thực hiện các hành động phá hoại trái phép
+- Các đóng góp âm thầm thay đổi hành vi theo cách người dùng không thể kiểm tra (audit)
 
-### Medium Severity
-- Skills that make undisclosed outbound network requests
-- Agent definitions that escalate permissions or bypass user confirmation prompts
-- Hook patterns that behave differently across platforms to conceal behavior
-- Skills that write outside their documented scope without an explicit user
-  approval step
+### Mức độ nghiêm trọng trung bình (Medium Severity)
+- Các skill thực hiện các yêu cầu mạng ra ngoài (outbound network requests) không được công khai
+- Các định nghĩa agent leo thang quyền hạn hoặc bỏ qua các lời nhắc xác nhận của người dùng
+- Các mẫu hook hoạt động khác nhau giữa các nền tảng nhằm che giấu hành vi
+- Các skill ghi dữ liệu ra ngoài phạm vi đã ghi nhận trong tài liệu mà không có bước phê duyệt rõ ràng của người dùng
 
-### Out of Scope
-- The behavior of Claude or the Claude Code CLI itself
-  (report to [Anthropic](https://www.anthropic.com/security))
-- Bugs in the user's Claude Code installation or editor extension
-- Theoretical vulnerabilities with no realistic attack path
-- Issues requiring physical access to the user's machine
+### Ngoài phạm vi (Out of Scope)
+- Hành vi của Claude hoặc bản thân CLI Claude Code (hãy báo cáo tới [Anthropic](https://www.anthropic.com/security))
+- Các lỗi trong bản cài đặt Claude Code của người dùng hoặc extension của trình soạn thảo
+- Các lỗ hổng trên lý thuyết không có đường dẫn tấn công thực tế
+- Các vấn đề đòi hỏi quyền truy cập vật lý vào máy của người dùng
 
-## Security Guidelines for Contributors
+## Hướng dẫn bảo mật cho người đóng góp
 
-When contributing hooks, skills, or agents:
+Khi đóng góp hooks, skills, hoặc agents:
 
-- **Hooks must be POSIX-compatible** — use `grep -E`, not `grep -P`; avoid
-  platform-specific syntax that behaves differently across operating systems
-- **No silent network calls** from hooks or skills unless explicitly documented
-  and opt-in by the user
-- **No reading secrets or environment variables** beyond what is minimally
-  required and clearly documented in the skill's header
-- **Skills must not write outside their documented scope** without an explicit
-  user confirmation step
+- **Hook phải tương thích POSIX** — sử dụng `grep -E`, không dùng `grep -P`; tránh cú pháp đặc thù của từng nền tảng có hành vi khác nhau giữa các hệ điều hành
+- **Không thực hiện gọi mạng ngầm (silent network calls)** từ hooks hoặc skills trừ khi đã được ghi nhận rõ ràng trong tài liệu và người dùng chủ động bật (opt-in)
+- **Không đọc secrets hoặc biến môi trường** vượt quá mức tối thiểu cần thiết và phải được ghi nhận rõ ràng ở phần header của skill
+- **Skill không được ghi dữ liệu ra ngoài phạm vi đã ghi nhận trong tài liệu** mà không có bước xác nhận rõ ràng từ người dùng
 
-## Disclosure Policy
+## Chính sách công bố (Disclosure Policy)
 
-We follow a **90-day coordinated disclosure** timeline:
+Chúng tôi tuân thủ quy trình **công bố có điều phối trong 90 ngày (90-day coordinated disclosure)**:
 
-1. You submit the vulnerability privately
-2. We acknowledge within 48 hours
-3. We confirm and assess severity within 7 days
-4. We develop and test a fix
-5. We notify you before any public disclosure
-6. Public disclosure happens after the fix ships, or at 90 days — whichever
-   comes first
+1. Bạn gửi thông tin lỗ hổng một cách riêng tư
+2. Chúng tôi xác nhận trong vòng 48 giờ
+3. Chúng tôi xác minh và đánh giá mức độ nghiêm trọng trong vòng 7 ngày
+4. Chúng tôi phát triển và kiểm thử bản vá
+5. Chúng tôi thông báo cho bạn trước khi có bất kỳ công bố rộng rãi nào
+6. Việc công bố công khai diễn ra sau khi bản vá được phát hành, hoặc sau 90 ngày — tùy điều kiện nào đến trước
 
-We credit reporters in release notes unless you prefer to remain anonymous.
+Chúng tôi sẽ ghi nhận công lao của người báo cáo trong release notes trừ khi bạn muốn ẩn danh.

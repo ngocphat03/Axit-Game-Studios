@@ -1,29 +1,25 @@
-# Context Management
+# Quản lý Ngữ cảnh (Context Management)
 
-Context is the most critical resource in a Claude Code session. Manage it actively.
+Ngữ cảnh là tài nguyên quan trọng nhất trong một phiên làm việc Claude Code. Hãy chủ động quản lý nó.
 
-## File-Backed State (Primary Strategy)
+## Trạng thái lưu bằng File (Chiến lược chính)
 
-**The file is the memory, not the conversation.** Conversations are ephemeral and
-will be compacted or lost. Files on disk persist across compactions and session crashes.
+**File là bộ nhớ, không phải là cuộc hội thoại.** Các cuộc hội thoại mang tính tạm thời và sẽ bị nén (compacted) hoặc mất đi. Các file trên đĩa tồn tại bền vững qua các lần nén ngữ cảnh và crash phiên làm việc.
 
-### Session State File
+### File trạng thái phiên làm việc (Session State File)
 
-Maintain `production/session-state/active.md` as a living checkpoint. Update it
-after each significant milestone:
+Duy trì `production/session-state/active.md` như một checkpoint sống. Cập nhật nó sau mỗi milestone quan trọng:
 
-- Design section approved and written to file
-- Architecture decision made
-- Implementation milestone reached
-- Test results obtained
+- Một phần thiết kế được duyệt và ghi vào file
+- Một quyết định kiến trúc được đưa ra
+- Đạt được một mốc triển khai code
+- Thu thập được kết quả kiểm thử
 
-The state file should contain: current task, progress checklist, key decisions
-made, files being worked on, and open questions.
+File trạng thái nên chứa: tác vụ hiện tại, checklist tiến độ, các quyết định chính đã đưa ra, các file đang được xử lý, và các câu hỏi mở.
 
-### Status Line Block (Production+ only)
+### Khối dòng trạng thái (Status Line Block - Chỉ từ Production trở lên)
 
-When the project is in Production, Polish, or Release stage, include a structured
-status block in `active.md` that the status line script can parse:
+Khi dự án ở giai đoạn Production, Polish, hoặc Release, hãy thêm một khối trạng thái có cấu trúc vào `active.md` để script dòng trạng thái có thể phân tích cú pháp:
 
 ```markdown
 <!-- STATUS -->
@@ -33,75 +29,68 @@ Task: Implement hitbox detection
 <!-- /STATUS -->
 ```
 
-- All three fields (Epic, Feature, Task) are optional — include only what applies
-- Update this block when switching focus areas
-- The status line displays it as a breadcrumb: `Combat System > Melee Combat > Hitboxes`
-- Remove or empty the block when no active work focus exists
+- Cả 3 trường (Epic, Feature, Task) đều là tùy chọn — chỉ đưa vào những gì phù hợp
+- Cập nhật khối này khi chuyển đổi khu vực trọng tâm
+- Dòng trạng thái hiển thị nó dưới dạng breadcrumb: `Combat System > Melee Combat > Hitboxes`
+- Xóa hoặc để trống khối này khi không có công việc nào đang tập trung
 
-After any disruption (compaction, crash, `/clear`), read the state file first.
+Sau bất kỳ sự gián đoạn nào (nén context, crash, `/clear`), hãy đọc file trạng thái trước tiên.
 
-### Incremental File Writing
+### Ghi file tăng dần (Incremental File Writing)
 
-When creating multi-section documents (design docs, architecture docs, lore entries):
+Khi tạo các tài liệu nhiều phần (design docs, architecture docs, cốt truyện lore):
 
-1. Create the file immediately with a skeleton (all section headers, empty bodies)
-2. Discuss and draft one section at a time in conversation
-3. Write each section to the file as soon as it's approved
-4. Update the session state file after each section
-5. After writing a section, previous discussion about that section can be safely
-   compacted — the decisions are in the file
+1. Tạo file ngay lập tức với một khung sườn (tất cả các tiêu đề mục, phần thân để trống)
+2. Thảo luận và soạn thảo từng phần một trong cuộc trò chuyện
+3. Ghi từng phần vào file ngay sau khi được duyệt
+4. Cập nhật file trạng thái phiên làm việc sau mỗi phần
+5. Sau khi ghi một phần, cuộc thảo luận trước đó về phần đó có thể được nén an toàn — các quyết định đã nằm trong file
 
-This keeps the context window holding only the *current* section's discussion
-(~3-5k tokens) instead of the entire document's conversation history (~30-50k tokens).
+Cách này giúp cửa sổ ngữ cảnh chỉ giữ cuộc thảo luận của phần *hiện tại* (~3-5k tokens) thay vì toàn bộ lịch sử trò chuyện của cả tài liệu (~30-50k tokens).
 
-## Proactive Compaction
+## Chủ động Nén ngữ cảnh (Proactive Compaction)
 
-- **Compact proactively** at ~60-70% context usage, not reactively at the limit
-- **Use `/clear`** between unrelated tasks, or after 2+ failed correction attempts
-- **Natural compaction points:** after writing a section to file, after committing,
-  after completing a task, before starting a new topic
-- **Focused compaction:** `/compact Focus on [current task] — sections 1-3 are
-  written to file, working on section 4`
+- **Chủ động nén** ở mức ~60-70% dung lượng ngữ cảnh, không đợi đến khi chạm giới hạn mới xử lý
+- **Sử dụng `/clear`** giữa các tác vụ không liên quan, hoặc sau 2+ lần thử sửa lỗi thất bại
+- **Các điểm nén tự nhiên:** sau khi ghi một phần vào file, sau khi commit, sau khi hoàn thành một tác vụ, trước khi bắt đầu một chủ đề mới
+- **Nén có trọng tâm:** `/compact Tập trung vào [tác vụ hiện tại] — các phần 1-3 đã được ghi vào file, đang làm phần 4`
 
-## Context Budgets by Task Type
+## Ngân sách ngữ cảnh theo loại tác vụ
 
-- Light (read/review): ~3k tokens startup
-- Medium (implement feature): ~8k tokens
-- Heavy (multi-system refactor): ~15k tokens
+- Nhẹ (đọc/review): ~3k tokens khởi động
+- Trung bình (triển khai tính năng): ~8k tokens
+- Nặng (refactor đa hệ thống): ~15k tokens
 
-## Subagent Delegation
+## Ủy quyền cho Subagent
 
-Use subagents for research and exploration to keep the main session clean.
-Subagents run in their own context window and return only summaries:
+Sử dụng subagent cho việc nghiên cứu và khám phá để giữ phiên làm việc chính luôn sạch sẽ.
+Subagent chạy trong cửa sổ ngữ cảnh riêng và chỉ trả về các bản tóm tắt:
 
-- **Use subagents** when investigating across multiple files, exploring unfamiliar code,
-  or doing research that would consume >5k tokens of file reads
-- **Use direct reads** when you know exactly which 1-2 files to check
-- Subagents do not inherit conversation history — provide full context in the prompt
+- **Sử dụng subagent** khi điều tra trên nhiều file, khám phá code lạ, hoặc nghiên cứu tiêu tốn >5k tokens đọc file
+- **Đọc trực tiếp** khi bạn biết chính xác 1-2 file cụ thể cần kiểm tra
+- Subagent không thừa hưởng lịch sử trò chuyện — hãy cung cấp đầy đủ ngữ cảnh trong prompt
 
-## Compaction Instructions
+## Hướng dẫn Nén ngữ cảnh (Compaction Instructions)
 
-When context is compacted, preserve the following in the summary:
+Khi ngữ cảnh được nén, hãy giữ lại những thông tin sau trong bản tóm tắt:
 
-- Reference to `production/session-state/active.md` (read it to recover state)
-- List of files modified in this session and their purpose
-- Any architectural decisions made and their rationale
-- Active sprint tasks and their current status
-- Agent invocations and their outcomes (success/failure/blocked)
-- Test results (pass/fail counts, specific failures)
-- Unresolved blockers or questions awaiting user input
-- The current task and what step we are on
-- Which sections of the current document are written to file vs. still in progress
+- Tham chiếu tới `production/session-state/active.md` (đọc nó để phục hồi trạng thái)
+- Danh sách các file đã chỉnh sửa trong phiên này và mục đích của chúng
+- Bất kỳ quyết định kiến trúc nào đã đưa ra và lý do
+- Các tác vụ sprint đang hoạt động và trạng thái hiện tại của chúng
+- Các lần gọi agent và kết quả (thành công/thất bại/bị chặn)
+- Kết quả test (số lượng pass/fail, các lỗi cụ thể)
+- Các điểm nghẽn chưa giải quyết hoặc câu hỏi đang chờ người dùng phản hồi
+- Tác vụ hiện tại và chúng ta đang ở bước nào
+- Những phần nào của tài liệu hiện tại đã ghi vào file so với những phần đang làm dở
 
-**After compaction:** Read `production/session-state/active.md` and any files being
-actively worked on to recover full context. The files contain the decisions; the
-conversation history is secondary.
+**Sau khi nén:** Đọc `production/session-state/active.md` và bất kỳ file nào đang được xử lý để phục hồi đầy đủ ngữ cảnh. Các file chứa quyết định; lịch sử trò chuyện chỉ là thứ yếu.
 
-## Recovery After Session Crash
+## Phục hồi sau sự cố Crash phiên làm việc
 
-If a session dies ("prompt too long") or you start a new session to continue work:
+Nếu một phiên làm việc bị ngắt ("prompt too long") hoặc bạn bắt đầu một phiên mới để tiếp tục công việc:
 
-1. The `session-start.sh` hook will detect and preview `active.md` automatically
-2. Read the full state file for context
-3. Read the partially-completed file(s) listed in the state
-4. Continue from the next incomplete section or task
+1. Hook `session-start.sh` sẽ tự động phát hiện và xem trước `active.md`
+2. Đọc file trạng thái đầy đủ để lấy ngữ cảnh
+3. Đọc (các) file đang làm dở được liệt kê trong file trạng thái
+4. Tiếp tục từ phần chưa hoàn thành hoặc tác vụ tiếp theo

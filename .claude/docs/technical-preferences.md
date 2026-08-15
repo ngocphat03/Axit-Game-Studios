@@ -1,87 +1,87 @@
-# Technical Preferences
+# Tùy chọn kỹ thuật (Technical Preferences)
 
-<!-- Populated by /setup-engine. Updated as the user makes decisions throughout development. -->
-<!-- All agents reference this file for project-specific standards and conventions. -->
+<!-- Được điền bởi /setup-engine. Được cập nhật khi người dùng đưa ra các quyết định trong suốt quá trình phát triển. -->
+<!-- Tất cả các agent đều tham chiếu file này để nắm bắt tiêu chuẩn và quy ước đặc thù của dự án. -->
 
-## Engine & Language
+## Engine & Ngôn ngữ lập trình
 
-- **Engine**: [TO BE CONFIGURED — run /setup-engine]
-- **Language**: [TO BE CONFIGURED]
-- **Rendering**: [TO BE CONFIGURED]
-- **Physics**: [TO BE CONFIGURED]
+- **Engine**: [CHỜ CẤU HÌNH — chạy /setup-engine]
+- **Ngôn ngữ**: [CHỜ CẤU HÌNH]
+- **Rendering**: [CHỜ CẤU HÌNH]
+- **Physics**: [CHỜ CẤU HÌNH]
 
-## Input & Platform
+## Đầu vào điều khiển & Nền tảng (Input & Platform)
 
-<!-- Written by /setup-engine. Read by /ux-design, /ux-review, /test-setup, /team-ui, and /dev-story -->
-<!-- to scope interaction specs, test helpers, and implementation to the correct input methods. -->
+<!-- Được ghi bởi /setup-engine. Được đọc bởi /ux-design, /ux-review, /test-setup, /team-ui, và /dev-story -->
+<!-- nhằm giới hạn phạm vi đặc tả tương tác, test helpers, và triển khai code đúng phương thức điều khiển. -->
 
-- **Target Platforms**: [TO BE CONFIGURED — e.g., PC, Console, Mobile, Web]
-- **Input Methods**: [TO BE CONFIGURED — e.g., Keyboard/Mouse, Gamepad, Touch, Mixed]
-- **Primary Input**: [TO BE CONFIGURED — the dominant input for this game]
-- **Gamepad Support**: [TO BE CONFIGURED — Full / Partial / None]
-- **Touch Support**: [TO BE CONFIGURED — Full / Partial / None]
-- **Platform Notes**: [TO BE CONFIGURED — any platform-specific UX constraints]
+- **Nền tảng mục tiêu (Target Platforms)**: [CHỜ CẤU HÌNH — ví dụ: PC, Console, Mobile, Web]
+- **Phương thức điều khiển (Input Methods)**: [CHỜ CẤU HÌNH — ví dụ: Bàn phím/Chuột, Tay cầm Gamepad, Cảm ứng Touch, Hỗn hợp]
+- **Điều khiển chính (Primary Input)**: [CHỜ CẤU HÌNH — phương thức điều khiển chủ đạo cho game này]
+- **Hỗ trợ Gamepad**: [CHỜ CẤU HÌNH — Đầy đủ (Full) / Một phần (Partial) / Không (None)]
+- **Hỗ trợ Cảm ứng**: [CHỜ CẤU HÌNH — Đầy đủ (Full) / Một phần (Partial) / Không (None)]
+- **Ghi chú nền tảng**: [CHỜ CẤU HÌNH — bất kỳ ràng buộc UX đặc thù nào của nền tảng]
 
-## Naming Conventions
+## Quy ước đặt tên (Naming Conventions)
 
-- **Classes**: [TO BE CONFIGURED]
-- **Variables**: [TO BE CONFIGURED]
-- **Signals/Events**: [TO BE CONFIGURED]
-- **Files**: [TO BE CONFIGURED]
-- **Scenes/Prefabs**: [TO BE CONFIGURED]
-- **Constants**: [TO BE CONFIGURED]
+- **Classes**: [CHỜ CẤU HÌNH]
+- **Variables**: [CHỜ CẤU HÌNH]
+- **Signals/Events**: [CHỜ CẤU HÌNH]
+- **Files**: [CHỜ CẤU HÌNH]
+- **Scenes/Prefabs**: [CHỜ CẤU HÌNH]
+- **Constants**: [CHỜ CẤU HÌNH]
 
-## Performance Budgets
+## Ngân sách hiệu năng (Performance Budgets)
 
-- **Target Framerate**: [TO BE CONFIGURED]
-- **Frame Budget**: [TO BE CONFIGURED]
-- **Draw Calls**: [TO BE CONFIGURED]
-- **Memory Ceiling**: [TO BE CONFIGURED]
+- **Framerate mục tiêu**: [CHỜ CẤU HÌNH]
+- **Ngân sách Frame**: [CHỜ CẤU HÌNH]
+- **Draw Calls**: [CHỜ CẤU HÌNH]
+- **Trần bộ nhớ (Memory Ceiling)**: [CHỜ CẤU HÌNH]
 
-## Testing
+## Kiểm thử (Testing)
 
-- **Framework**: [TO BE CONFIGURED]
-- **Minimum Coverage**: [TO BE CONFIGURED]
-- **Required Tests**: Balance formulas, gameplay systems, networking (if applicable)
+- **Framework**: [CHỜ CẤU HÌNH]
+- **Độ bao phủ tối thiểu**: [CHỜ CẤU HÌNH]
+- **Các test bắt buộc**: Công thức cân bằng, hệ thống gameplay, mạng (nếu có)
 
-## Forbidden Patterns
+## Các mẫu thiết kế bị cấm (Forbidden Patterns)
 
-<!-- Add patterns that should never appear in this project's codebase -->
-- [None configured yet — add as architectural decisions are made]
+<!-- Thêm các mẫu thiết kế tuyệt đối không được xuất hiện trong codebase của dự án -->
+- [Chưa cấu hình — bổ sung khi các quyết định kiến trúc được đưa ra]
 
-## Allowed Libraries / Addons
+## Thư viện / Addon được phép sử dụng
 
-<!-- Add approved third-party dependencies here -->
-- [None configured yet — add as dependencies are approved]
+<!-- Thêm các dependency bên thứ ba đã được phê duyệt tại đây -->
+- [Chưa cấu hình — bổ sung khi các dependency được phê duyệt]
 
-## Architecture Decisions Log
+## Nhật ký quyết định kiến trúc (Architecture Decisions Log)
 
-<!-- Quick reference linking to full ADRs in docs/architecture/ -->
-- [No ADRs yet — use /architecture-decision to create one]
+<!-- Tham chiếu nhanh liên kết tới các ADR đầy đủ trong docs/architecture/ -->
+- [Chưa có ADR nào — sử dụng /architecture-decision để tạo]
 
-## Engine Specialists
+## Chuyên viên phụ trách Engine (Engine Specialists)
 
-<!-- Written by /setup-engine when engine is configured. -->
-<!-- Read by /code-review, /architecture-decision, /architecture-review, and team skills -->
-<!-- to know which specialist to spawn for engine-specific validation. -->
+<!-- Được ghi bởi /setup-engine khi engine được cấu hình. -->
+<!-- Được đọc bởi /code-review, /architecture-decision, /architecture-review, và các team skill -->
+<!-- để biết chuyên viên nào cần được gọi cho việc xác thực đặc thù theo engine. -->
 
-- **Primary**: [TO BE CONFIGURED — run /setup-engine]
-- **Language/Code Specialist**: [TO BE CONFIGURED]
-- **Shader Specialist**: [TO BE CONFIGURED]
-- **UI Specialist**: [TO BE CONFIGURED]
-- **Additional Specialists**: [TO BE CONFIGURED]
-- **Routing Notes**: [TO BE CONFIGURED]
+- **Chuyên viên chính (Primary)**: [CHỜ CẤU HÌNH — chạy /setup-engine]
+- **Chuyên viên Ngôn ngữ/Code**: [CHỜ CẤU HÌNH]
+- **Chuyên viên Shader**: [CHỜ CẤU HÌNH]
+- **Chuyên viên UI**: [CHỜ CẤU HÌNH]
+- **Các chuyên viên bổ sung**: [CHỜ CẤU HÌNH]
+- **Ghi chú điều phối**: [CHỜ CẤU HÌNH]
 
-### File Extension Routing
+### Điều phối theo phần mở rộng File (File Extension Routing)
 
-<!-- Skills use this table to select the right specialist per file type. -->
-<!-- If a row says [TO BE CONFIGURED], fall back to Primary for that file type. -->
+<!-- Các skill sử dụng bảng này để chọn đúng chuyên viên theo từng loại file. -->
+<!-- Nếu một hàng ghi [CHỜ CẤU HÌNH], quay về dùng Chuyên viên chính (Primary) cho loại file đó. -->
 
-| File Extension / Type | Specialist to Spawn |
-|-----------------------|---------------------|
-| Game code (primary language) | [TO BE CONFIGURED] |
-| Shader / material files | [TO BE CONFIGURED] |
-| UI / screen files | [TO BE CONFIGURED] |
-| Scene / prefab / level files | [TO BE CONFIGURED] |
-| Native extension / plugin files | [TO BE CONFIGURED] |
-| General architecture review | Primary |
+| Phần mở rộng / Loại File | Chuyên viên được gọi |
+|---|---|
+| Mã nguồn game (ngôn ngữ chính) | [CHỜ CẤU HÌNH] |
+| File Shader / Material | [CHỜ CẤU HÌNH] |
+| File UI / Màn hình | [CHỜ CẤU HÌNH] |
+| File Scene / Prefab / Màn chơi | [CHỜ CẤU HÌNH] |
+| File GDExtension / Plugin native | [CHỜ CẤU HÌNH] |
+| Đánh giá kiến trúc chung | Chuyên viên chính (Primary) |

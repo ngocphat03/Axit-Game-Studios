@@ -1,30 +1,30 @@
-# Axit Skill Spec v1
+# Đặc tả Axit Skill v1 (Axit Skill Spec v1)
 
-## Purpose
+## Mục đích (Purpose)
 
-A Skill is a compact, reusable **procedure for one repeatable job**.
+Một Skill là một **quy trình có thể tái sử dụng, tinh gọn cho một công việc lặp lại đơn lẻ**.
 
-A Skill answers:
+Một Skill trả lời các câu hỏi:
 
-- When should this procedure run?
-- What inputs or evidence does it need?
-- What ordered actions should be performed?
-- What conditions require stopping or handing off?
-- What output or evidence should be produced?
+- Khi nào quy trình này nên chạy?
+- Nó cần những đầu vào hoặc bằng chứng nào?
+- Những hành động có thứ tự nào cần được thực hiện?
+- Những điều kiện nào đòi hỏi phải dừng lại hoặc bàn giao?
+- Đầu ra hoặc bằng chứng nào cần được tạo ra?
 
-A Skill does not own a broad responsibility. Responsibilities belong to Profiles.
+Một Skill không sở hữu một trách nhiệm bao quát. Trách nhiệm bao quát thuộc về Profiles.
 
-## Canonical location
+## Vị trí chuẩn mực (Canonical location)
 
 ```text
 .axit/core/skills/<skill-id>/SKILL.md
 ```
 
-A Core Skill must also be valid for Codex discovery. The canonical `SKILL.md` is the source of truth; `.agents/skills/` is only a discovery compatibility layer.
+Một Core Skill cũng phải hợp lệ cho việc khám phá của Codex. File `SKILL.md` chuẩn mực là nguồn sự thật; `.agents/skills/` chỉ là tầng tương thích phục vụ khám phá.
 
-## Required frontmatter
+## Frontmatter bắt buộc (Required frontmatter)
 
-Use the Codex-compatible minimum:
+Sử dụng mức tối thiểu tương thích với Codex:
 
 ```yaml
 ---
@@ -33,76 +33,72 @@ description: Verify a bounded code or project change against accepted requiremen
 ---
 ```
 
-Required fields:
+Các trường bắt buộc:
 
-- `name` — stable lowercase kebab-case identifier.
-- `description` — concise trigger and boundary text. State both when the Skill should run and the most important case where it should not.
+- `name` — định danh ổn định viết thường nối dấu gạch ngang kebab-case.
+- `description` — văn bản mô tả điều kiện kích hoạt và ranh giới súc tích. Nêu rõ cả khi nào Skill nên chạy và trường hợp quan trọng nhất mà nó không nên chạy.
 
-Do not add Axit-only frontmatter fields unless Codex compatibility is verified and a real need exists.
+Không thêm các trường frontmatter chỉ dành riêng cho Axit trừ khi tính tương thích Codex đã được xác minh và có nhu cầu thực tế.
 
-## Required body sections
+## Các phần thân bài bắt buộc (Required body sections)
 
 ### `# Purpose`
 
-State the single repeatable job performed by the Skill.
+Nêu rõ công việc lặp lại đơn lẻ do Skill thực hiện.
 
 ### `# Inputs`
 
-List semantic input categories, not one repository's hardcoded paths unless the procedure genuinely requires them.
+Liệt kê các danh mục đầu vào mang tính ngữ nghĩa, không hardcode đường dẫn của một repository cụ thể trừ khi quy trình thực sự đòi hỏi.
 
 ### `# Procedure`
 
-Provide imperative ordered steps. Keep the procedure focused on one job.
+Cung cấp các bước thực hiện có thứ tự rõ ràng. Giữ cho quy trình tập trung vào một công việc duy nhất.
 
-Steps may branch based on evidence or project capabilities, but should not become an end-to-end project lifecycle.
+Các bước có thể rẽ nhánh dựa trên bằng chứng hoặc capability của dự án, nhưng không nên biến thành toàn bộ vòng đời dự án end-to-end.
 
 ### `# Stop / Handoff Conditions`
 
-State when the procedure must stop, return a blocked result, or hand the issue to another responsibility.
+Nêu rõ khi nào quy trình phải dừng lại, trả về kết quả bị chặn (blocked), hoặc bàn giao vấn đề cho trách nhiệm khác.
 
 ### `# Output`
 
-Define the minimum result/evidence produced by the procedure.
+Xác định kết quả/bằng chứng tối thiểu do quy trình tạo ra.
 
-## Optional body sections
+## Các phần thân bài tùy chọn (Optional body sections)
 
-Use only when materially helpful:
+Chỉ sử dụng khi thực sự hữu ích:
 
 - `# Evidence Rules`
 - `# Constraints`
 - `# Examples`
 - `# References`
 
-Move large domain knowledge, API reference material, and long examples out of `SKILL.md` when they are not required on every invocation.
+Di chuyển các kiến thức lĩnh vực lớn, tài liệu tham chiếu API và ví dụ dài ra ngoài `SKILL.md` khi chúng không bắt buộc phải nạp trong mọi lần gọi.
 
-## Separation of concerns
+## Phân tách trách nhiệm (Separation of concerns)
 
 ```text
-Profile     = responsibility / judgment lens
-Skill       = reusable procedure
-Workflow    = composition of multiple responsibilities or Skills
-Knowledge   = theory / reference / domain guidance
-Rules       = project constraints and approvals
-Registry    = accepted project-wide technical truth
-Runtime     = actual authorization and side-effect enforcement
+Profile     = trách nhiệm / lăng kính đánh giá
+Skill       = quy trình có thể tái sử dụng
+Workflow    = sự kết hợp của nhiều trách nhiệm hoặc Skill
+Knowledge   = lý thuyết / tham chiếu / chỉ dẫn lĩnh vực
+Rules       = ràng buộc và phê duyệt của dự án
+Registry    = chân lý kỹ thuật toàn dự án đã được chấp thuận
+Runtime     = thực thi cấp quyền và kiểm soát tác dụng phụ thực tế
 ```
 
-A Skill may tell Codex to respect project rules; it must not pretend prompt instructions are runtime security controls.
+Một Skill có thể chỉ dẫn Codex tôn trọng quy tắc dự án; nó không được coi các chỉ dẫn prompt là biện pháp kiểm soát bảo mật runtime.
 
-## Core Skill quality test
+## Bài kiểm tra chất lượng Core Skill
 
-Before a Skill enters Core, all answers should be yes:
+Trước khi một Skill được đưa vào Core, tất cả câu trả lời phải là có:
 
-1. Does the procedure repeat across materially different game projects?
-2. Is it one focused job rather than a whole department or lifecycle?
-3. Is the procedure distinct from a Profile responsibility description?
-4. Can engine/genre/network specialization be supplied by project knowledge or later domain Skills?
-5. Are inputs, stop conditions, and outputs explicit?
-6. Is the procedure short enough to load on demand without becoming a knowledge dump?
-7. Can the same `SKILL.md` serve as the canonical Axit Skill and a valid Codex Skill?
+1. Quy trình này có lặp lại trên các dự án game khác biệt thực tế không?
+2. Đây có phải là một công việc tập trung thay vì toàn bộ một phòng ban hay vòng đời dự án không?
+3. Quy trình này có khác biệt với mô tả trách nhiệm của Profile không?
+4. Tính chuyên môn hóa theo engine/thể loại/network có thể được cung cấp bởi kiến thức dự án hoặc các Skill domain sau này không?
+5. Đầu vào, điều kiện dừng và đầu ra có rõ ràng không?
+6. Quy trình có đủ ngắn để nạp theo yêu cầu mà không trở thành nơi xả dữ liệu kiến thức khổng lồ không?
+7. Cùng một file `SKILL.md` có thể vừa là Axit Skill chuẩn mực vừa là một Codex Skill hợp lệ không?
 
-If not, keep it as ordinary Profile behavior, project guidance, Knowledge, or a future domain-specific Skill.
-
-## Codex compatibility rule
-
-Codex uses `name` and `description` for discovery and loads the full `SKILL.md` only when the Skill is selected. Therefore descriptions must be specific enough to avoid accidental activation, and the body should contain only instructions needed once selected.
+Nếu không, hãy giữ nó dưới dạng hành vi Profile thông thường, hướng dẫn dự án, Knowledge, hoặc một Skill đặc thù domain trong tương lai.

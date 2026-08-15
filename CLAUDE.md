@@ -1,54 +1,53 @@
-# Claude Code Game Studios -- Game Studio Agent Architecture
+# Claude Code Game Studios -- Kiến trúc Game Studio Agent
 
-Indie game development managed through 49 coordinated Claude Code subagents.
-Each agent owns a specific domain, enforcing separation of concerns and quality.
+Quy trình phát triển game indie được quản lý thông qua 49 Claude Code subagents phối hợp nhịp nhàng.
+Mỗi agent nắm giữ một lĩnh vực cụ thể, đảm bảo sự phân tách trách nhiệm và kiểm soát chất lượng.
 
 ## Technology Stack
 
 - **Engine**: [CHOOSE: Godot 4 / Unity / Unreal Engine 5]
 - **Language**: [CHOOSE: GDScript / C# / C++ / Blueprint]
 - **Version Control**: Git with trunk-based development
-- **Build System**: [SPECIFY after choosing engine]
-- **Asset Pipeline**: [SPECIFY after choosing engine]
+- **Build System**: [SPECIFY sau khi chọn engine]
+- **Asset Pipeline**: [SPECIFY sau khi chọn engine]
 
-> **Note**: Engine-specialist agents exist for Godot, Unity, and Unreal with
-> dedicated sub-specialists. Use the set matching your engine.
+> **Lưu ý**: Các agent chuyên trách engine (Engine-specialist) đã có sẵn cho Godot, Unity, và Unreal cùng với các sub-specialists chuyên sâu. Hãy sử dụng bộ agent phù hợp với engine của bạn.
 
-## Project Structure
+## Cấu trúc dự án (Project Structure)
 
 @.claude/docs/directory-structure.md
 
-## Engine Version Reference
+## Tham chiếu phiên bản Engine (Engine Version Reference)
 
 @docs/engine-reference/godot/VERSION.md
 
-## Technical Preferences
+## Tùy chọn kỹ thuật (Technical Preferences)
 
 @.claude/docs/technical-preferences.md
 
-## Coordination Rules
+## Quy tắc điều phối (Coordination Rules)
 
 @.claude/docs/coordination-rules.md
 
-## Collaboration Protocol
+## Giao thức cộng tác (Collaboration Protocol)
 
-**User-driven collaboration, not autonomous execution.**
-Every task follows: **Question -> Options -> Decision -> Draft -> Approval**
+**Cộng tác định hướng bởi người dùng, không tự ý thực thi (User-driven collaboration, not autonomous execution).**
+Mọi nhiệm vụ đều tuân theo: **Hỏi (Question) -> Đưa lựa chọn (Options) -> Quyết định (Decision) -> Bản thảo (Draft) -> Phê duyệt (Approval)**
 
-- Agents MUST ask "May I write this to [filepath]?" before using Write/Edit tools
-- Agents MUST show drafts or summaries before requesting approval
-- Multi-file changes require explicit approval for the full changeset
-- No commits without user instruction
+- Agent BẮT BUỘC phải hỏi "Tôi có thể ghi nội dung này vào [filepath] không?" trước khi sử dụng công cụ Write/Edit
+- Agent BẮT BUỘC phải trình bày bản thảo hoặc tóm tắt trước khi yêu cầu phê duyệt
+- Thay đổi nhiều file đòi hỏi sự phê duyệt rõ ràng cho toàn bộ tập thay đổi (changeset)
+- Không commit nếu không có hướng dẫn từ người dùng
 
-See `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` for full protocol and examples.
+Xem `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` để biết toàn bộ giao thức và các ví dụ chi tiết.
 
-> **First session?** If the project has no engine configured and no game concept,
-> run `/start` to begin the guided onboarding flow.
+> **Phiên làm việc đầu tiên?** Nếu dự án chưa cấu hình engine và chưa có concept game,
+> hãy chạy `/start` để bắt đầu quy trình onboarding có hướng dẫn.
 
-## Coding Standards
+## Tiêu chuẩn viết code (Coding Standards)
 
 @.claude/docs/coding-standards.md
 
-## Context Management
+## Quản lý ngữ cảnh (Context Management)
 
 @.claude/docs/context-management.md

@@ -1,143 +1,134 @@
-# Director Gates — Shared Review Pattern
+# Cổng Director — Mẫu Đánh giá Dùng chung (Director Gates — Shared Review Pattern)
 
-This document defines the standard gate prompts for all director and lead reviews
-across every workflow stage. Skills reference gate IDs from this document instead
-of embedding full prompts inline — eliminating drift when prompts need updating.
+Tài liệu này định nghĩa các prompt cổng (gate prompts) chuẩn cho tất cả các đánh giá của giám đốc (director) và trưởng bộ phận (lead) xuyên suốt mọi giai đoạn phát triển. Các skill chỉ cần tham chiếu Gate ID từ tài liệu này thay vì nhúng toàn bộ prompt trực tiếp — loại bỏ sự sai lệch khi các prompt cần cập nhật.
 
-**Scope**: All 7 production stages (Concept → Release), all 3 Tier 1 directors,
-all key Tier 2 leads. Any skill, team orchestrator, or workflow may invoke these gates.
+**Phạm vi**: Cả 7 giai đoạn sản xuất (Concept → Release), cả 3 giám đốc Tier 1, và các lead Tier 2 chủ chốt. Mọi skill, bộ điều phối team hoặc workflow đều có thể gọi các cổng này.
 
 ---
 
-## How to Use This Document
+## Cách sử dụng Tài liệu này
 
-In any skill, replace an inline director prompt with a reference:
+Trong bất kỳ skill nào, hãy thay thế prompt director trực tiếp bằng một tham chiếu:
 
 ```
-Spawn `creative-director` via Task using gate **CD-PILLARS** from
+Gọi `creative-director` qua Task sử dụng cổng **CD-PILLARS** từ
 `.claude/docs/director-gates.md`.
 ```
 
-Pass the context listed under that gate's **Context to pass** field, then handle
-the verdict using the **Verdict handling** rules below.
+Truyền ngữ cảnh được liệt kê trong mục **Context to pass** của cổng đó, sau đó xử lý kết luận bằng các quy tắc **Verdict handling** bên dưới.
 
 ---
 
-## Review Modes
+## Các Chế độ Review (Review Modes)
 
-Review intensity controls whether director gates run. It can be set globally
-(persists across sessions) or overridden per skill run.
+Mức độ review kiểm soát việc các cổng director có chạy hay không. Chế độ này có thể được thiết lập toàn cục (lưu qua các phiên) hoặc ghi đè theo từng lần chạy skill.
 
-**Global config**: `production/review-mode.txt` — one word: `full`, `lean`, or `solo`.
-Set once during `/start`. Edit the file directly to change it at any time.
+**Cấu hình toàn cục**: `production/review-mode.txt` — một từ duy nhất: `full`, `lean`, hoặc `solo`.
+Thiết lập một lần trong `/start`. Chỉnh sửa trực tiếp file để thay đổi bất kỳ lúc nào.
 
-**Per-run override**: any gate-using skill accepts `--review [full|lean|solo]` as an
-argument. This overrides the global config for that run only.
+**Ghi đè theo lần chạy**: bất kỳ skill nào có dùng cổng đều chấp nhận đối số `--review [full|lean|solo]`. Điều này chỉ ghi đè cấu hình toàn cục cho lần chạy đó.
 
-Examples:
+Ví dụ:
 ```
-/brainstorm space horror           → uses global mode
-/brainstorm space horror --review full   → forces full mode this run
-/architecture-decision --review solo     → skips all gates this run
+/brainstorm space horror           → dùng chế độ toàn cục
+/brainstorm space horror --review full   → ép buộc chế độ full lần chạy này
+/architecture-decision --review solo     → bỏ qua mọi cổng lần chạy này
 ```
 
-| Mode | What runs | Best for |
-|------|-----------|----------|
-| `full` | All gates active — every workflow step reviewed | Teams, learning users, or when you want thorough director feedback at every step |
-| `lean` | PHASE-GATEs only (`/gate-check`) — per-skill gates skipped | **Default** — solo devs and small teams; directors review at milestones only |
-| `solo` | No director gates anywhere | Game jams, prototypes, maximum speed |
+| Chế độ | Những gì sẽ chạy | Phù hợp nhất cho |
+|---|---|---|
+| `full` | Mọi cổng đều hoạt động — mọi bước workflow đều được review | Đội nhóm, người dùng đang học hỏi, hoặc khi muốn có phản hồi kỹ lưỡng từ director ở từng bước |
+| `lean` | Chỉ chạy PHASE-GATE (`/gate-check`) — bỏ qua các cổng inline theo từng skill | **Mặc định** — solo dev và nhóm nhỏ; director chỉ review tại các mốc milestone |
+| `solo` | Không chạy cổng director ở bất kỳ đâu | Game jams, prototypes, tốc độ tối đa |
 
-**Check pattern — apply before every gate spawn:**
+**Mẫu kiểm tra — áp dụng trước mỗi lần gọi cổng:**
 
 ```
-Before spawning gate [GATE-ID]:
-1. If skill was called with --review [mode], use that
-2. Else read production/review-mode.txt
-3. Else default to lean
+Trước khi gọi cổng [GATE-ID]:
+1. Nếu skill được gọi kèm --review [mode], dùng chế độ đó
+2. Ngược lại, đọc production/review-mode.txt
+3. Ngược lại, mặc định là lean
 
-Apply the resolved mode:
-- solo → skip all gates. Note: "[GATE-ID] skipped — Solo mode"
-- lean → skip unless this is a PHASE-GATE (CD-PHASE-GATE, TD-PHASE-GATE, PR-PHASE-GATE, AD-PHASE-GATE)
-         Note: "[GATE-ID] skipped — Lean mode"
-- full → spawn as normal
+Áp dụng chế độ đã phân giải:
+- solo → bỏ qua mọi cổng. Ghi chú: "[GATE-ID] skipped — Solo mode"
+- lean → bỏ qua trừ khi đây là PHASE-GATE (CD-PHASE-GATE, TD-PHASE-GATE, PR-PHASE-GATE, AD-PHASE-GATE)
+         Ghi chú: "[GATE-ID] skipped — Lean mode"
+- full → gọi bình thường
 ```
 
 ---
 
-## Invocation Pattern (copy into any skill)
+## Mẫu Gọi Cổng (Invocation Pattern)
 
-**MANDATORY: Resolve review mode before every gate spawn.** Never spawn a gate without checking. The resolved mode is determined once per skill run:
-1. If skill was called with `--review [mode]`, use that
-2. Else read `production/review-mode.txt`
-3. Else default to `lean`
+**BẮT BUỘC: Phân giải chế độ review trước mỗi lần gọi cổng.** Tuyệt đối không gọi cổng mà chưa kiểm tra. Chế độ được xác định một lần cho mỗi lượt chạy skill:
+1. Nếu skill được gọi kèm `--review [mode]`, dùng chế độ đó
+2. Ngược lại, đọc `production/review-mode.txt`
+3. Ngược lại, mặc định là `lean`
 
-Apply the resolved mode:
-- `solo` → **skip all gates**. Note in output: `[GATE-ID] skipped — Solo mode`
-- `lean` → **skip unless this is a PHASE-GATE** (CD-PHASE-GATE, TD-PHASE-GATE, PR-PHASE-GATE, AD-PHASE-GATE). Note: `[GATE-ID] skipped — Lean mode`
-- `full` → spawn as normal
-
-```
-# Apply mode check, then:
-Spawn `[agent-name]` via Task:
-- Gate: [GATE-ID] (see .claude/docs/director-gates.md)
-- Context: [fields listed under that gate]
-- Await the verdict before proceeding.
-```
-
-For parallel spawning (multiple directors at the same gate point):
+Áp dụng chế độ đã phân giải:
+- `solo` → **bỏ qua mọi cổng**. Ghi chú trong đầu ra: `[GATE-ID] skipped — Solo mode`
+- `lean` → **bỏ qua trừ khi đây là PHASE-GATE** (CD-PHASE-GATE, TD-PHASE-GATE, PR-PHASE-GATE, AD-PHASE-GATE). Ghi chú: `[GATE-ID] skipped — Lean mode`
+- `full` → gọi bình thường
 
 ```
-# Apply mode check for each gate first, then spawn all that survive:
-Spawn all [N] agents simultaneously via Task — issue all Task calls before
-waiting for any result. Collect all verdicts before proceeding.
+# Áp dụng kiểm tra chế độ, sau đó:
+Gọi `[agent-name]` qua Task:
+- Cổng: [GATE-ID] (xem .claude/docs/director-gates.md)
+- Ngữ cảnh: [các trường liệt kê dưới cổng đó]
+- Chờ kết luận trước khi tiếp tục.
+```
+
+Đối với việc gọi song song (nhiều director tại cùng một điểm cổng):
+
+```
+# Áp dụng kiểm tra chế độ cho từng cổng trước, sau đó gọi tất cả các cổng hợp lệ:
+Gọi đồng thời tất cả [N] agents qua Task — phát ra tất cả các lệnh gọi Task trước
+khi chờ đợi bất kỳ kết quả nào. Thu thập tất cả kết luận trước khi tiếp tục.
 ```
 
 ---
 
-## Standard Verdict Format
+## Định dạng Kết luận Chuẩn (Standard Verdict Format)
 
-All gates return one of three verdicts. Skills must handle all three:
+Tất cả các cổng đều trả về một trong ba kết luận. Các skill phải xử lý cả ba trường hợp:
 
-| Verdict | Meaning | Default action |
-|---------|---------|----------------|
-| **APPROVE / READY** | No issues. Proceed. | Continue the workflow |
-| **CONCERNS [list]** | Issues present but not blocking. | Surface to user via `AskUserQuestion` — options: `Revise flagged items` / `Accept and proceed` / `Discuss further` |
-| **REJECT / NOT READY [blockers]** | Blocking issues. Do not proceed. | Surface blockers to user. Do not write files or advance stage until resolved. |
+| Kết luận | Ý nghĩa | Hành động mặc định |
+|---|---|---|
+| **APPROVE / READY** | Không có vấn đề. Tiến hành tiếp. | Tiếp tục workflow |
+| **CONCERNS [list]** | Có vấn đề nhưng không chặn hoàn toàn. | Hiển thị cho người dùng qua `AskUserQuestion` — các lựa chọn: `Sửa đổi các mục được đánh dấu` / `Chấp nhận và tiếp tục` / `Thảo luận thêm` |
+| **REJECT / NOT READY [blockers]** | Có vấn đề chặn nghiêm trọng. Không được tiếp tục. | Hiển thị các điểm nghẽn cho người dùng. Không ghi file hoặc chuyển giai đoạn cho đến khi được giải quyết. |
 
-**Escalation rule**: When multiple directors are spawned in parallel, apply the
-strictest verdict — one NOT READY overrides all READY verdicts.
+**Quy tắc phân xử**: Khi nhiều director được gọi song song, hãy áp dụng kết luận nghiêm ngặt nhất — chỉ cần một kết luận NOT READY sẽ ghi đè tất cả các kết luận READY.
 
 ---
 
-## Recording Gate Outcomes
+## Ghi nhận Kết quả Cổng
 
-After a gate resolves, record the verdict in the relevant document's status header:
+Sau khi một cổng hoàn tất phân giải, hãy ghi nhận kết luận vào tiêu đề trạng thái của tài liệu liên quan:
 
 ```markdown
 > **[Director] Review ([GATE-ID])**: APPROVED [date] / CONCERNS (accepted) [date] / REVISED [date]
 ```
 
-For phase gates, record in `docs/architecture/architecture.md` or
-`production/session-state/active.md` as appropriate.
+Đối với các cổng giai đoạn, hãy ghi nhận vào `docs/architecture/architecture.md` hoặc `production/session-state/active.md` khi phù hợp.
 
 ---
 
-## Tier 1 — Creative Director Gates
+## Phân tầng 1 — Các cổng Creative Director
 
-Agent: `creative-director` | Model tier: Opus | Domain: Vision, pillars, player experience
+Agent: `creative-director` | Phân tầng Model: Opus | Lĩnh vực: Tầm nhìn, trụ cột, trải nghiệm người chơi
 
 ---
 
-### CD-PILLARS — Pillar Stress Test
+### CD-PILLARS — Kiểm tra Áp lực Trụ cột (Pillar Stress Test)
 
-**Trigger**: After game pillars and anti-pillars are defined (brainstorm Phase 4,
-or any time pillars are revised)
+**Kích hoạt**: Sau khi các trụ cột và phản trụ cột (anti-pillars) được xác định (brainstorm Giai đoạn 4, hoặc bất cứ khi nào trụ cột được sửa đổi)
 
-**Context to pass**:
-- Full pillar set with names, definitions, and design tests
-- Anti-pillars list
-- Core fantasy statement
-- Unique hook ("Like X, AND ALSO Y")
+**Ngữ cảnh cần truyền**:
+- Toàn bộ tập hợp trụ cột kèm tên, định nghĩa và bài test thiết kế
+- Danh sách phản trụ cột
+- Tuyên bố hình dung cốt lõi (core fantasy)
+- Điểm nhấn độc đáo (Unique hook)
 
 **Prompt**:
 > "Review these game pillars. Are they falsifiable — could a real design decision
@@ -147,20 +138,19 @@ or any time pillars are revised)
 > specific feedback for each pillar and an overall verdict: APPROVE (strong), CONCERNS
 > [list] (needs sharpening), or REJECT (weak — pillars do not carry weight)."
 
-**Verdicts**: APPROVE / CONCERNS / REJECT
+**Kết luận**: APPROVE / CONCERNS / REJECT
 
 ---
 
-### CD-GDD-ALIGN — GDD Pillar Alignment Check
+### CD-GDD-ALIGN — Kiểm tra Độ đồng bộ Trụ cột trong GDD
 
-**Trigger**: After a system GDD is authored (design-system, quick-design, or any
-workflow that produces a GDD)
+**Kích hoạt**: Sau khi GDD của một hệ thống được soạn thảo (design-system, quick-design, hoặc bất kỳ workflow nào tạo ra GDD)
 
-**Context to pass**:
-- GDD file path
-- Game pillars (from `design/gdd/game-concept.md` or `design/gdd/game-pillars.md`)
-- MDA aesthetics target for this game
-- System's stated Player Fantasy section
+**Ngữ cảnh cần truyền**:
+- Đường dẫn file GDD
+- Các trụ cột game (từ `design/gdd/game-concept.md` hoặc `design/gdd/game-pillars.md`)
+- Mục tiêu thẩm mỹ MDA của game này
+- Phần Hình dung của người chơi (Player Fantasy) của hệ thống
 
 **Prompt**:
 > "Review this system GDD for pillar alignment. Does every section serve the stated
@@ -169,20 +159,19 @@ workflow that produces a GDD)
 > [specific sections with issues], or REJECT [pillar violations that must be
 > redesigned before this system is implementable]."
 
-**Verdicts**: APPROVE / CONCERNS / REJECT
+**Kết luận**: APPROVE / CONCERNS / REJECT
 
 ---
 
-### CD-SYSTEMS — Systems Decomposition Vision Check
+### CD-SYSTEMS — Kiểm tra Tầm nhìn Phân rã Hệ thống
 
-**Trigger**: After the systems index is written by `/map-systems` — validates the
-complete system set before GDD authoring begins
+**Kích hoạt**: Sau khi systems index được ghi bởi `/map-systems` — xác thực toàn bộ tập hợp hệ thống trước khi bắt đầu viết GDD
 
-**Context to pass**:
-- Systems index path (`design/gdd/systems-index.md`)
-- Game pillars and core fantasy (from `design/gdd/game-concept.md`)
-- Priority tier assignments (MVP / Vertical Slice / Alpha / Full Vision)
-- Any high-risk or bottleneck systems identified in the dependency map
+**Ngữ cảnh cần truyền**:
+- Đường dẫn systems index (`design/gdd/systems-index.md`)
+- Các trụ cột game và hình dung cốt lõi
+- Phân bổ phân tầng ưu tiên (MVP / Vertical Slice / Alpha / Full Vision)
+- Bất kỳ hệ thống rủi ro cao hoặc điểm nghẽn cổ chai nào được xác định
 
 **Prompt**:
 > "Review this systems decomposition against the game's design pillars. Does the
@@ -195,21 +184,19 @@ complete system set before GDD authoring begins
 > the decomposition misses critical design intent and must be revised before GDD
 > authoring begins]."
 
-**Verdicts**: APPROVE / CONCERNS / REJECT
+**Kết luận**: APPROVE / CONCERNS / REJECT
 
 ---
 
-### CD-NARRATIVE — Narrative Consistency Check
+### CD-NARRATIVE — Kiểm tra Tính nhất quán Cốt truyện
 
-**Trigger**: After narrative GDDs, lore documents, dialogue specs, or world-building
-documents are authored (team-narrative, design-system for story systems, writer
-deliverables)
+**Kích hoạt**: Sau khi các GDD cốt truyện, tài liệu lore, đặc tả lời thoại hoặc tài liệu xây dựng thế giới được soạn thảo
 
-**Context to pass**:
-- Document file path(s)
-- Game pillars
-- Narrative direction brief or tone guide (if exists at `design/narrative/`)
-- Any existing lore that the new document references
+**Ngữ cảnh cần truyền**:
+- Đường dẫn file tài liệu
+- Các trụ cột game
+- Bản tóm tắt định hướng cốt truyện hoặc hướng dẫn tông điệu
+- Bất kỳ lore hiện có nào mà tài liệu mới tham chiếu tới
 
 **Prompt**:
 > "Review this narrative content for consistency with the game's pillars and
@@ -218,19 +205,18 @@ deliverables)
 > the player experience pillar? Return APPROVE, CONCERNS [specific inconsistencies],
 > or REJECT [contradictions that break world coherence]."
 
-**Verdicts**: APPROVE / CONCERNS / REJECT
+**Kết luận**: APPROVE / CONCERNS / REJECT
 
 ---
 
-### CD-PLAYTEST — Player Experience Validation
+### CD-PLAYTEST — Xác thực Trải nghiệm Người chơi
 
-**Trigger**: After playtest reports are generated (`/playtest-report`), or after
-any session that produces player feedback
+**Kích hoạt**: Sau khi báo cáo playtest được tạo (`/playtest-report`), hoặc sau bất kỳ phiên nào tạo ra phản hồi của người chơi
 
-**Context to pass**:
-- Playtest report file path
-- Game pillars and core fantasy statement
-- The specific hypothesis being tested
+**Ngữ cảnh cần truyền**:
+- Đường dẫn file báo cáo playtest
+- Các trụ cột game và tuyên bố hình dung cốt lõi
+- Giả thuyết cụ thể đang được kiểm chứng
 
 **Prompt**:
 > "Review this playtest report against the game's design pillars and core fantasy.
@@ -240,18 +226,18 @@ any session that produces player feedback
 > between intended and actual experience], or REJECT [core fantasy is not present —
 > redesign needed before further playtesting]."
 
-**Verdicts**: APPROVE / CONCERNS / REJECT
+**Kết luận**: APPROVE / CONCERNS / REJECT
 
 ---
 
-### CD-PHASE-GATE — Creative Readiness at Phase Transition
+### CD-PHASE-GATE — Đánh giá Sẵn sàng Sáng tạo khi Chuyển Giai đoạn
 
-**Trigger**: Always at `/gate-check` — spawn in parallel with TD-PHASE-GATE and PR-PHASE-GATE
+**Kích hoạt**: Luôn chạy tại `/gate-check` — gọi song song với TD-PHASE-GATE, PR-PHASE-GATE, và AD-PHASE-GATE
 
-**Context to pass**:
-- Target phase name
-- List of all artifacts present (file paths)
-- Game pillars and core fantasy
+**Ngữ cảnh cần truyền**:
+- Tên giai đoạn mục tiêu
+- Danh sách tất cả các sản phẩm hiện có (đường dẫn file)
+- Các trụ cột game và hình dung cốt lõi
 
 **Prompt**:
 > "Review the current project state for [target phase] gate readiness from a
@@ -260,28 +246,26 @@ any session that produces player feedback
 > any design decisions across GDDs or architecture that compromise the intended
 > player experience? Return READY, CONCERNS [list], or NOT READY [blockers]."
 
-**Verdicts**: READY / CONCERNS / NOT READY
+**Kết luận**: READY / CONCERNS / NOT READY
 
 ---
 
-## Tier 1 — Technical Director Gates
+## Phân tầng 1 — Các cổng Technical Director
 
-Agent: `technical-director` | Model tier: Opus | Domain: Architecture, engine risk, performance
+Agent: `technical-director` | Phân tầng Model: Opus | Lĩnh vực: Kiến trúc, rủi ro engine, hiệu năng
 
 ---
 
-### TD-SYSTEM-BOUNDARY — System Boundary Architecture Review
+### TD-SYSTEM-BOUNDARY — Đánh giá Kiến trúc Ranh giới Hệ thống
 
-**Trigger**: After `/map-systems` Phase 3 dependency mapping is agreed but before
-GDD authoring begins — validates that the system structure is architecturally
-sound before teams invest in writing GDDs against it
+**Kích hoạt**: Sau khi lập bản đồ phụ thuộc của `/map-systems` được thống nhất nhưng trước khi viết GDD
 
-**Context to pass**:
-- Systems index path (or the dependency map summary if index not yet written)
-- Layer assignments (Foundation / Core / Feature / Presentation / Polish)
-- The full dependency graph (what each system depends on)
-- Any bottleneck systems flagged (many dependents)
-- Any circular dependencies found and their proposed resolutions
+**Ngữ cảnh cần truyền**:
+- Đường dẫn systems index
+- Phân bổ phân tầng (Foundation / Core / Feature / Presentation / Polish)
+- Toàn bộ đồ thị phụ thuộc
+- Các hệ thống điểm nghẽn được đánh dấu
+- Các phụ thuộc vòng tròn được phát hiện và giải pháp đề xuất
 
 **Prompt**:
 > "Review this systems decomposition from an architectural perspective before GDD
@@ -296,20 +280,19 @@ sound before teams invest in writing GDDs against it
 > [fundamental boundary problems — the system structure will cause architectural
 > issues and must be restructured before any GDD is written]."
 
-**Verdicts**: APPROVE / CONCERNS / REJECT
+**Kết luận**: APPROVE / CONCERNS / REJECT
 
 ---
 
-### TD-FEASIBILITY — Technical Feasibility Assessment
+### TD-FEASIBILITY — Đánh giá Tính khả thi Kỹ thuật
 
-**Trigger**: After biggest technical risks are identified during scope/feasibility
-(brainstorm Phase 6, quick-design, or any early-stage concept with technical unknowns)
+**Kích hoạt**: Sau khi các rủi ro kỹ thuật lớn nhất được xác định trong giai đoạn phạm vi/khả thi
 
-**Context to pass**:
-- Concept's core loop description
-- Platform target
-- Engine choice (or "undecided")
-- List of identified technical risks
+**Ngữ cảnh cần truyền**:
+- Mô tả vòng lặp cốt lõi của concept
+- Nền tảng mục tiêu
+- Lựa chọn engine
+- Danh sách rủi ro kỹ thuật đã xác định
 
 **Prompt**:
 > "Review these technical risks for a [genre] game targeting [platform] using
@@ -319,20 +302,19 @@ sound before teams invest in writing GDDs against it
 > developers. Return VIABLE (risks are manageable), CONCERNS [list with mitigation
 > suggestions], or HIGH RISK [blockers that require concept or scope revision]."
 
-**Verdicts**: VIABLE / CONCERNS / HIGH RISK
+**Kết luận**: VIABLE / CONCERNS / HIGH RISK
 
 ---
 
-### TD-ARCHITECTURE — Architecture Sign-Off
+### TD-ARCHITECTURE — Ký duyệt Kiến trúc
 
-**Trigger**: After the master architecture document is drafted (`/create-architecture`
-Phase 7), and after any major architecture revision
+**Kích hoạt**: Sau khi tài liệu kiến trúc tổng thể được soạn thảo (`/create-architecture`), và sau bất kỳ sửa đổi kiến trúc lớn nào
 
-**Context to pass**:
-- Architecture document path (`docs/architecture/architecture.md`)
-- Technical requirements baseline (TR-IDs and count)
-- ADR list with statuses
-- Engine knowledge gap inventory
+**Ngữ cảnh cần truyền**:
+- Đường dẫn tài liệu kiến trúc (`docs/architecture/architecture.md`)
+- Đường cơ sở yêu cầu kỹ thuật (TR-IDs và số lượng)
+- Danh sách ADR kèm trạng thái
+- Bản kiểm kê khoảng trống kiến thức engine
 
 **Prompt**:
 > "Review this master architecture document for technical soundness. Check: (1) Is
@@ -342,19 +324,18 @@ Phase 7), and after any major architecture revision
 > Foundation layer ADR gaps resolved before implementation begins? Return APPROVE,
 > CONCERNS [list], or REJECT [blockers that must be resolved before coding starts]."
 
-**Verdicts**: APPROVE / CONCERNS / REJECT
+**Kết luận**: APPROVE / CONCERNS / REJECT
 
 ---
 
-### TD-ADR — Architecture Decision Review
+### TD-ADR — Đánh giá Quyết định Kiến trúc
 
-**Trigger**: After an individual ADR is authored (`/architecture-decision`), before
-it is marked Accepted
+**Kích hoạt**: Sau khi một ADR riêng lẻ được soạn thảo (`/architecture-decision`), trước khi nó được đánh dấu Accepted
 
-**Context to pass**:
-- ADR file path
-- Engine version and knowledge gap risk level for the domain
-- Related ADRs (if any)
+**Ngữ cảnh cần truyền**:
+- Đường dẫn file ADR
+- Phiên bản engine và mức rủi ro khoảng trống kiến thức cho lĩnh vực đó
+- Các ADR liên quan (nếu có)
 
 **Prompt**:
 > "Review this Architecture Decision Record. Does it have a clear problem statement
@@ -364,40 +345,19 @@ it is marked Accepted
 > it covers? Return APPROVE, CONCERNS [specific gaps], or REJECT [the decision is
 > underspecified or makes unsound technical assumptions]."
 
-**Verdicts**: APPROVE / CONCERNS / REJECT
+**Kết luận**: APPROVE / CONCERNS / REJECT
 
 ---
 
-### TD-ENGINE-RISK — Engine Version Risk Review
+### TD-PHASE-GATE — Đánh giá Sẵn sàng Kỹ thuật khi Chuyển Giai đoạn
 
-**Trigger**: When making architecture decisions that touch post-cutoff engine APIs,
-or before finalizing any engine-specific implementation approach
+**Kích hoạt**: Luôn chạy tại `/gate-check` — gọi song song với CD-PHASE-GATE, PR-PHASE-GATE, và AD-PHASE-GATE
 
-**Context to pass**:
-- The specific API or feature being used
-- Engine version and LLM knowledge cutoff (from `docs/engine-reference/[engine]/VERSION.md`)
-- Relevant excerpt from breaking-changes or deprecated-apis docs
-
-**Prompt**:
-> "Review this engine API usage against the version reference. Is this API present
-> in [engine version]? Has its signature, behaviour, or namespace changed since the
-> LLM knowledge cutoff? Are there known deprecations or post-cutoff alternatives?
-> Return APPROVE (safe to use as described), CONCERNS [verify before implementing],
-> or REJECT [API has changed — provide corrected approach]."
-
-**Verdicts**: APPROVE / CONCERNS / REJECT
-
----
-
-### TD-PHASE-GATE — Technical Readiness at Phase Transition
-
-**Trigger**: Always at `/gate-check` — spawn in parallel with CD-PHASE-GATE and PR-PHASE-GATE
-
-**Context to pass**:
-- Target phase name
-- Architecture document path (if exists)
-- Engine reference path
-- ADR list
+**Ngữ cảnh cần truyền**:
+- Tên giai đoạn mục tiêu
+- Đường dẫn tài liệu kiến trúc (nếu có)
+- Đường dẫn tài liệu tham chiếu engine
+- Danh sách ADR
 
 **Prompt**:
 > "Review the current project state for [target phase] gate readiness from a
@@ -406,27 +366,26 @@ or before finalizing any engine-specific implementation approach
 > documented? Are Foundation-layer decisions complete enough to begin implementation?
 > Return READY, CONCERNS [list], or NOT READY [blockers]."
 
-**Verdicts**: READY / CONCERNS / NOT READY
+**Kết luận**: READY / CONCERNS / NOT READY
 
 ---
 
-## Tier 1 — Producer Gates
+## Phân tầng 1 — Các cổng Producer
 
-Agent: `producer` | Model tier: Opus | Domain: Scope, timeline, dependencies, production risk
+Agent: `producer` | Phân tầng Model: Opus | Lĩnh vực: Quy mô, tiến độ, phụ thuộc, rủi ro sản xuất
 
 ---
 
-### PR-SCOPE — Scope and Timeline Validation
+### PR-SCOPE — Xác thực Quy mô và Tiến độ
 
-**Trigger**: After scope tiers are defined (brainstorm Phase 6, quick-design, or
-any workflow that produces an MVP definition and timeline estimate)
+**Kích hoạt**: Sau khi các phân tầng quy mô được xác định
 
-**Context to pass**:
-- Full vision scope description
-- MVP definition
-- Timeline estimate
-- Team size (solo / small team / etc.)
-- Scope tiers (what ships if time runs out)
+**Ngữ cảnh cần truyền**:
+- Mô tả quy mô tầm nhìn đầy đủ
+- Định nghĩa MVP
+- Ước lượng tiến độ thời gian
+- Quy mô nhóm (solo / nhóm nhỏ / v.v.)
+- Các phân tầng quy mô (những gì sẽ phát hành nếu hết thời gian)
 
 **Prompt**:
 > "Review this scope estimate. Is the MVP achievable in the stated timeline for
@@ -436,20 +395,19 @@ any workflow that produces an MVP definition and timeline estimate)
 > Return REALISTIC (scope matches capacity), OPTIMISTIC [specific adjustments
 > recommended], or UNREALISTIC [blockers — timeline or MVP must be revised]."
 
-**Verdicts**: REALISTIC / OPTIMISTIC / UNREALISTIC
+**Kết luận**: REALISTIC / OPTIMISTIC / UNREALISTIC
 
 ---
 
-### PR-SPRINT — Sprint Feasibility Review
+### PR-SPRINT — Đánh giá Tính khả thi của Sprint
 
-**Trigger**: Before finalising a sprint plan (`/sprint-plan`), and after any
-mid-sprint scope change
+**Kích hoạt**: Trước khi chốt kế hoạch sprint (`/sprint-plan`), và sau bất kỳ thay đổi phạm vi nào giữa sprint
 
-**Context to pass**:
-- Proposed sprint story list (titles, estimates, dependencies)
-- Team capacity (hours available)
-- Current sprint backlog debt (if any)
-- Milestone constraints
+**Ngữ cảnh cần truyền**:
+- Danh sách story đề xuất cho sprint (tiêu đề, ước lượng, phụ thuộc)
+- Năng lực của nhóm (số giờ khả dụng)
+- Nợ tồn đọng trong backlog sprint hiện tại (nếu có)
+- Các ràng buộc của milestone
 
 **Prompt**:
 > "Review this sprint plan for feasibility. Is the story load realistic for the
@@ -459,71 +417,19 @@ mid-sprint scope change
 > achievable), CONCERNS [specific risks], or UNREALISTIC [sprint must be
 > descoped — identify which stories to defer]."
 
-**Verdicts**: REALISTIC / CONCERNS / UNREALISTIC
+**Kết luận**: REALISTIC / CONCERNS / UNREALISTIC
 
 ---
 
-### PR-MILESTONE — Milestone Risk Assessment
+### PR-PHASE-GATE — Đánh giá Sẵn sàng Sản xuất khi Chuyển Giai đoạn
 
-**Trigger**: At milestone review (`/milestone-review`), at mid-sprint retrospectives,
-or when a scope change is proposed that affects the milestone
+**Kích hoạt**: Luôn chạy tại `/gate-check` — gọi song song với CD-PHASE-GATE, TD-PHASE-GATE, và AD-PHASE-GATE
 
-**Context to pass**:
-- Milestone definition and target date
-- Current completion percentage
-- Blocked stories count
-- Sprint velocity data (if available)
-
-**Prompt**:
-> "Review this milestone status. Based on current velocity and blocked story count,
-> will this milestone hit its target date? What are the top 3 production risks
-> between now and the milestone? Are there scope items that should be cut to protect
-> the milestone date vs. items that are non-negotiable? Return ON TRACK, AT RISK
-> [specific mitigations], or OFF TRACK [date must slip or scope must cut — provide
-> both options]."
-
-**Verdicts**: ON TRACK / AT RISK / OFF TRACK
-
----
-
-### PR-EPIC — Epic Structure Feasibility Review
-
-**Trigger**: After epics are defined by `/create-epics`, before stories are
-broken out — validates the epic structure is producible before `/create-stories`
-is invoked
-
-**Context to pass**:
-- Epic definition file paths (all epics just created)
-- Epic index path (`production/epics/index.md`)
-- Milestone timeline and target dates
-- Team capacity (solo / small team / size)
-- Layer being epiced (Foundation / Core / Feature / etc.)
-
-**Prompt**:
-> "Review this epic structure for production feasibility before story breakdown
-> begins. Are the epic boundaries scoped appropriately — could each epic realistically
-> complete before a milestone deadline? Are epics correctly ordered by system
-> dependency — does any epic require another epic's output before it can start?
-> Are any epics underscoped (too small, should merge) or overscoped (too large,
-> should split into 2-3 focused epics)? Are the Foundation-layer epics scoped to
-> allow Core-layer epics to begin at the start of the next sprint after Foundation
-> completes? Return REALISTIC (epic structure is producible), CONCERNS [specific
-> structural adjustments before stories are written], or UNREALISTIC [epics must
-> be split, merged, or reordered — story breakdown cannot begin until resolved]."
-
-**Verdicts**: REALISTIC / CONCERNS / UNREALISTIC
-
----
-
-### PR-PHASE-GATE — Production Readiness at Phase Transition
-
-**Trigger**: Always at `/gate-check` — spawn in parallel with CD-PHASE-GATE and TD-PHASE-GATE
-
-**Context to pass**:
-- Target phase name
-- Sprint and milestone artifacts present
-- Team size and capacity
-- Current blocked story count
+**Ngữ cảnh cần truyền**:
+- Tên giai đoạn mục tiêu
+- Các sản phẩm sprint và milestone hiện có
+- Quy mô và năng lực nhóm
+- Số lượng story bị chặn hiện tại
 
 **Prompt**:
 > "Review the current project state for [target phase] gate readiness from a
@@ -532,49 +438,25 @@ is invoked
 > sequence? Are there milestone or sprint risks that could derail the phase within
 > the first two sprints? Return READY, CONCERNS [list], or NOT READY [blockers]."
 
-**Verdicts**: READY / CONCERNS / NOT READY
+**Kết luận**: READY / CONCERNS / NOT READY
 
 ---
 
-## Tier 1 — Art Director Gates
+## Phân tầng 1 — Các cổng Art Director
 
-Agent: `art-director` | Model tier: Sonnet | Domain: Visual identity, art bible, visual production readiness
-
----
-
-### AD-CONCEPT-VISUAL — Visual Identity Anchor
-
-**Trigger**: After game pillars are locked (brainstorm Phase 4), in parallel with CD-PILLARS
-
-**Context to pass**:
-- Game concept (elevator pitch, core fantasy, unique hook)
-- Full pillar set with names, definitions, and design tests
-- Target platform (if known)
-- Any reference games or visual touchstones mentioned by the user
-
-**Prompt**:
-> "Based on these game pillars and core concept, propose 2-3 distinct visual identity
-> directions. For each direction provide: (1) a one-line visual rule that could guide
-> all visual decisions (e.g., 'everything must move', 'beauty is in the decay'), (2)
-> mood and atmosphere targets, (3) shape language (sharp/rounded/organic/geometric
-> emphasis), (4) color philosophy (palette direction, what colors mean in this world).
-> Be specific — avoid generic descriptions. One direction should directly serve the
-> primary design pillar. Name each direction. Recommend which best serves the stated
-> pillars and explain why."
-
-**Verdicts**: CONCEPTS (multiple valid options — user selects) / STRONG (one direction clearly dominant) / CONCERNS (pillars don't provide enough direction to differentiate visual identity yet)
+Agent: `art-director` | Phân tầng Model: Sonnet | Lĩnh vực: Nhận diện hình ảnh, art bible, sẵn sàng sản xuất mỹ thuật
 
 ---
 
-### AD-ART-BIBLE — Art Bible Sign-Off
+### AD-ART-BIBLE — Ký duyệt Art Bible
 
-**Trigger**: After the art bible is drafted (`/art-bible`), before asset production begins
+**Kích hoạt**: Sau khi art bible được soạn thảo (`/art-bible`), trước khi sản xuất asset bắt đầu
 
-**Context to pass**:
-- Art bible path (`design/art/art-bible.md`)
-- Game pillars and core fantasy
-- Platform and performance constraints (from `.claude/docs/technical-preferences.md` if configured)
-- Visual identity anchor chosen during brainstorm (from `design/gdd/game-concept.md`)
+**Ngữ cảnh cần truyền**:
+- Đường dẫn art bible (`design/art/art-bible.md`)
+- Các trụ cột game và hình dung cốt lõi
+- Ràng buộc nền tảng và hiệu năng
+- Điểm neo nhận diện hình ảnh đã chọn trong brainstorm
 
 **Prompt**:
 > "Review this art bible for completeness and internal consistency. Does the color
@@ -587,19 +469,19 @@ Agent: `art-director` | Model tier: Sonnet | Domain: Visual identity, art bible,
 > sections needing clarification], or REJECT [fundamental inconsistencies that must
 > be resolved before asset production begins]."
 
-**Verdicts**: APPROVE / CONCERNS / REJECT
+**Kết luận**: APPROVE / CONCERNS / REJECT
 
 ---
 
-### AD-PHASE-GATE — Visual Readiness at Phase Transition
+### AD-PHASE-GATE — Đánh giá Sẵn sàng Mỹ thuật khi Chuyển Giai đoạn
 
-**Trigger**: Always at `/gate-check` — spawn in parallel with CD-PHASE-GATE, TD-PHASE-GATE, and PR-PHASE-GATE
+**Kích hoạt**: Luôn chạy tại `/gate-check` — gọi song song với CD-PHASE-GATE, TD-PHASE-GATE, và PR-PHASE-GATE
 
-**Context to pass**:
-- Target phase name
-- List of all art/visual artifacts present (file paths)
-- Visual identity anchor from `design/gdd/game-concept.md` (if present)
-- Art bible path if it exists (`design/art/art-bible.md`)
+**Ngữ cảnh cần truyền**:
+- Tên giai đoạn mục tiêu
+- Danh sách tất cả sản phẩm hình ảnh/mỹ thuật hiện có (đường dẫn file)
+- Điểm neo nhận diện hình ảnh
+- Đường dẫn art bible nếu có
 
 **Prompt**:
 > "Review the current project state for [target phase] gate readiness from a visual
@@ -612,26 +494,24 @@ Agent: `art-director` | Model tier: Sonnet | Domain: Visual identity, art bible,
 > before this phase can succeed — specify what artifact is missing and why it
 > matters at this stage]."
 
-**Verdicts**: READY / CONCERNS / NOT READY
+**Kết luận**: READY / CONCERNS / NOT READY
 
 ---
 
-## Tier 2 — Lead Gates
+## Phân tầng 2 — Các cổng Lead
 
-These gates are invoked by orchestration skills and senior skills when a domain
-specialist's feasibility sign-off is needed. Tier 2 leads use Sonnet (default).
+Các cổng này được gọi bởi các skill điều phối và skill cấp cao khi cần sự ký duyệt tính khả thi của chuyên viên lĩnh vực. Các lead Tier 2 sử dụng Sonnet (mặc định).
 
 ---
 
-### LP-FEASIBILITY — Lead Programmer Implementation Feasibility
+### LP-FEASIBILITY — Tính khả thi Triển khai của Lead Programmer
 
-**Trigger**: After the master architecture document is written (`/create-architecture`
-Phase 7b), or when a new architectural pattern is proposed
+**Kích hoạt**: Sau khi tài liệu kiến trúc tổng thể được viết (`/create-architecture`), hoặc khi một mẫu kiến trúc mới được đề xuất
 
-**Context to pass**:
-- Architecture document path
-- Technical requirements baseline summary
-- ADR list with statuses
+**Ngữ cảnh cần truyền**:
+- Đường dẫn tài liệu kiến trúc
+- Tóm tắt đường cơ sở yêu cầu kỹ thuật
+- Danh sách ADR kèm trạng thái
 
 **Prompt**:
 > "Review this architecture for implementation feasibility. Flag: (a) any decisions
@@ -641,20 +521,19 @@ Phase 7b), or when a new architectural pattern is proposed
 > that contradict standard [engine] idioms. Return FEASIBLE, CONCERNS [list], or
 > INFEASIBLE [blockers that make this architecture unimplementable as written]."
 
-**Verdicts**: FEASIBLE / CONCERNS / INFEASIBLE
+**Kết luận**: FEASIBLE / CONCERNS / INFEASIBLE
 
 ---
 
-### LP-CODE-REVIEW — Lead Programmer Code Review
+### LP-CODE-REVIEW — Code Review của Lead Programmer
 
-**Trigger**: After a dev story is implemented (`/dev-story`, `/story-done`), or
-as part of `/code-review`
+**Kích hoạt**: Sau khi một dev story được triển khai code (`/dev-story`, `/story-done`), hoặc như một phần của `/code-review`
 
-**Context to pass**:
-- Implementation file paths
-- Story file path (for acceptance criteria)
-- Relevant GDD section
-- ADR that governs this system
+**Ngữ cảnh cần truyền**:
+- Đường dẫn các file triển khai code
+- Đường dẫn file story (để lấy tiêu chí chấp nhận)
+- Phần GDD liên quan
+- ADR chi phối hệ thống này
 
 **Prompt**:
 > "Review this implementation against the story acceptance criteria and governing
@@ -663,20 +542,19 @@ as part of `/code-review`
 > testable and documented? Are there any correctness issues against the GDD rules?
 > Return APPROVE, CONCERNS [specific issues], or REJECT [must be revised before merge]."
 
-**Verdicts**: APPROVE / CONCERNS / REJECT
+**Kết luận**: APPROVE / CONCERNS / REJECT
 
 ---
 
-### QL-STORY-READY — QA Lead Story Readiness Check
+### QL-STORY-READY — Kiểm tra Story Sẵn sàng của QA Lead
 
-**Trigger**: Before a story is accepted into a sprint — invoked by `/create-stories`,
-`/story-readiness`, and `/sprint-plan` during story selection
+**Kích hoạt**: Trước khi một story được chấp nhận vào sprint — được gọi bởi `/create-stories`, `/story-readiness`, và `/sprint-plan`
 
-**Context to pass**:
-- Story file path
-- Story type (Logic / Integration / Visual/Feel / UI / Config/Data)
-- Acceptance criteria list (verbatim from the story)
-- The GDD requirement (TR-ID and text) the story covers
+**Ngữ cảnh cần truyền**:
+- Đường dẫn file story
+- Loại story (Logic / Integration / Visual/Feel / UI / Config/Data)
+- Danh sách tiêu chí chấp nhận (nguyên văn từ story)
+- Yêu cầu GDD (TR-ID và văn bản) mà story bao phủ
 
 **Prompt**:
 > "Review this story's acceptance criteria for testability before it enters the
@@ -689,19 +567,18 @@ as part of `/code-review`
 > GAPS [specific criteria needing refinement], or INADEQUATE [criteria are too
 > vague — story must be revised before sprint inclusion]."
 
-**Verdicts**: ADEQUATE / GAPS / INADEQUATE
+**Kết luận**: ADEQUATE / GAPS / INADEQUATE
 
 ---
 
-### QL-TEST-COVERAGE — QA Lead Test Coverage Review
+### QL-TEST-COVERAGE — Đánh giá Độ bao phủ Kiểm thử của QA Lead
 
-**Trigger**: After implementation stories are complete, before marking an epic
-done, or at `/gate-check` Production → Polish
+**Kích hoạt**: Sau khi các story triển khai hoàn tất, trước khi đánh dấu một epic hoàn thành, hoặc tại `/gate-check` Production → Polish
 
-**Context to pass**:
-- List of implemented stories with story types (Logic / Integration / Visual / UI / Config)
-- Test file paths in `tests/`
-- GDD acceptance criteria for the system
+**Ngữ cảnh cần truyền**:
+- Danh sách story đã triển khai kèm loại story
+- Đường dẫn file test trong `tests/`
+- Tiêu chí chấp nhận GDD cho hệ thống
 
 **Prompt**:
 > "Review the test coverage for these implementation stories. Are all Logic stories
@@ -711,96 +588,37 @@ done, or at `/gate-check` Production → Polish
 > Return ADEQUATE (coverage meets standards), GAPS [specific missing tests], or
 > INADEQUATE [critical logic is untested — do not advance]."
 
-**Verdicts**: ADEQUATE / GAPS / INADEQUATE
+**Kết luận**: ADEQUATE / GAPS / INADEQUATE
 
 ---
 
-### ND-CONSISTENCY — Narrative Director Consistency Check
+## Giao thức Cổng Song song (Parallel Gate Protocol)
 
-**Trigger**: After writer deliverables (dialogue, lore, item descriptions) are
-authored, or when a design decision has narrative implications
-
-**Context to pass**:
-- Document or content file path(s)
-- Narrative bible or tone guide path (if exists)
-- Relevant world-building rules
-- Character or faction profiles affected
-
-**Prompt**:
-> "Review this narrative content for internal consistency and adherence to
-> established world rules. Are character voices consistent with their established
-> profiles? Does the lore contradict any established facts? Is the tone consistent
-> with the game's narrative direction? Return APPROVE, CONCERNS [specific
-> inconsistencies to fix], or REJECT [contradictions that break the narrative
-> foundation]."
-
-**Verdicts**: APPROVE / CONCERNS / REJECT
-
----
-
-### AD-VISUAL — Art Director Visual Consistency Review
-
-**Trigger**: After art direction decisions are made, when new asset types are
-introduced, or when a tech art decision affects visual style
-
-**Context to pass**:
-- Art bible path (if exists at `design/art/art-bible.md`)
-- The specific asset type, style decision, or visual direction being reviewed
-- Reference images or style descriptions
-- Platform and performance constraints
-
-**Prompt**:
-> "Review this visual direction decision for consistency with the established art
-> style and production constraints. Does it match the art bible? Is it achievable
-> within the platform's performance budget? Are there asset pipeline implications
-> that create technical risk? Return APPROVE, CONCERNS [specific adjustments], or
-> REJECT [style violation or production risk that must be resolved first]."
-
-**Verdicts**: APPROVE / CONCERNS / REJECT
-
----
-
-## Parallel Gate Protocol
-
-When a workflow requires multiple directors at the same checkpoint (most common
-at `/gate-check`), spawn all agents simultaneously:
+Khi một workflow yêu cầu nhiều director tại cùng một điểm kiểm tra (thường gặp nhất tại `/gate-check`), hãy gọi đồng thời tất cả các agent:
 
 ```
-Spawn in parallel (issue all Task calls before waiting for any result):
-1. creative-director  → gate CD-PHASE-GATE
-2. technical-director → gate TD-PHASE-GATE
-3. producer           → gate PR-PHASE-GATE
-4. art-director       → gate AD-PHASE-GATE
+Gọi song song (phát ra tất cả các lệnh gọi Task trước khi chờ đợi kết quả):
+1. creative-director  → cổng CD-PHASE-GATE
+2. technical-director → cổng TD-PHASE-GATE
+3. producer           → cổng PR-PHASE-GATE
+4. art-director       → cổng AD-PHASE-GATE
 
-Collect all four verdicts, then apply escalation rules:
-- Any NOT READY / REJECT → overall verdict minimum FAIL
-- Any CONCERNS → overall verdict minimum CONCERNS
-- All READY / APPROVE → eligible for PASS (still subject to artifact checks)
+Thu thập cả 4 kết luận, sau đó áp dụng quy tắc phân xử:
+- Bất kỳ kết luận NOT READY / REJECT → kết luận tổng thể tối thiểu là FAIL
+- Bất kỳ kết luận CONCERNS → kết luận tổng thể tối thiểu là CONCERNS
+- Tất cả READY / APPROVE → đủ điều kiện đạt PASS (vẫn phụ thuộc vào việc kiểm tra sự hiện diện của sản phẩm)
 ```
 
 ---
 
-## Adding New Gates
+## Độ bao phủ Cổng theo từng Giai đoạn
 
-When a new gate is needed for a new skill or workflow:
-
-1. Assign a gate ID: `[DIRECTOR-PREFIX]-[DESCRIPTIVE-SLUG]`
-   - Prefixes: `CD-` `TD-` `PR-` `LP-` `QL-` `ND-` `AD-`
-   - Add new prefixes for new agents: `audio-director` → `AU-`, `ux-designer` → `UX-`
-2. Add the gate under the appropriate director section with all five fields:
-   Trigger, Context to pass, Prompt, Verdicts, and any special handling notes
-3. Reference it in skills by ID only — never copy the prompt text into the skill
-
----
-
-## Gate Coverage by Stage
-
-| Stage | Required Gates | Optional Gates |
-|-------|---------------|----------------|
+| Giai đoạn | Các Cổng Bắt buộc | Các Cổng Tùy chọn |
+|---|---|---|
 | **Concept** | CD-PILLARS, AD-CONCEPT-VISUAL | TD-FEASIBILITY, PR-SCOPE |
-| **Systems Design** | TD-SYSTEM-BOUNDARY, CD-SYSTEMS, PR-SCOPE, CD-GDD-ALIGN (per GDD) | ND-CONSISTENCY, AD-VISUAL |
-| **Technical Setup** | TD-ARCHITECTURE, TD-ADR (per ADR), LP-FEASIBILITY, AD-ART-BIBLE | TD-ENGINE-RISK |
-| **Pre-Production** | PR-EPIC, QL-STORY-READY (per story), PR-SPRINT, all four PHASE-GATEs (via gate-check) | CD-PLAYTEST |
-| **Production** | LP-CODE-REVIEW (per story), QL-STORY-READY, PR-SPRINT (per sprint), QL-TEST-COVERAGE (per sprint close-out) | PR-MILESTONE, AD-VISUAL |
+| **Systems Design** | TD-SYSTEM-BOUNDARY, CD-SYSTEMS, PR-SCOPE, CD-GDD-ALIGN (mỗi GDD) | ND-CONSISTENCY, AD-VISUAL |
+| **Technical Setup** | TD-ARCHITECTURE, TD-ADR (mỗi ADR), LP-FEASIBILITY, AD-ART-BIBLE | TD-ENGINE-RISK |
+| **Pre-Production** | PR-EPIC, QL-STORY-READY (mỗi story), PR-SPRINT, cả 4 PHASE-GATE (qua gate-check) | CD-PLAYTEST |
+| **Production** | LP-CODE-REVIEW (mỗi story), QL-STORY-READY, PR-SPRINT (mỗi sprint), QL-TEST-COVERAGE (khi đóng sprint) | PR-MILESTONE, AD-VISUAL |
 | **Polish** | QL-TEST-COVERAGE, CD-PLAYTEST, PR-MILESTONE | AD-VISUAL |
-| **Release** | All four PHASE-GATEs (via gate-check) | QL-TEST-COVERAGE |
+| **Release** | Cả 4 PHASE-GATE (qua gate-check) | QL-TEST-COVERAGE |

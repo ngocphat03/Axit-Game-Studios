@@ -1,132 +1,132 @@
-# Available Skills (Slash Commands)
+# Danh sách Skill khả dụng (Slash Commands)
 
-73 slash commands organized by phase. Type `/` in Claude Code to access any of them.
+73 lệnh slash command được tổ chức theo từng giai đoạn. Gõ `/` trong Claude Code để truy cập bất kỳ lệnh nào.
 
-## Onboarding & Navigation
+## Khởi động & Điều hướng (Onboarding & Navigation)
 
-| Command | Purpose |
-|---------|---------|
-| `/start` | First-time onboarding — asks where you are, then guides you to the right workflow |
-| `/help` | Context-aware "what do I do next?" — reads current stage and surfaces the required next step |
-| `/project-stage-detect` | Full project audit — detect phase, identify existence gaps, recommend next steps |
-| `/setup-engine` | Configure engine + version, detect knowledge gaps, populate version-aware reference docs |
-| `/adopt` | Brownfield format audit — checks internal structure of existing GDDs/ADRs/stories, produces migration plan |
+| Lệnh | Mục đích |
+|---|---|
+| `/start` | Khởi động lần đầu — hỏi bạn đang ở đâu, sau đó dẫn dắt bạn tới quy trình phù hợp |
+| `/help` | Nhận biết ngữ cảnh "tôi cần làm gì tiếp theo?" — đọc giai đoạn hiện tại và gợi ý bước bắt buộc kế tiếp |
+| `/project-stage-detect` | Kiểm toán toàn bộ dự án — phát hiện giai đoạn, xác định các khoảng trống tài liệu, đề xuất bước tiếp theo |
+| `/setup-engine` | Cấu hình engine + phiên bản, phát hiện khoảng trống kiến thức, điền tài liệu tham chiếu nhận biết phiên bản |
+| `/adopt` | Audit định dạng dự án cũ — kiểm tra cấu trúc nội bộ của các GDD/ADR/story hiện có, lập kế hoạch migration |
 
-## Game Design
+## Thiết kế Game (Game Design)
 
-| Command | Purpose |
-|---------|---------|
-| `/brainstorm` | Guided ideation using professional studio methods (MDA, SDT, Bartle, verb-first) |
-| `/map-systems` | Decompose game concept into systems, map dependencies, prioritize design order |
-| `/design-system` | Guided, section-by-section GDD authoring for a single game system |
-| `/quick-design` | Lightweight design spec for small changes — tuning, tweaks, minor additions |
-| `/review-all-gdds` | Cross-GDD consistency and game design holism review across all design docs |
-| `/propagate-design-change` | When a GDD is revised, find affected ADRs and produce an impact report |
+| Lệnh | Mục đích |
+|---|---|
+| `/brainstorm` | Lên ý tưởng có hướng dẫn bằng các phương pháp studio chuyên nghiệp (MDA, SDT, Bartle, verb-first) |
+| `/map-systems` | Phân rã concept game thành các hệ thống, lập bản đồ phụ thuộc, ưu tiên thứ tự thiết kế |
+| `/design-system` | Soạn thảo GDD từng phần có hướng dẫn cho một hệ thống game đơn lẻ |
+| `/quick-design` | Bản đặc tả thiết kế tinh gọn cho các thay đổi nhỏ — tinh chỉnh cân bằng, sửa đổi nhỏ |
+| `/review-all-gdds` | Đánh giá tính nhất quán chéo và tính toàn diện trong thiết kế game trên tất cả các GDD |
+| `/propagate-design-change` | Khi một GDD được sửa đổi, tìm các ADR bị ảnh hưởng và tạo báo cáo tác động |
 
-## Art & Assets
+## Mỹ thuật & Tài nguyên (Art & Assets)
 
-| Command | Purpose |
-|---------|---------|
-| `/art-bible` | Guided, section-by-section Art Bible authoring — creates visual identity spec before asset production begins |
-| `/asset-spec` | Generate per-asset visual specifications and AI generation prompts from GDDs, level docs, or character profiles |
-| `/asset-audit` | Audit assets for naming conventions, file size budgets, and pipeline compliance |
+| Lệnh | Mục đích |
+|---|---|
+| `/art-bible` | Soạn thảo Art Bible từng phần có hướng dẫn — tạo đặc tả nhận diện hình ảnh trước khi sản xuất asset |
+| `/asset-spec` | Tạo đặc tả hình ảnh từng asset và prompt sinh ảnh AI từ GDD, tài liệu màn chơi, hoặc hồ sơ nhân vật |
+| `/asset-audit` | Kiểm toán asset về quy ước đặt tên, ngân sách dung lượng file và tính tuân thủ pipeline |
 
-## UX & Interface Design
+## Thiết kế Giao diện & Trải nghiệm UX (UX & Interface Design)
 
-| Command | Purpose |
-|---------|---------|
-| `/ux-design` | Guided section-by-section UX spec authoring (screen/flow, HUD, or pattern library) |
-| `/ux-review` | Validate UX specs for GDD alignment, accessibility, and pattern compliance |
+| Lệnh | Mục đích |
+|---|---|
+| `/ux-design` | Soạn thảo đặc tả UX từng phần có hướng dẫn (màn hình/luồng, HUD, hoặc thư viện mẫu tương tác) |
+| `/ux-review` | Xác thực các đặc tả UX về độ khớp GDD, khả năng tiếp cận (accessibility) và tuân thủ mẫu tương tác |
 
-## Architecture
+## Kiến trúc (Architecture)
 
-| Command | Purpose |
-|---------|---------|
-| `/create-architecture` | Guided authoring of the master architecture document |
-| `/architecture-decision` | Create an Architecture Decision Record (ADR) |
-| `/architecture-review` | Validate all ADRs for completeness, dependency ordering, and GDD coverage |
-| `/create-control-manifest` | Generate flat programmer rules sheet from accepted ADRs |
+| Lệnh | Mục đích |
+|---|---|
+| `/create-architecture` | Soạn thảo có hướng dẫn cho tài liệu kiến trúc tổng thể (master architecture) |
+| `/architecture-decision` | Tạo một bản ghi quyết định kiến trúc (ADR) |
+| `/architecture-review` | Xác thực tất cả các ADR về độ hoàn thiện, thứ tự phụ thuộc và độ bao phủ GDD |
+| `/create-control-manifest` | Tạo bảng quy tắc lập trình phẳng từ các ADR đã được chấp thuận |
 
 ## Stories & Sprints
 
-| Command | Purpose |
-|---------|---------|
-| `/create-epics` | Translate GDDs + ADRs into epics — one per architectural module |
-| `/create-stories` | Break a single epic into implementable story files |
-| `/dev-story` | Read a story and implement it — routes to the correct programmer agent |
-| `/sprint-plan` | Generate or update a sprint plan; initializes sprint-status.yaml |
-| `/sprint-status` | Fast 30-line sprint snapshot (reads sprint-status.yaml) |
-| `/story-readiness` | Validate a story is implementation-ready before pickup (READY/NEEDS WORK/BLOCKED) |
-| `/story-done` | 8-phase completion review after implementation; updates story file, surfaces next story |
-| `/estimate` | Structured effort estimate with complexity, dependencies, and risk breakdown |
+| Lệnh | Mục đích |
+|---|---|
+| `/create-epics` | Chuyển đổi GDD + ADR thành các epic — mỗi module kiến trúc một epic |
+| `/create-stories` | Phân rã một epic đơn lẻ thành các file story có thể triển khai code |
+| `/dev-story` | Đọc một story và triển khai code — điều phối tới đúng agent lập trình |
+| `/sprint-plan` | Tạo hoặc cập nhật kế hoạch sprint; khởi tạo sprint-status.yaml |
+| `/sprint-status` | Ảnh chụp nhanh sprint 30 dòng nhanh chóng (đọc từ sprint-status.yaml) |
+| `/story-readiness` | Xác thực một story đã sẵn sàng triển khai trước khi nhận (READY/NEEDS WORK/BLOCKED) |
+| `/story-done` | Đánh giá hoàn thành 8 giai đoạn sau khi code xong; cập nhật file story, hiển thị story tiếp theo |
+| `/estimate` | Ước lượng nỗ lực có cấu trúc kèm phân tích độ phức tạp, phụ thuộc và rủi ro |
 
-## Reviews & Analysis
+## Đánh giá & Phân tích (Reviews & Analysis)
 
-| Command | Purpose |
-|---------|---------|
-| `/design-review` | Review a game design document for completeness and consistency |
-| `/code-review` | Architectural code review for a file or changeset |
-| `/balance-check` | Analyze game balance data, formulas, and config — flag outliers |
-| `/content-audit` | Audit GDD-specified content counts against implemented content |
-| `/scope-check` | Analyze feature or sprint scope against original plan, flag scope creep |
-| `/perf-profile` | Structured performance profiling with bottleneck identification |
-| `/tech-debt` | Scan, track, prioritize, and report on technical debt |
-| `/gate-check` | Validate readiness to advance between development phases (PASS/CONCERNS/FAIL) |
-| `/consistency-check` | Scan all GDDs against the entity registry to detect cross-document inconsistencies (stats, names, rules that contradict each other) |
-| `/security-audit` | Audit the game for security vulnerabilities: save tampering, cheat vectors, network exploits, data exposure, and input validation gaps |
+| Lệnh | Mục đích |
+|---|---|
+| `/design-review` | Đánh giá tài liệu thiết kế game về tính hoàn thiện và tính nhất quán |
+| `/code-review` | Đánh giá mã nguồn kiến trúc cho một file hoặc tập thay đổi |
+| `/balance-check` | Phân tích dữ liệu cân bằng game, công thức và cấu hình — đánh dấu các giá trị bất thường |
+| `/content-audit` | Kiểm toán số lượng nội dung được chỉ định trong GDD so với nội dung đã triển khai |
+| `/scope-check` | Phân tích phạm vi tính năng hoặc sprint so với kế hoạch ban đầu, cảnh báo phình to quy mô |
+| `/perf-profile` | Đo đạc hiệu năng có cấu trúc kèm xác định điểm nghẽn cổ chai |
+| `/tech-debt` | Quét, theo dõi, sắp xếp ưu tiên và báo cáo về nợ kỹ thuật (tech debt) |
+| `/gate-check` | Xác thực tính sẵn sàng để chuyển tiếp giữa các giai đoạn phát triển (PASS/CONCERNS/FAIL) |
+| `/consistency-check` | Quét tất cả các GDD đối chiếu với sổ đăng ký thực thể để phát hiện mâu thuẫn chéo |
+| `/security-audit` | Kiểm toán game về các lỗ hổng bảo mật: can thiệp file save, gian lận, khai thác mạng, lộ dữ liệu |
 
-## QA & Testing
+## QA & Kiểm thử (QA & Testing)
 
-| Command | Purpose |
-|---------|---------|
-| `/qa-plan` | Generate a QA test plan for a sprint or feature |
-| `/smoke-check` | Run critical path smoke test gate before QA hand-off |
-| `/soak-test` | Generate a soak test protocol for extended play sessions |
-| `/regression-suite` | Map test coverage to GDD critical paths, identify fixed bugs without regression tests |
-| `/test-setup` | Scaffold the test framework and CI/CD pipeline for the project's engine |
-| `/test-helpers` | Generate engine-specific test helper libraries for the test suite |
-| `/test-evidence-review` | Quality review of test files and manual evidence documents |
-| `/test-flakiness` | Detect non-deterministic (flaky) tests from CI run logs |
-| `/skill-test` | Validate skill files for structural compliance and behavioral correctness |
-| `/skill-improve` | Improve a skill using a test-fix-retest loop — diagnose, propose fix, rewrite, verify |
+| Lệnh | Mục đích |
+|---|---|
+| `/qa-plan` | Tạo kế hoạch kiểm thử QA cho một sprint hoặc tính năng |
+| `/smoke-check` | Chạy cổng kiểm thử nhanh (smoke test) luồng quan trọng trước khi bàn giao cho QA |
+| `/soak-test` | Tạo quy trình kiểm thử độ ổn định kéo dài (soak test) cho các phiên chơi game lâu |
+| `/regression-suite` | Ánh xạ độ bao phủ kiểm thử tới các luồng quan trọng trong GDD, tìm bug đã sửa nhưng thiếu test hồi quy |
+| `/test-setup` | Dựng khung test framework và pipeline CI/CD cho engine của dự án |
+| `/test-helpers` | Tạo các thư viện trợ giúp kiểm thử đặc thù theo engine cho bộ test |
+| `/test-evidence-review` | Đánh giá chất lượng của các file test và tài liệu bằng chứng thủ công |
+| `/test-flakiness` | Phát hiện các bài test không tất định (chập chờn) từ nhật ký chạy CI |
+| `/skill-test` | Xác thực các file skill về độ tuân thủ cấu trúc và tính đúng đắn của hành vi |
+| `/skill-improve` | Cải tiến skill bằng vòng lặp test-fix-retest — chẩn đoán, đề xuất sửa, viết lại, xác minh |
 
-## Production
+## Sản xuất (Production)
 
-| Command | Purpose |
-|---------|---------|
-| `/milestone-review` | Review milestone progress and generate status report |
-| `/retrospective` | Run a structured sprint or milestone retrospective |
-| `/bug-report` | Create a structured bug report |
-| `/bug-triage` | Read all open bugs, re-evaluate priority vs. severity, assign owner and label |
-| `/reverse-document` | Generate design or architecture docs from existing implementation |
-| `/playtest-report` | Generate a structured playtest report or analyze existing playtest notes |
+| Lệnh | Mục đích |
+|---|---|
+| `/milestone-review` | Đánh giá tiến độ milestone và tạo báo cáo trạng thái |
+| `/retrospective` | Chạy buổi tổng kết cải tiến (retrospective) có cấu trúc cho sprint hoặc milestone |
+| `/bug-report` | Tạo báo cáo bug có cấu trúc |
+| `/bug-triage` | Đọc tất cả bug đang mở, đánh giá lại độ ưu tiên vs mức nghiêm trọng, phân công người xử lý |
+| `/reverse-document` | Tạo tài liệu thiết kế hoặc kiến trúc từ code triển khai hiện có |
+| `/playtest-report` | Tạo báo cáo playtest có cấu trúc hoặc phân tích các ghi chú playtest có sẵn |
 
-## Release
+## Phát hành (Release)
 
-| Command | Purpose |
-|---------|---------|
-| `/release-checklist` | Generate and validate a pre-release checklist for the current build |
-| `/launch-checklist` | Complete launch readiness validation across all departments |
-| `/changelog` | Auto-generate changelog from git commits and sprint data |
-| `/patch-notes` | Generate player-facing patch notes from git history and internal data |
-| `/hotfix` | Emergency fix workflow with audit trail, bypassing normal sprint process |
-| `/day-one-patch` | Prepare a focused day-one patch for known issues discovered after gold master but before or at public launch |
+| Lệnh | Mục đích |
+|---|---|
+| `/release-checklist` | Tạo và xác thực checklist trước phát hành cho bản build hiện tại |
+| `/launch-checklist` | Xác thực toàn diện tính sẵn sàng ra mắt trên tất cả các phòng ban |
+| `/changelog` | Tự động tạo changelog từ git commits và dữ liệu sprint |
+| `/patch-notes` | Tạo patch notes hướng tới người chơi từ lịch sử git và dữ liệu nội bộ |
+| `/hotfix` | Quy trình sửa lỗi khẩn cấp kèm audit trail, bỏ qua quy trình sprint thông thường |
+| `/day-one-patch` | Chuẩn bị bản vá ngày đầu (day-one patch) tập trung cho các sự cố đã biết sau khi chốt gold master |
 
-## Creative & Content
+## Sáng tạo & Nội dung (Creative & Content)
 
-| Command | Purpose |
-|---------|---------|
-| `/prototype` | Concept prototype — throwaway build right after brainstorm to validate core idea (Phase 1) |
-| `/vertical-slice` | Pre-Production validation — production-quality end-to-end build before committing to Production (Phase 4) |
-| `/onboard` | Generate contextual onboarding document for a new contributor or agent |
-| `/localize` | Localization workflow: string extraction, validation, translation readiness |
+| Lệnh | Mục đích |
+|---|---|
+| `/prototype` | Prototype ý tưởng — bản build dùng một lần ngay sau brainstorm để kiểm chứng ý tưởng cốt lõi (Giai đoạn 1) |
+| `/vertical-slice` | Xác thực Tiền sản xuất — bản build end-to-end chất lượng sản xuất trước khi bước vào Sản xuất (Giai đoạn 4) |
+| `/onboard` | Tạo tài liệu onboarding theo ngữ cảnh cho một người đóng góp hoặc agent mới |
+| `/localize` | Quy trình bản địa hóa: trích xuất chuỗi ngôn ngữ, xác thực, độ sẵn sàng dịch thuật |
 
-## Team Orchestration
+## Điều phối Nhóm (Team Orchestration)
 
-Coordinate multiple agents on a single feature area:
+Điều phối nhiều agent trên một khu vực tính năng đơn lẻ:
 
-| Command | Coordinates |
-|---------|-------------|
+| Lệnh | Điều phối các Agent |
+|---|---|
 | `/team-combat` | game-designer + gameplay-programmer + ai-programmer + technical-artist + sound-designer + qa-tester |
 | `/team-narrative` | narrative-director + writer + world-builder + level-designer |
 | `/team-ui` | ux-designer + ui-programmer + art-director + accessibility-specialist |

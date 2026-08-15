@@ -1,9 +1,9 @@
 <p align="center">
   <h1 align="center">Claude Code Game Studios</h1>
   <p align="center">
-    Turn a single Claude Code session into a full game development studio.
+    Biến một phiên làm việc Claude Code duy nhất thành một studio phát triển game hoàn chỉnh.
     <br />
-    49 agents. 73 skills. One coordinated AI team.
+    49 agents. 73 skills. Một đội ngũ AI phối hợp nhịp nhàng.
   </p>
 </p>
 
@@ -20,47 +20,47 @@
 
 ---
 
-## Why This Exists
+## Vì sao dự án này tồn tại
 
-Building a game solo with AI is powerful — but a single chat session has no structure. No one stops you from hardcoding magic numbers, skipping design docs, or writing spaghetti code. There's no QA pass, no design review, no one asking "does this actually fit the game's vision?"
+Tự làm game solo với AI rất mạnh mẽ — nhưng một phiên chat đơn lẻ thường thiếu cấu trúc. Không có gì ngăn bạn hardcode các magic numbers, bỏ qua tài liệu thiết kế (design docs), hay viết code kiểu spaghetti. Không có khâu kiểm thử QA, không có đánh giá thiết kế (design review), và không ai đặt câu hỏi "điều này có thực sự phù hợp với tầm nhìn của trò chơi không?"
 
-**Claude Code Game Studios** solves this by giving your AI session the structure of a real studio. Instead of one general-purpose assistant, you get 49 specialized agents organized into a studio hierarchy — directors who guard the vision, department leads who own their domains, and specialists who do the hands-on work. Each agent has defined responsibilities, escalation paths, and quality gates.
+**Claude Code Game Studios** giải quyết vấn đề này bằng cách mang đến cho phiên AI của bạn cấu trúc của một studio thực thụ. Thay vì chỉ có một trợ lý đa năng chung chung, bạn có 49 agent chuyên biệt được tổ chức theo cấp bậc studio — các giám đốc (directors) bảo vệ tầm nhìn, các trưởng bộ phận (leads) làm chủ lĩnh vực của mình, và các chuyên viên (specialists) trực tiếp thực thi. Mỗi agent đều có trách nhiệm rõ ràng, quy trình báo cáo/chuyển tiếp (escalation paths) và các cổng kiểm soát chất lượng (quality gates).
 
-The result: you still make every decision, but now you have a team that asks the right questions, catches mistakes early, and keeps your project organized from first brainstorm to launch.
-
----
-
-## Table of Contents
-
-- [What's Included](#whats-included)
-- [Studio Hierarchy](#studio-hierarchy)
-- [Slash Commands](#slash-commands)
-- [Getting Started](#getting-started)
-- [Upgrading](#upgrading)
-- [Project Structure](#project-structure)
-- [How It Works](#how-it-works)
-- [Design Philosophy](#design-philosophy)
-- [Customization](#customization)
-- [Platform Support](#platform-support)
-- [Community](#community)
-- [Supporting This Project](#supporting-this-project)
-- [License](#license)
+Kết quả: Bạn vẫn là người đưa ra mọi quyết định, nhưng giờ đây bạn có một đội ngũ biết đặt đúng câu hỏi, phát hiện sớm sai sót và giữ cho dự án của bạn luôn ngăn nắp từ bước brainstorm đầu tiên cho đến khi phát hành.
 
 ---
 
-## What's Included
+## Mục lục
 
-| Category | Count | Description |
-|----------|-------|-------------|
-| **Agents** | 49 | Specialized subagents across design, programming, art, audio, narrative, QA, and production |
-| **Skills** | 73 | Slash commands for every workflow phase (`/start`, `/design-system`, `/create-epics`, `/create-stories`, `/dev-story`, `/story-done`, etc.) |
-| **Hooks** | 12 | Automated validation on commits, pushes, asset changes, session lifecycle, agent audit trail, and gap detection |
-| **Rules** | 11 | Path-scoped coding standards enforced when editing gameplay, engine, AI, UI, network code, and more |
-| **Templates** | 41 | Document templates for GDDs, UX specs, ADRs, sprint plans, HUD design, accessibility, and more |
+- [Những gì bao gồm](#những-gì-bao-gồm)
+- [Cấp bậc Studio (Studio Hierarchy)](#cấp-bậc-studio-studio-hierarchy)
+- [Các lệnh Slash Commands](#các-lệnh-slash-commands)
+- [Bắt đầu nhanh](#bắt-đầu-nhanh)
+- [Nâng cấp](#nâng-cấp)
+- [Cấu trúc dự án](#cấu-trúc-dự-án)
+- [Cách thức hoạt động](#cách-thức-hoạt-động)
+- [Triết lý thiết kế](#triết-lý-thiết-kế)
+- [Tùy biến](#tùy-biến)
+- [Hỗ trợ nền tảng](#hỗ-trợ-nền-tảng)
+- [Cộng đồng](#cộng-đồng)
+- [Ủng hộ dự án](#ủng-hộ-dự-án)
+- [Giấy phép (License)](#giấy-phép-license)
 
-## Studio Hierarchy
+---
 
-Agents are organized into three tiers, matching how real studios operate:
+## Những gì bao gồm
+
+| Danh mục | Số lượng | Mô tả |
+|---|---|---|
+| **Agents** | 49 | Các subagent chuyên biệt trải dài trên design, programming, art, audio, narrative, QA, và production |
+| **Skills** | 73 | Các lệnh slash command cho từng giai đoạn workflow (`/start`, `/design-system`, `/create-epics`, `/create-stories`, `/dev-story`, `/story-done`, v.v.) |
+| **Hooks** | 12 | Tự động xác thực khi commit, push, thay đổi asset, vòng đời phiên làm việc, audit trail của agent và phát hiện lỗ hổng/khoảng trống |
+| **Rules** | 11 | Tiêu chuẩn viết code theo phạm vi đường dẫn được thực thi khi chỉnh sửa gameplay, engine, AI, UI, network code, v.v. |
+| **Templates** | 41 | Các template tài liệu cho GDD, UX spec, ADR, sprint plan, thiết kế HUD, accessibility, v.v. |
+
+## Cấp bậc Studio (Studio Hierarchy)
+
+Các agent được tổ chức thành ba tầng (tiers), mô phỏng cách hoạt động của các studio ngoài đời thực:
 
 ```
 Tier 1 — Directors (Opus)
@@ -82,21 +82,21 @@ Tier 3 — Specialists (Sonnet/Haiku)
   live-ops-designer    community-manager
 ```
 
-### Engine Specialists
+### Chuyên viên Game Engine (Engine Specialists)
 
-The template includes agent sets for all three major engines. Use the set that matches your project:
+Template này bao gồm các bộ agent cho cả 3 engine phổ biến. Hãy sử dụng bộ phù hợp với dự án của bạn:
 
 | Engine | Lead Agent | Sub-Specialists |
-|--------|-----------|-----------------|
+|---|---|---|
 | **Godot 4** | `godot-specialist` | GDScript, Shaders, GDExtension |
 | **Unity** | `unity-specialist` | DOTS/ECS, Shaders/VFX, Addressables, UI Toolkit |
 | **Unreal Engine 5** | `unreal-specialist` | GAS, Blueprints, Replication, UMG/CommonUI |
 
-## Slash Commands
+## Các lệnh Slash Commands
 
-Type `/` in Claude Code to access all 73 skills:
+Gõ `/` trong Claude Code để truy cập toàn bộ 73 skills:
 
-**Onboarding & Navigation**
+**Onboarding & Điều hướng**
 `/start` `/help` `/project-stage-detect` `/setup-engine` `/adopt`
 
 **Game Design**
@@ -105,192 +105,189 @@ Type `/` in Claude Code to access all 73 skills:
 **Art & Assets**
 `/art-bible` `/asset-spec` `/asset-audit`
 
-**UX & Interface Design**
+**UX & Thiết kế giao diện**
 `/ux-design` `/ux-review`
 
-**Architecture**
+**Kiến trúc (Architecture)**
 `/create-architecture` `/architecture-decision` `/architecture-review` `/create-control-manifest`
 
 **Stories & Sprints**
 `/create-epics` `/create-stories` `/dev-story` `/sprint-plan` `/sprint-status` `/story-readiness` `/story-done` `/estimate`
 
-**Reviews & Analysis**
+**Đánh giá & Phân tích (Reviews & Analysis)**
 `/design-review` `/code-review` `/balance-check` `/content-audit` `/scope-check` `/perf-profile` `/tech-debt` `/gate-check` `/consistency-check` `/security-audit`
 
-**QA & Testing**
+**QA & Kiểm thử (QA & Testing)**
 `/qa-plan` `/smoke-check` `/soak-test` `/regression-suite` `/test-setup` `/test-helpers` `/test-evidence-review` `/test-flakiness` `/skill-test` `/skill-improve`
 
 **Production**
 `/milestone-review` `/retrospective` `/bug-report` `/bug-triage` `/reverse-document` `/playtest-report`
 
-**Release**
+**Phát hành (Release)**
 `/release-checklist` `/launch-checklist` `/changelog` `/patch-notes` `/hotfix` `/day-one-patch`
 
-**Creative & Content**
+**Sáng tạo & Nội dung (Creative & Content)**
 `/prototype` `/onboard` `/localize`
 
-**Team Orchestration** (coordinate multiple agents on a single feature)
+**Phối hợp đội ngũ (Team Orchestration)** (điều phối nhiều agent cho cùng một tính năng)
 `/team-combat` `/team-narrative` `/team-ui` `/team-release` `/team-polish` `/team-audio` `/team-level` `/team-live-ops` `/team-qa`
 
-## Getting Started
+## Bắt đầu nhanh
 
-### Prerequisites
+### Điều kiện tiên quyết
 
 - [Git](https://git-scm.com/)
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (`npm install -g @anthropic-ai/claude-code`)
-- **Recommended**: [jq](https://jqlang.github.io/jq/) (for hook validation) and Python 3 (for JSON validation)
+- **Khuyến nghị**: [jq](https://jqlang.github.io/jq/) (để xác thực hook) và Python 3 (để xác thực JSON)
 
-All hooks fail gracefully if optional tools are missing — nothing breaks, you just lose validation.
+Tất cả các hook đều tự động bỏ qua an toàn nếu thiếu công cụ tùy chọn — không có gì bị lỗi, bạn chỉ tạm thời không có tính năng xác thực đó.
 
-### Setup
+### Thiết lập
 
-1. **Clone or use as template**:
+1. **Clone hoặc sử dụng làm template**:
    ```bash
    git clone https://github.com/Donchitos/Claude-Code-Game-Studios.git my-game
    cd my-game
    ```
 
-2. **Open Claude Code** and start a session:
+2. **Mở Claude Code** và khởi động một phiên làm việc:
    ```bash
    claude
    ```
 
-3. **Run `/start`** — the system asks where you are (no idea, vague concept,
-   clear design, existing work) and guides you to the right workflow. No assumptions.
+3. **Chạy `/start`** — hệ thống sẽ hỏi tình trạng hiện tại của bạn (chưa có ý tưởng, khái niệm mơ hồ, thiết kế rõ ràng, hoặc dự án có sẵn) và hướng dẫn bạn tới đúng workflow. Không đưa ra suy đoán tùy tiện.
 
-   Or jump directly to a specific skill if you already know what you need:
-   - `/brainstorm` — explore game ideas from scratch
-   - `/setup-engine godot 4.6` — configure your engine if you already know
-   - `/project-stage-detect` — analyze an existing project
+   Hoặc nhảy trực tiếp đến một skill cụ thể nếu bạn đã biết rõ nhu cầu:
+   - `/brainstorm` — khám phá các ý tưởng game từ đầu
+   - `/setup-engine godot 4.6` — cấu hình game engine nếu bạn đã xác định
+   - `/project-stage-detect` — phân tích dự án hiện có
 
-## Upgrading
+## Nâng cấp
 
-Already using an older version of this template? See [UPGRADING.md](UPGRADING.md)
-for step-by-step migration instructions, a breakdown of what changed between
-versions, and which files are safe to overwrite vs. which need a manual merge.
+Bạn đang sử dụng phiên bản cũ hơn của template này? Xem [UPGRADING.md](UPGRADING.md) để biết hướng dẫn migration từng bước, phân tích những thay đổi giữa các phiên bản và những file nào an toàn để ghi đè so với những file cần merge thủ công.
 
-## Project Structure
+## Cấu trúc dự án
 
 ```
-CLAUDE.md                           # Master configuration
+CLAUDE.md                           # Cấu hình tổng thể
 .claude/
-  settings.json                     # Hooks, permissions, safety rules
-  agents/                           # 49 agent definitions (markdown + YAML frontmatter)
-  skills/                           # 73 slash commands (subdirectory per skill)
-  hooks/                            # 12 hook scripts (bash, cross-platform)
-  rules/                            # 11 path-scoped coding standards
-  statusline.sh                     # Status line script (context%, model, stage, epic breadcrumb)
+  settings.json                     # Hooks, quyền hạn (permissions), quy tắc an toàn
+  agents/                           # 49 định nghĩa agent (markdown + YAML frontmatter)
+  skills/                           # 73 slash commands (mỗi thư mục con tương ứng một skill)
+  hooks/                            # 12 hook scripts (bash, đa nền tảng)
+  rules/                            # 11 quy chuẩn code theo phạm vi đường dẫn
+  statusline.sh                     # Script hiển thị status line (context%, model, stage, epic breadcrumb)
   docs/
-    workflow-catalog.yaml           # 7-phase pipeline definition (read by /help)
+    workflow-catalog.yaml           # Định nghĩa pipeline 7 giai đoạn (được đọc bởi /help)
     templates/                      # 41 document templates
-src/                                # Game source code
+src/                                # Source code của game
 assets/                             # Art, audio, VFX, shaders, data files
 design/                             # GDDs, narrative docs, level designs
-docs/                               # Technical documentation and ADRs
-tests/                              # Test suites (unit, integration, performance, playtest)
-tools/                              # Build and pipeline tools
-prototypes/                         # Throwaway prototypes (isolated from src/)
-production/                         # Sprint plans, milestones, release tracking
+docs/                               # Tài liệu kỹ thuật và các quyết định kiến trúc ADR
+tests/                              # Bộ kiểm thử (unit, integration, performance, playtest)
+tools/                              # Công cụ build và pipeline
+prototypes/                         # Bản mẫu thử nghiệm (độc lập với src/)
+production/                         # Kế hoạch sprint, milestones, theo dõi release
 ```
 
-## How It Works
+## Cách thức hoạt động
 
-### Agent Coordination
+### Phối hợp Agent (Agent Coordination)
 
-Agents follow a structured delegation model:
+Các agent tuân theo mô hình phân quyền có cấu trúc:
 
-1. **Vertical delegation** — directors delegate to leads, leads delegate to specialists
-2. **Horizontal consultation** — same-tier agents can consult each other but can't make binding cross-domain decisions
-3. **Conflict resolution** — disagreements escalate up to the shared parent (`creative-director` for design, `technical-director` for technical)
-4. **Change propagation** — cross-department changes are coordinated by `producer`
-5. **Domain boundaries** — agents don't modify files outside their domain without explicit delegation
+1. **Phân quyền theo chiều dọc (Vertical delegation)** — Giám đốc (directors) giao việc cho trưởng bộ phận (leads), trưởng bộ phận giao việc cho chuyên viên (specialists)
+2. **Tham vấn theo chiều ngang (Horizontal consultation)** — Các agent cùng cấp có thể tham vấn lẫn nhau nhưng không thể đưa ra quyết định ràng buộc chéo lĩnh vực
+3. **Giải quyết xung đột (Conflict resolution)** — Bất đồng quan điểm sẽ được báo cáo lên cấp quản lý chung (`creative-director` cho thiết kế, `technical-director` cho kỹ thuật)
+4. **Lan truyền thay đổi (Change propagation)** — Các thay đổi xuyên suốt nhiều phòng ban do `producer` điều phối
+5. **Ranh giới lĩnh vực (Domain boundaries)** — Agent không chỉnh sửa các file ngoài phạm vi phụ trách của mình nếu không có ủy quyền rõ ràng
 
-### Collaborative, Not Autonomous
+### Tính cộng tác, không tự động tùy tiện (Collaborative, Not Autonomous)
 
-This is **not** an auto-pilot system. Every agent follows a strict collaboration protocol:
+Đây **không** phải là hệ thống tự lái (auto-pilot). Mọi agent đều tuân theo quy trình cộng tác nghiêm ngặt:
 
-1. **Ask** — agents ask questions before proposing solutions
-2. **Present options** — agents show 2-4 options with pros/cons
-3. **You decide** — the user always makes the call
-4. **Draft** — agents show work before finalizing
-5. **Approve** — nothing gets written without your sign-off
+1. **Hỏi (Ask)** — Agent đặt câu hỏi trước khi đề xuất giải pháp
+2. **Đưa ra các lựa chọn (Present options)** — Agent đưa ra 2-4 phương án kèm ưu/nhược điểm
+3. **Bạn quyết định (You decide)** — Người dùng luôn là người đưa ra lựa chọn cuối cùng
+4. **Bản thảo (Draft)** — Agent trình bày bản thảo trước khi hoàn thiện
+5. **Phê duyệt (Approve)** — Không có nội dung nào được ghi nhận chính thức nếu chưa có sự phê duyệt của bạn
 
-You stay in control. The agents provide structure and expertise, not autonomy.
+Bạn luôn nắm quyền kiểm soát. Các agent cung cấp cấu trúc và chuyên môn, không tự ý hành động ngoài tầm kiểm soát.
 
-### Automated Safety
+### Tự động hóa an toàn (Automated Safety)
 
-**Hooks** run automatically on every session:
+**Hooks** tự động chạy trong mỗi phiên làm việc:
 
-| Hook | Trigger | What It Does |
-|------|---------|--------------|
-| `validate-commit.sh` | PreToolUse (Bash) | Checks for hardcoded values, TODO format, JSON validity, design doc sections — exits early if the command is not `git commit` |
-| `validate-push.sh` | PreToolUse (Bash) | Warns on pushes to protected branches — exits early if the command is not `git push` |
-| `validate-assets.sh` | PostToolUse (Write/Edit) | Validates naming conventions and JSON structure — exits early if the file is not in `assets/` |
-| `session-start.sh` | Session open | Shows current branch and recent commits for orientation |
-| `detect-gaps.sh` | Session open | Detects fresh projects (suggests `/start`) and missing design docs when code or prototypes exist |
-| `pre-compact.sh` | Before compaction | Preserves session progress notes |
-| `post-compact.sh` | After compaction | Reminds Claude to restore session state from `active.md` |
-| `notify.sh` | Notification event | Shows Windows toast notification via PowerShell |
-| `session-stop.sh` | Session close | Archives `active.md` to session log and records git activity |
-| `log-agent.sh` | Agent spawned | Audit trail start — logs subagent invocation |
-| `log-agent-stop.sh` | Agent stops | Audit trail stop — completes subagent record |
-| `validate-skill-change.sh` | PostToolUse (Write/Edit) | Advises running `/skill-test` after any `.claude/skills/` change |
+| Hook | Điều kiện kích hoạt (Trigger) | Chức năng |
+|---|---|---|
+| `validate-commit.sh` | PreToolUse (Bash) | Kiểm tra các giá trị hardcode, định dạng TODO, tính hợp lệ của JSON, các phần trong design doc — thoát sớm nếu lệnh không phải `git commit` |
+| `validate-push.sh` | PreToolUse (Bash) | Cảnh báo khi push vào các nhánh được bảo vệ — thoát sớm nếu lệnh không phải `git push` |
+| `validate-assets.sh` | PostToolUse (Write/Edit) | Xác thực quy ước đặt tên và cấu trúc JSON — thoát sớm nếu file không nằm trong `assets/` |
+| `session-start.sh` | Mở phiên (Session open) | Hiển thị branch hiện tại và các commit gần đây để định hướng |
+| `detect-gaps.sh` | Mở phiên (Session open) | Phát hiện dự án mới (gợi ý `/start`) và phát hiện thiếu design doc khi đã có code hoặc prototype |
+| `pre-compact.sh` | Trước khi compact | Lưu lại các ghi chú tiến độ của phiên làm việc |
+| `post-compact.sh` | Sau khi compact | Nhắc nhở Claude khôi phục trạng thái phiên từ `active.md` |
+| `notify.sh` | Sự kiện thông báo (Notification) | Hiển thị thông báo Windows toast notification qua PowerShell |
+| `session-stop.sh` | Đóng phiên (Session close) | Lưu trữ `active.md` vào session log và ghi lại hoạt động git |
+| `log-agent.sh` | Agent được khởi tạo | Bắt đầu audit trail — ghi log quá trình gọi subagent |
+| `log-agent-stop.sh` | Agent kết thúc | Kết thúc audit trail — hoàn tất bản ghi của subagent |
+| `validate-skill-change.sh` | PostToolUse (Write/Edit) | Khuyến nghị chạy `/skill-test` sau bất kỳ thay đổi nào trong `.claude/skills/` |
 
-> **Note**: `validate-commit.sh`, `validate-assets.sh`, and `validate-skill-change.sh` fire on every Bash/Write tool call and exit immediately (exit 0) when the command or file path is not relevant. This is normal hook behavior — not a performance concern.
+> **Lưu ý**: `validate-commit.sh`, `validate-assets.sh`, và `validate-skill-change.sh` được kích hoạt trên mỗi lệnh Bash/Write tool và thoát ngay lập tức (exit 0) nếu câu lệnh hoặc đường dẫn file không liên quan. Đây là hành vi hook bình thường — không ảnh hưởng đến hiệu năng.
 
-**Permission rules** in `settings.json` auto-allow safe operations (git status, test runs) and block dangerous ones (force push, `rm -rf`, reading `.env` files).
+**Quy tắc phân quyền (Permission rules)** trong `settings.json` tự động cho phép các thao tác an toàn (git status, chạy test) và chặn các thao tác nguy hiểm (force push, `rm -rf`, đọc file `.env`).
 
-### Path-Scoped Rules
+### Quy tắc theo phạm vi đường dẫn (Path-Scoped Rules)
 
-Coding standards are automatically enforced based on file location:
+Các tiêu chuẩn code được tự động áp dụng dựa trên vị trí file:
 
-| Path | Enforces |
-|------|----------|
-| `src/gameplay/**` | Data-driven values, delta time usage, no UI references |
-| `src/core/**` | Zero allocations in hot paths, thread safety, API stability |
-| `src/ai/**` | Performance budgets, debuggability, data-driven parameters |
-| `src/networking/**` | Server-authoritative, versioned messages, security |
-| `src/ui/**` | No game state ownership, localization-ready, accessibility |
-| `design/gdd/**` | Required 8 sections, formula format, edge cases |
-| `tests/**` | Test naming, coverage requirements, fixture patterns |
-| `prototypes/**` | Relaxed standards, README required, hypothesis documented |
+| Đường dẫn (Path) | Quy chuẩn áp dụng |
+|---|---|
+| `src/gameplay/**` | Giá trị định hướng theo dữ liệu (data-driven), sử dụng delta time, không tham chiếu trực tiếp đến UI |
+| `src/core/**` | Không cấp phát bộ nhớ (zero allocations) trong các hot paths, thread safety, tính ổn định của API |
+| `src/ai/**` | Giới hạn hiệu năng (performance budgets), khả năng debug, tham số định hướng theo dữ liệu |
+| `src/networking/**` | Server-authoritative, message có phiên bản, bảo mật |
+| `src/ui/**` | Không trực tiếp nắm giữ game state, sẵn sàng cho đa ngôn ngữ (localization), hỗ trợ accessibility |
+| `design/gdd/**` | Yêu cầu đủ 8 phần, định dạng công thức, xử lý các trường hợp biên (edge cases) |
+| `tests/**` | Quy ước đặt tên test, yêu cầu độ bao phủ (coverage), các mẫu fixture |
+| `prototypes/**` | Tiêu chuẩn nới lỏng, yêu cầu có README, giả thuyết được ghi nhận tài liệu rõ ràng |
 
-## Design Philosophy
+## Triết lý thiết kế
 
-This template is grounded in professional game development practices:
+Template này được xây dựng dựa trên các phương pháp phát triển game chuyên nghiệp:
 
-- **MDA Framework** — Mechanics, Dynamics, Aesthetics analysis for game design
-- **Self-Determination Theory** — Autonomy, Competence, Relatedness for player motivation
-- **Flow State Design** — Challenge-skill balance for player engagement
-- **Bartle Player Types** — Audience targeting and validation
-- **Verification-Driven Development** — Tests first, then implementation
+- **MDA Framework** — Phân tích Mechanics, Dynamics, Aesthetics trong game design
+- **Self-Determination Theory** — Tự chủ (Autonomy), Năng lực (Competence), Gắn kết (Relatedness) để thúc đẩy động lực của người chơi
+- **Flow State Design** — Cân bằng giữa thử thách và kỹ năng để tạo sự lôi cuốn cho người chơi
+- **Bartle Player Types** — Xác định đối tượng người chơi mục tiêu và kiểm chứng
+- **Verification-Driven Development** — Viết test trước, sau đó mới triển khai code (implementation)
 
-## Customization
+## Tùy biến
 
-This is a **template**, not a locked framework. Everything is meant to be customized:
+Đây là một **template**, không phải là một framework bị khóa cứng. Mọi thứ đều có thể tùy chỉnh:
 
-- **Add/remove agents** — delete agent files you don't need, add new ones for your domains
-- **Edit agent prompts** — tune agent behavior, add project-specific knowledge
-- **Modify skills** — adjust workflows to match your team's process
-- **Add rules** — create new path-scoped rules for your project's directory structure
-- **Tune hooks** — adjust validation strictness, add new checks
-- **Pick your engine** — use the Godot, Unity, or Unreal agent set (or none)
-- **Set review intensity** — `full` (all director gates), `lean` (phase gates only), or `solo` (none). Set during `/start` or edit `production/review-mode.txt`. Override per-run with `--review solo` on any skill.
+- **Thêm/xóa agent** — Xóa các file agent bạn không cần, thêm agent mới cho các lĩnh vực của bạn
+- **Chỉnh sửa prompt của agent** — Tinh chỉnh hành vi của agent, bổ sung kiến thức đặc thù của dự án
+- **Sửa đổi skills** — Điều chỉnh workflows phù hợp với quy trình làm việc của đội ngũ bạn
+- **Thêm rules** — Tạo các quy tắc theo đường dẫn mới cho cấu trúc thư mục của dự án
+- **Tinh chỉnh hooks** — Điều chỉnh độ nghiêm ngặt của việc xác thực, thêm các bước kiểm tra mới
+- **Chọn game engine của bạn** — Sử dụng bộ agent cho Godot, Unity, hoặc Unreal (hoặc không dùng bộ nào)
+- **Thiết lập mức độ review** — `full` (tất cả các cổng director), `lean` (chỉ các cổng giai đoạn), hoặc `solo` (không review). Thiết lập trong `/start` hoặc chỉnh sửa `production/review-mode.txt`. Ghi đè cho từng lần chạy với `--review solo` trên bất kỳ skill nào.
 
-## Platform Support
+## Hỗ trợ nền tảng
 
-Primary development and testing on **Windows 10** with Git Bash. All hooks use POSIX-compatible patterns (`grep -E`, not `grep -P`) and include fallbacks for missing tools, so they should run on macOS and Linux. The `notify.sh` hook uses PowerShell for Windows toast notifications and is a no-op elsewhere — desktop notifications on macOS/Linux are not yet wired. Cross-platform testing is ongoing; please file issues for any platform-specific breakage.
+Môi trường phát triển và kiểm thử chính là trên **Windows 10** với Git Bash. Tất cả các hook đều sử dụng cú pháp tương thích POSIX (`grep -E`, không dùng `grep -P`) và bao gồm cơ chế dự phòng khi thiếu công cụ, do đó chúng có thể chạy tốt trên macOS và Linux. Hook `notify.sh` sử dụng PowerShell cho thông báo toast trên Windows và không thực hiện thao tác gì trên các hệ điều hành khác — tính năng thông báo desktop trên macOS/Linux đang được hoàn thiện. Việc kiểm thử đa nền tảng đang tiếp tục diễn ra; vui lòng báo cáo issue nếu gặp bất kỳ lỗi nào liên quan đến nền tảng cụ thể.
 
-## Community
+## Cộng đồng
 
-- **Discussions** — [GitHub Discussions](https://github.com/Donchitos/Claude-Code-Game-Studios/discussions) for questions, ideas, and showcasing what you've built
-- **Issues** — [Bug reports and feature requests](https://github.com/Donchitos/Claude-Code-Game-Studios/issues)
+- **Thảo luận (Discussions)** — [GitHub Discussions](https://github.com/Donchitos/Claude-Code-Game-Studios/discussions) để đặt câu hỏi, chia sẻ ý tưởng và giới thiệu sản phẩm bạn đã tạo ra
+- **Issues** — [Báo cáo lỗi và yêu cầu tính năng](https://github.com/Donchitos/Claude-Code-Game-Studios/issues)
 
 ---
 
-## Supporting This Project
+## Ủng hộ dự án
 
-Claude Code Game Studios is free and open source. If it saves you time or helps you ship your game, consider supporting continued development:
+Claude Code Game Studios là dự án miễn phí và mã nguồn mở. Nếu nó giúp bạn tiết kiệm thời gian hoặc hỗ trợ bạn phát hành trò chơi của mình, hãy cân nhắc ủng hộ để tiếp tục phát triển:
 
 <p>
   <a href="https://www.buymeacoffee.com/donchitos3"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee"></a>
@@ -298,15 +295,15 @@ Claude Code Game Studios is free and open source. If it saves you time or helps 
   <a href="https://github.com/sponsors/Donchitos"><img src="https://img.shields.io/badge/GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="GitHub Sponsors"></a>
 </p>
 
-- **[Buy Me a Coffee](https://www.buymeacoffee.com/donchitos3)** — one-time support
-- **[GitHub Sponsors](https://github.com/sponsors/Donchitos)** — recurring support through GitHub
+- **[Buy Me a Coffee](https://www.buymeacoffee.com/donchitos3)** — Ủng hộ một lần
+- **[GitHub Sponsors](https://github.com/sponsors/Donchitos)** — Ủng hộ định kỳ qua GitHub
 
-Sponsorships help fund time spent maintaining skills, adding new agents, keeping up with Claude Code and engine API changes, and responding to community issues.
+Sự tài trợ giúp có thêm thời gian duy trì các skill, thêm các agent mới, cập nhật kịp thời theo các thay đổi API của Claude Code và game engine, cũng như hỗ trợ cộng đồng.
 
 ---
 
-*Built for Claude Code. Maintained and extended — contributions welcome via [GitHub Discussions](https://github.com/Donchitos/Claude-Code-Game-Studios/discussions).*
+*Được xây dựng cho Claude Code. Duy trì và mở rộng — luôn chào đón đóng góp qua [GitHub Discussions](https://github.com/Donchitos/Claude-Code-Game-Studios/discussions).*
 
-## License
+## Giấy phép (License)
 
-MIT License. See [LICENSE](LICENSE) for details.
+Giấy phép MIT. Xem [LICENSE](LICENSE) để biết thêm chi tiết.

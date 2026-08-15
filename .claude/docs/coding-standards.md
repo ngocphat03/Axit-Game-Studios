@@ -1,66 +1,65 @@
-# Coding Standards
+# Tiêu chuẩn lập trình (Coding Standards)
 
-- All game code must include doc comments on public APIs
-- Every system must have a corresponding architecture decision record in `docs/architecture/`
-- Gameplay values must be data-driven (external config), never hardcoded
-- All public methods must be unit-testable (dependency injection over singletons)
-- Commits must reference the relevant design document or task ID
-- **Commit messages**: Use Conventional Commits format — `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`. Reference the story or task ID in the body (e.g., `Story: EPIC-001-S02`).
-- **Verification-driven development**: Write tests first when adding gameplay systems.
-  For UI changes, verify with screenshots. Compare expected output to actual output
-  before marking work complete. Every implementation should have a way to prove it works.
+- Mọi code game phải bao gồm doc comments trên các public API
+- Mỗi hệ thống phải có một bản ghi quyết định kiến trúc (ADR) tương ứng trong `docs/architecture/`
+- Các giá trị gameplay phải được hướng dữ liệu (cấu hình bên ngoài), tuyệt đối không hardcode
+- Tất cả các public method phải có khả năng viết unit test (ưu tiên dependency injection hơn singletons)
+- Các commit phải tham chiếu tới tài liệu thiết kế hoặc ID tác vụ liên quan
+- **Thông điệp Commit**: Sử dụng định dạng Conventional Commits — `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`. Tham chiếu ID story hoặc task trong phần thân (ví dụ: `Story: EPIC-001-S02`).
+- **Phát triển hướng xác minh (Verification-Driven Development)**: Viết test trước khi thêm các hệ thống gameplay.
+  Đối với các thay đổi UI, xác minh bằng ảnh chụp màn hình. So sánh kết quả kỳ vọng với kết quả thực tế trước khi đánh dấu công việc hoàn thành. Mọi triển khai code đều phải có cách để chứng minh nó hoạt động.
 
-# Design Document Standards
+# Tiêu chuẩn tài liệu thiết kế (Design Document Standards)
 
-- All design docs use Markdown
-- Each mechanic has a dedicated document in `design/gdd/`
-- Documents must include these 8 required sections:
-  1. **Overview** -- one-paragraph summary
-  2. **Player Fantasy** -- intended feeling and experience
-  3. **Detailed Rules** -- unambiguous mechanics
-  4. **Formulas** -- all math defined with variables
-  5. **Edge Cases** -- unusual situations handled
-  6. **Dependencies** -- other systems listed
-  7. **Tuning Knobs** -- configurable values identified
-  8. **Acceptance Criteria** -- testable success conditions
-- Balance values must link to their source formula or rationale
+- Tất cả các tài liệu thiết kế đều sử dụng định dạng Markdown
+- Mỗi cơ chế gameplay có một tài liệu riêng trong `design/gdd/`
+- Tài liệu phải bao gồm đủ 8 phần bắt buộc:
+  1. **Overview (Tổng quan)** -- tóm tắt trong một đoạn văn
+  2. **Player Fantasy (Hình dung của người chơi)** -- cảm xúc và trải nghiệm dự kiến
+  3. **Detailed Rules (Quy tắc chi tiết)** -- các cơ chế rõ ràng, không mơ hồ
+  4. **Formulas (Công thức toán học)** -- tất cả các phép toán được định nghĩa kèm biến số
+  5. **Edge Cases (Trường hợp biên)** -- xử lý các tình huống bất thường
+  6. **Dependencies (Các phụ thuộc)** -- danh sách các hệ thống liên quan
+  7. **Tuning Knobs (Các nút tinh chỉnh)** -- xác định các giá trị có thể cấu hình
+  8. **Acceptance Criteria (Tiêu chí chấp nhận)** -- các điều kiện thành công có thể kiểm thử
+- Các giá trị cân bằng phải liên kết tới công thức nguồn hoặc lý do thiết kế
 
-# Testing Standards
+# Tiêu chuẩn kiểm thử (Testing Standards)
 
-## Test Evidence by Story Type
+## Bằng chứng kiểm thử theo loại Story
 
-All stories must have appropriate test evidence before they can be marked Done:
+Tất cả các story phải có bằng chứng kiểm thử phù hợp trước khi có thể đánh dấu Hoàn thành (Done):
 
-| Story Type | Required Evidence | Location | Gate Level |
+| Loại Story | Bằng chứng bắt buộc | Vị trí lưu trữ | Mức độ Cổng |
 |---|---|---|---|
-| **Logic** (formulas, AI, state machines) | Automated unit test — must pass | `tests/unit/[system]/` | BLOCKING |
-| **Integration** (multi-system) | Integration test OR documented playtest | `tests/integration/[system]/` | BLOCKING |
-| **Visual/Feel** (animation, VFX, feel) | Screenshot + lead sign-off | `production/qa/evidence/` | ADVISORY |
-| **UI** (menus, HUD, screens) | Manual walkthrough doc OR interaction test | `production/qa/evidence/` | ADVISORY |
-| **Config/Data** (balance tuning) | Smoke check pass | `production/qa/smoke-[date].md` | ADVISORY |
+| **Logic** (công thức, AI, máy trạng thái) | Unit test tự động — bắt buộc phải pass | `tests/unit/[system]/` | BLOCKING |
+| **Integration** (liên kết đa hệ thống) | Integration test HOẶC biên bản playtest | `tests/integration/[system]/` | BLOCKING |
+| **Visual/Feel** (animation, VFX, cảm giác chơi) | Ảnh chụp màn hình + lead ký duyệt | `production/qa/evidence/` | ADVISORY |
+| **UI** (menus, HUD, các màn hình) | Tài liệu walkthrough thủ công HOẶC test tương tác | `production/qa/evidence/` | ADVISORY |
+| **Config/Data** (tinh chỉnh cân bằng) | Vượt qua smoke check | `production/qa/smoke-[date].md` | ADVISORY |
 
-## Automated Test Rules
+## Quy tắc kiểm thử tự động (Automated Test Rules)
 
-- **Naming**: `[system]_[feature]_test.[ext]` for files; `test_[scenario]_[expected]` for functions
-- **Determinism**: Tests must produce the same result every run — no random seeds, no time-dependent assertions
-- **Isolation**: Each test sets up and tears down its own state; tests must not depend on execution order
-- **No hardcoded data**: Test fixtures use constant files or factory functions, not inline magic numbers
-  (exception: boundary value tests where the exact number IS the point)
-- **Independence**: Unit tests do not call external APIs, databases, or file I/O — use dependency injection
+- **Đặt tên**: `[system]_[feature]_test.[ext]` cho các file; `test_[scenario]_[expected]` cho các hàm test
+- **Tính tất định (Determinism)**: Các bài test phải cho ra cùng một kết quả ở mỗi lần chạy — không dùng random seeds ngẫu nhiên, không dùng assertion phụ thuộc thời gian
+- **Tính cô lập (Isolation)**: Mỗi bài test tự thiết lập và dọn dẹp trạng thái của chính nó; các test không được phụ thuộc vào thứ tự thực thi
+- **Không dùng dữ liệu hardcode**: Dữ liệu mẫu (test fixtures) sử dụng file hằng số hoặc hàm factory, không dùng magic numbers trực tiếp
+  (ngoại lệ: các bài test giá trị biên nơi con số chính xác LÀ trọng tâm cần test)
+- **Tính độc lập (Independence)**: Unit test không gọi API bên ngoài, cơ sở dữ liệu, hoặc I/O file — sử dụng dependency injection
 
-## What NOT to Automate
+## Những gì KHÔNG NÊN tự động hóa
 
-- Visual fidelity (shader output, VFX appearance, animation curves)
-- "Feel" qualities (input responsiveness, perceived weight, timing)
-- Platform-specific rendering (test on target hardware, not headlessly)
-- Full gameplay sessions (covered by playtesting, not automation)
+- Độ trung thực hình ảnh (đầu ra shader, giao diện VFX, đường cong animation)
+- Các yếu tố "Cảm giác chơi" (độ nhạy điều khiển, cảm giác trọng lượng, thời điểm nhấn phím)
+- Render đặc thù theo nền tảng (kiểm thử trên phần cứng thực tế, không chạy headless)
+- Toàn bộ phiên chơi game (được bao phủ bởi playtest thực tế của người chơi, không phải tự động hóa)
 
-## CI/CD Rules
+## Quy tắc CI/CD
 
-- Automated test suite runs on every push to main and every PR
-- No merge if tests fail — tests are a blocking gate in CI
-- Never disable or skip failing tests to make CI pass — fix the underlying issue
-- Engine-specific CI commands:
+- Bộ test tự động chạy trên mỗi lần push vào nhánh main và trên mỗi PR
+- Không cho phép merge nếu test thất bại — test là cổng chặn (blocking gate) trong CI
+- Tuyệt đối không tắt hoặc bỏ qua các test bị lỗi để CI vượt qua — hãy sửa lỗi gốc bên dưới
+- Các lệnh CI đặc thù theo Engine:
   - **Godot**: `godot --headless --script tests/gdunit4_runner.gd`
   - **Unity**: `game-ci/unity-test-runner@v4` (GitHub Actions)
-  - **Unreal**: headless runner with `-nullrhi` flag
+  - **Unreal**: headless runner với cờ `-nullrhi`

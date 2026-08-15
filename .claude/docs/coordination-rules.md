@@ -1,73 +1,54 @@
-# Agent Coordination Rules
+# Quy tắc điều phối Agent (Agent Coordination Rules)
 
-1. **Vertical Delegation**: Leadership agents delegate to department leads, who
-   delegate to specialists. Never skip a tier for complex decisions.
-2. **Horizontal Consultation**: Agents at the same tier may consult each other
-   but must not make binding decisions outside their domain.
-3. **Conflict Resolution**: When two agents disagree, escalate to the shared
-   parent. If no shared parent, escalate to `creative-director` for design
-   conflicts or `technical-director` for technical conflicts.
-4. **Change Propagation**: When a design change affects multiple domains, the
-   `producer` agent coordinates the propagation.
-5. **No Unilateral Cross-Domain Changes**: An agent must never modify files
-   outside its designated directories without explicit delegation.
+1. **Ủy quyền theo chiều dọc (Vertical Delegation)**: Các agent lãnh đạo ủy quyền cho các trưởng bộ phận, trưởng bộ phận ủy quyền cho các chuyên viên. Không bao giờ nhảy cóc phân tầng đối với các quyết định phức tạp.
+2. **Tham vấn theo chiều ngang (Horizontal Consultation)**: Các agent ở cùng phân tầng có thể tham vấn lẫn nhau nhưng không được đưa ra quyết định ràng buộc ngoài lĩnh vực phụ trách của mình.
+3. **Giải quyết xung đột (Conflict Resolution)**: Khi hai agent bất đồng quan điểm, hãy báo cáo lên cấp quản lý chung. Nếu không có quản lý chung, báo cáo lên `creative-director` cho các xung đột thiết kế hoặc `technical-director` cho các xung đột kỹ thuật.
+4. **Lan truyền thay đổi (Change Propagation)**: Khi một thay đổi thiết kế ảnh hưởng tới nhiều lĩnh vực, agent `producer` sẽ điều phối việc cập nhật lan truyền.
+5. **Không tự ý sửa đổi chéo lĩnh vực (No Unilateral Cross-Domain Changes)**: Một agent tuyệt đối không bao giờ được chỉnh sửa các file nằm ngoài thư mục được chỉ định của mình nếu không có sự ủy quyền rõ ràng.
 
-## Model Tier Assignment
+## Phân bổ phân tầng Model (Model Tier Assignment)
 
-Skills and agents are assigned to model tiers based on task complexity:
+Các skill và agent được phân bổ vào các tầng model dựa trên độ phức tạp của tác vụ:
 
-| Tier | Model | When to use |
-|------|-------|-------------|
-| **Haiku** | `claude-haiku-4-5-20251001` | Read-only status checks, formatting, simple lookups — no creative judgment needed |
-| **Sonnet** | `claude-sonnet-4-6` | Implementation, design authoring, analysis of individual systems — default for most work |
-| **Opus** | `claude-opus-4-6` | Multi-document synthesis, high-stakes phase gate verdicts, cross-system holistic review |
+| Phân tầng | Model | Khi nào nên sử dụng |
+|---|---|---|
+| **Haiku** | `claude-haiku-4-5-20251001` | Kiểm tra trạng thái chỉ đọc, định dạng dữ liệu, tra cứu đơn giản — không cần phán đoán sáng tạo |
+| **Sonnet** | `claude-sonnet-4-6` | Triển khai code, soạn thảo thiết kế, phân tích các hệ thống riêng lẻ — mặc định cho hầu hết công việc |
+| **Opus** | `claude-opus-4-6` | Tổng hợp đa tài liệu, kết luận cổng giai đoạn quan trọng, đánh giá toàn diện liên hệ thống |
 
-Skills with `model: haiku`: `/help`, `/sprint-status`, `/story-readiness`, `/scope-check`,
-`/project-stage-detect`, `/changelog`, `/patch-notes`, `/onboard`
+Các skill sử dụng `model: haiku`: `/help`, `/sprint-status`, `/story-readiness`, `/scope-check`, `/project-stage-detect`, `/changelog`, `/patch-notes`, `/onboard`
 
-Skills with `model: opus`: `/review-all-gdds`, `/architecture-review`, `/gate-check`
+Các skill sử dụng `model: opus`: `/review-all-gdds`, `/architecture-review`, `/gate-check`
 
-All other skills default to Sonnet. When creating new skills, assign Haiku if the
-skill only reads and formats; assign Opus if it must synthesize 5+ documents with
-high-stakes output; otherwise leave unset (Sonnet).
+Tất cả các skill khác mặc định sử dụng Sonnet. Khi tạo skill mới, gán Haiku nếu skill chỉ đọc và định dạng; gán Opus nếu nó phải tổng hợp từ 5 tài liệu trở lên với kết quả có tính rủi ro cao; nếu không hãy để trống (Sonnet).
 
-## Subagents vs Agent Teams
+## Subagents so với Agent Teams
 
-This project uses two distinct multi-agent patterns:
+Dự án này sử dụng hai mô hình đa agent khác biệt:
 
-### Subagents (current, always active)
-Spawned via `Task` within a single Claude Code session. Used by all `team-*` skills
-and orchestration skills. Subagents share the session's permission context, run
-sequentially or in parallel within the session, and return results to the parent.
+### Subagents (hiện tại, luôn hoạt động)
+Được khởi tạo thông qua `Task` bên trong một phiên làm việc Claude Code đơn lẻ. Được sử dụng bởi tất cả các skill `team-*` và các skill điều phối. Các subagent dùng chung ngữ cảnh cấp quyền của phiên làm việc, chạy tuần tự hoặc song song trong phiên, và trả kết quả về cho agent cha.
 
-**When to spawn in parallel**: If two subagents' inputs are independent (neither
-needs the other's output to begin), spawn both Task calls simultaneously rather
-than waiting. Example: `/review-all-gdds` Phase 1 (consistency) and Phase 2
-(design theory) are independent — spawn both at the same time.
+**Khi nào nên khởi tạo song song**: Nếu đầu vào của hai subagent độc lập với nhau (không bên nào cần đầu ra của bên kia để bắt đầu), hãy gọi đồng thời cả hai lệnh Task thay vì chờ đợi. Ví dụ: `/review-all-gdds` Giai đoạn 1 (tính nhất quán) và Giai đoạn 2 (lý thuyết thiết kế) là độc lập — hãy gọi cả hai cùng lúc.
 
-### Agent Teams (experimental — opt-in)
-Multiple independent Claude Code *sessions* running simultaneously, coordinated
-via a shared task list. Each session has its own context window and token budget.
-Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` environment variable.
+### Agent Teams (thử nghiệm — tùy chọn kích hoạt)
+Nhiều *phiên làm việc* Claude Code độc lập chạy đồng thời, được điều phối qua một danh sách tác vụ dùng chung. Mỗi phiên có cửa sổ ngữ cảnh và ngân sách token riêng. Yêu cầu biến môi trường `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`.
 
-**Use agent teams when**:
-- Work spans multiple subsystems that will not touch the same files
-- Each workstream would take >30 minutes and benefits from true parallelism
-- A senior agent (technical-director, producer) needs to coordinate 3+ specialist
-  sessions working on different epics simultaneously
+**Sử dụng agent teams khi**:
+- Công việc trải rộng qua nhiều hệ thống con và không chạm vào cùng các file giống nhau
+- Mỗi luồng công việc kéo dài >30 phút và được hưởng lợi từ việc chạy song song thực sự
+- Một agent cấp cao (technical-director, producer) cần điều phối 3+ phiên làm việc của chuyên viên trên các epic khác nhau cùng lúc
 
-**Do not use agent teams when**:
-- One session's output is required as input for another (use sequential subagents)
-- The task fits in a single session's context (use subagents instead)
-- Cost is a concern — each team member burns tokens independently
+**Không sử dụng agent teams khi**:
+- Đầu ra của phiên làm việc này là đầu vào bắt buộc của phiên khác (sử dụng subagents tuần tự)
+- Tác vụ vừa vặn trong ngữ cảnh của một phiên làm việc đơn lẻ (sử dụng subagents thay thế)
+- Chi phí là vấn đề cần cân nhắc — mỗi thành viên trong team tiêu tốn token độc lập
 
-**Current status**: Opt-in via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Document first usage here when adopted.
+## Giao thức tác vụ song song (Parallel Task Protocol)
 
-## Parallel Task Protocol
+Khi một skill điều phối khởi tạo nhiều agent độc lập:
 
-When an orchestration skill spawns multiple independent agents:
-
-1. Issue all independent Task calls before waiting for any result
-2. Collect all results before proceeding to dependent phases
-3. If any agent is BLOCKED, surface it immediately — do not silently skip
-4. Always produce a partial report if some agents complete and others block
+1. Phát ra tất cả các lệnh gọi Task độc lập trước khi chờ đợi bất kỳ kết quả nào
+2. Thu thập đầy đủ tất cả kết quả trước khi chuyển sang các giai đoạn phụ thuộc
+3. Nếu bất kỳ agent nào bị BLOCKED, hãy báo cáo ngay lập tức — không âm thầm bỏ qua
+4. Luôn tạo báo cáo một phần nếu một số agent hoàn thành và các agent khác bị chặn

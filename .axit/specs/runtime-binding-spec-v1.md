@@ -1,59 +1,59 @@
-# Axit Runtime Binding Spec v1
+# Đặc tả Axit Runtime Binding v1 (Axit Runtime Binding Spec v1)
 
-## Purpose
+## Mục đích (Purpose)
 
-A Runtime Binding maps a stable semantic Axit Capability to one concrete execution transport.
+Một Runtime Binding ánh xạ một Capability ngữ nghĩa ổn định của Axit tới một transport thực thi cụ thể.
 
-It answers:
+Nó trả lời câu hỏi:
 
-> How can this environment attempt to perform the semantic operation requested by Axit?
+> Môi trường này có thể thực hiện thao tác ngữ nghĩa do Axit yêu cầu bằng cách nào?
 
-A Runtime Binding does **not** decide:
+Một Runtime Binding **không** quyết định:
 
-- which evidence is needed -> Skill / `verify-change`;
-- whether evidence is REQUIRED or SUPPORTING -> `verify-change`;
+- bằng chứng nào là cần thiết -> Skill / `verify-change`;
+- bằng chứng là BẮT BUỘC (REQUIRED) hay BỔ TRỢ (SUPPORTING) -> `verify-change`;
 - PASS / FAIL / BLOCKED -> `verify-change`;
-- whether an operation is permitted -> Runtime/Harness policy;
-- product intent or architecture -> owning Profile / Rules / Registry.
+- thao tác có được cấp quyền hay không -> Runtime/Harness policy;
+- ý định sản phẩm hoặc kiến trúc -> Profile / Rules / Registry sở hữu.
 
-The intended relationship is:
+Mối quan hệ được thiết kế theo luồng:
 
 ```text
-accepted criterion
-  -> semantic Capability
+tiêu chí được chấp thuận (accepted criterion)
+  -> Capability ngữ nghĩa
       -> Runtime Binding
-          -> concrete transport operation(s)
-              -> acquisition result + evidence
-                  -> verify-change judgment
+          -> (các) thao tác transport cụ thể
+              -> kết quả thu thập + bằng chứng
+                  -> đánh giá của verify-change
 ```
 
-## Canonical location
+## Vị trí chuẩn mực (Canonical location)
 
-Reviewed binding definitions live under:
+Các định nghĩa binding đã được đánh giá nằm dưới:
 
 ```text
 .axit/bindings/<system-id>/<binding-id>.yaml
 ```
 
-Do not create a binding file until a real transport and its concrete operations have been inspected or exercised.
+Không tạo file binding cho đến khi transport thực tế và các thao tác cụ thể của nó đã được kiểm tra hoặc thực thi kiểm chứng.
 
-A System may later reference one or more reviewed binding definitions from its capability sidecar. The current absence of a binding reference means the Capability is semantically known but unbound in repository configuration.
+Một System sau đó có thể tham chiếu một hoặc nhiều định nghĩa binding đã được đánh giá từ file sidecar capability của nó. Việc chưa có tham chiếu binding có nghĩa là Capability đã được biết về mặt ngữ nghĩa nhưng chưa được gắn kết (unbound) trong cấu hình repository.
 
-## Binding definition vs runtime availability
+## Định nghĩa binding so với Tính khả dụng tại runtime
 
-Keep these separate:
+Giữ các phần này tách biệt rõ ràng:
 
-- **binding definition** — source-controlled mapping from semantic Capability ids to verified transport operations;
-- **runtime availability** — whether the transport, editor/process, connection, dependency, and permission are usable now;
-- **credentials/endpoints/secrets** — environment/runtime configuration outside canonical Axit files.
+- **định nghĩa binding (binding definition)** — ánh xạ được quản lý theo mã nguồn từ các mã Capability ngữ nghĩa tới các thao tác transport đã xác minh;
+- **tính khả dụng tại runtime (runtime availability)** — liệu transport, editor/tiến trình, kết nối, dependency và quyền hạn có thể sử dụng ngay lúc này hay không;
+- **thông tin xác thực/endpoints/secrets** — cấu hình môi trường/runtime nằm ngoài các file Axit chuẩn mực.
 
-A committed binding with `status: active` means the mapping is reviewed. It does **not** mean the transport is connected on every developer machine.
+Một binding được commit với `status: active` có nghĩa là ánh xạ đó đã được đánh giá duyệt. Nó **không** có nghĩa là transport đang kết nối trên mọi máy lập trình viên.
 
-Do not commit passwords, API keys, auth tokens, machine-specific socket paths, ephemeral ports, or other secrets into `.axit`.
+Không commit mật khẩu, API keys, auth tokens, đường dẫn socket máy cục bộ, cổng tạm thời hoặc các bí mật khác vào trong `.axit`.
 
-## Minimal binding shape
+## Cấu trúc binding tối thiểu
 
-Materialize only after a real transport is available:
+Chỉ tạo ra khi transport thực tế đã khả dụng:
 
 ```yaml
 spec_version: axit.runtime-binding/v1
@@ -71,145 +71,112 @@ mappings:
       - <verified concrete transport operation>
 ```
 
-Provider/tool names are allowed **inside Runtime Bindings** because this layer exists specifically to isolate transport details from canonical Capability ids.
+Tên của provider/công cụ được phép xuất hiện **bên trong Runtime Bindings** vì tầng này tồn tại cụ thể để cô lập chi tiết transport khỏi các mã Capability ngữ nghĩa chuẩn mực.
 
-Do not copy provider/tool names back into Capability, Skill, Workflow, Profile, or Registry ids.
+Không sao chép ngược lại tên provider/công cụ vào các mã Capability, Skill, Workflow, Profile, hoặc Registry.
 
-## Mapping rules
+## Quy tắc ánh xạ
 
-1. Every `capability` in a binding must exist in an active Capability set for the affected System.
-2. Never invent a transport operation name. Inspect the real transport interface first.
-3. A semantic Capability may map to one or several ordered transport operations when the transport requires multiple calls to produce one trustworthy observation.
-4. Map the smallest transport surface needed for the Capability.
-5. Do not bind unrelated operations merely because the transport exposes them.
-6. A binding must preserve the Capability's evidence boundary: it cannot claim more than `can_establish` allows.
-7. A binding cannot weaken the Capability's declared side-effect class.
-8. Evidence v1 bindings must not gain source-writing semantics merely because the transport can mutate project files.
+1. Mọi `capability` trong một binding phải tồn tại trong tập hợp Capability đang hoạt động của System bị ảnh hưởng.
+2. Tuyệt đối không tự ý bịa tên thao tác transport. Hãy kiểm tra giao diện transport thực tế trước.
+3. Một Capability ngữ nghĩa có thể ánh xạ tới một hoặc nhiều thao tác transport có thứ tự khi transport yêu cầu nhiều lệnh gọi để tạo ra một quan sát đáng tin cậy.
+4. Ánh xạ phạm vi transport nhỏ nhất cần thiết cho Capability.
+5. Không bind các thao tác không liên quan chỉ vì transport hiển thị chúng.
+6. Một binding phải bảo toàn ranh giới bằng chứng của Capability: nó không thể tuyên bố nhiều hơn những gì `can_establish` cho phép.
+7. Một binding không thể làm suy yếu lớp tác dụng phụ đã khai báo của Capability.
+8. Các binding bằng chứng v1 không được có ngữ nghĩa ghi code chỉ vì transport có khả năng thay đổi file dự án.
 
-## Runtime resolution
+## Phân giải tại Runtime
 
-When a selected Capability needs acquisition:
+Khi một Capability đã chọn cần được thu thập:
 
-1. resolve the affected System;
-2. confirm the Capability id is declared by the System's active capability set;
-3. resolve a reviewed binding that maps that Capability;
-4. check current transport/environment availability;
-5. check Runtime/Harness policy and approvals;
-6. execute only the mapped operation(s) needed for the bounded evidence request;
-7. normalize the acquisition result;
-8. return evidence to the verifier without issuing a verification verdict.
+1. xác định System bị ảnh hưởng;
+2. xác nhận mã Capability được khai báo trong tập hợp capability đang hoạt động của System;
+3. phân giải một binding đã được đánh giá có ánh xạ Capability đó;
+4. kiểm tra tính khả dụng của transport/môi trường hiện tại;
+5. kiểm tra chính sách Runtime/Harness và các phê duyệt;
+6. chỉ thực thi (các) thao tác đã ánh xạ cần thiết cho yêu cầu bằng chứng có giới hạn;
+7. chuẩn hóa kết quả thu thập;
+8. trả lại bằng chứng cho verifier mà không tự ý đưa ra kết luận xác minh.
 
-Do not silently substitute an unregistered transport because it appears convenient. A fallback transport must have its own reviewed compatible binding or be explicitly approved as an ad-hoc runtime action outside canonical binding claims.
+Không âm thầm thay thế bằng một transport chưa đăng ký vì thấy tiện lợi. Một transport dự phòng phải có binding tương thích đã được đánh giá riêng hoặc được phê duyệt rõ ràng như một hành động runtime đặc biệt nằm ngoài các tuyên bố binding chuẩn mực.
 
-## Acquisition result classes
+## Các lớp kết quả thu thập (Acquisition result classes)
 
-A binding/runtime must distinguish at least these outcomes:
+Một binding/runtime phải phân biệt tối thiểu các kết quả sau:
 
-### `acquired`
+### `acquired` (Đã thu thập)
 
-The transport produced a trustworthy observation of the requested target/scope.
+Transport đã tạo ra một quan sát đáng tin cậy về target/phạm vi được yêu cầu.
 
-The observation may demonstrate product success, product failure, or merely partial evidence. `acquired` is **not** PASS.
+Quan sát có thể chứng minh sản phẩm thành công, sản phẩm thất bại, hoặc chỉ là bằng chứng một phần. `acquired` **không** đồng nghĩa với PASS.
 
-### `unavailable`
+### `unavailable` (Không khả dụng)
 
-The semantic Capability has no usable binding or the required editor/process/environment/dependency is not currently available.
+Capability ngữ nghĩa không có binding khả dụng hoặc editor/tiến trình/môi trường/dependency bắt buộc hiện không khả dụng.
 
-This is missing evidence, not product failure.
+Đây là trường hợp thiếu bằng chứng, không phải lỗi sản phẩm.
 
-### `denied`
+### `denied` (Bị từ chối)
 
-Runtime/Harness policy or required approval prevented the operation.
+Chính sách Runtime/Harness hoặc yêu cầu phê duyệt đã ngăn chặn thao tác.
 
-This is not product failure. Whether it blocks verification depends on whether the evidence was REQUIRED.
+Đây không phải lỗi sản phẩm. Việc nó có chặn xác minh hay không phụ thuộc vào việc bằng chứng đó có phải là REQUIRED hay không.
 
-### `transport_error`
+### `transport_error` (Lỗi transport)
 
-The transport/binding failed before producing a trustworthy target observation.
+Transport/binding bị lỗi trước khi tạo ra quan sát target đáng tin cậy.
 
-Treat this as acquisition failure unless the returned output itself contains reliable product evidence.
+Coi đây là lỗi thu thập trừ khi bản thân đầu ra trả về chứa bằng chứng sản phẩm đáng tin cậy.
 
-These acquisition classes are not verification verdicts.
+Các lớp thu thập này không phải là kết luận xác minh (verdict).
 
-## Evidence provenance
+## Nguồn gốc bằng chứng (Evidence provenance)
 
-A successful binding should return enough information for the verifier to understand:
+Một binding thành công nên trả về đủ thông tin để verifier hiểu:
 
-- semantic Capability id requested;
-- concrete target/scope observed;
-- transport/binding used;
-- structured or raw observations relevant to the criterion;
-- diagnostics/warnings that affect trust;
-- whether the operation actually completed.
+- mã Capability ngữ nghĩa được yêu cầu;
+- target/phạm vi cụ thể được quan sát;
+- transport/binding được sử dụng;
+- các quan sát có cấu trúc hoặc thô liên quan đến tiêu chí;
+- các chẩn đoán/cảnh báo ảnh hưởng đến độ tin cậy;
+- liệu thao tác có thực sự hoàn thành.
 
-Do not require one universal evidence payload schema before a real transport demonstrates the useful shape. Preserve native structured evidence when possible rather than flattening everything into prose.
+Không bắt buộc một schema payload bằng chứng phổ quát duy nhất trước khi transport thực tế chứng minh cấu trúc hữu ích. Hãy bảo toàn bằng chứng có cấu trúc bản địa khi có thể thay vì làm phẳng mọi thứ thành văn bản thuần.
 
-## Permission boundary
+## Ranh giới Phân quyền (Permission boundary)
 
-Binding resolution does not authorize execution.
+Việc phân giải binding không đồng nghĩa với cấp quyền thực thi.
 
-Examples:
+Ví dụ:
 
-- `unity.prefab.inspect` is read-only semantic intent, but the transport call is still subject to Runtime/Harness access policy;
-- `unity.playmode.verify` may enter controlled runtime state and may require an allowed editor/session state or approval;
-- a transport that also exposes destructive editor/file operations does not make those operations part of the binding.
+- `unity.prefab.inspect` là ý định ngữ nghĩa chỉ đọc, nhưng lệnh gọi transport vẫn phải tuân theo chính sách truy cập Runtime/Harness;
+- `unity.playmode.verify` có thể bước vào trạng thái runtime có kiểm soát và có thể yêu cầu trạng thái editor/phiên làm việc hoặc phê duyệt được phép;
+- một transport đồng thời hiển thị các thao tác phá hoại file/editor không làm cho các thao tác đó trở thành một phần của binding.
 
-Runtime/Harness remains the trust boundary.
+Runtime/Harness vẫn là ranh giới tin cậy.
 
-## Binding lifecycle
+## Vòng đời Binding
 
-Use these definition statuses:
+Sử dụng các trạng thái định nghĩa sau:
 
-- `validation` — concrete mapping exists but has not passed live binding regression/vertical-slice evidence;
-- `active` — mapping has passed live use for its declared capability scope;
-- `deprecated` — kept only for migration/reference and should not be selected for new runs.
+- `validation` — ánh xạ cụ thể đã tồn tại nhưng chưa vượt qua bằng chứng kiểm thử hồi quy/vertical-slice live;
+- `active` — ánh xạ đã vượt qua sử dụng thực tế cho phạm vi capability đã khai báo;
+- `deprecated` — chỉ giữ lại để migration/tham chiếu và không nên chọn cho các lần chạy mới.
 
-Do not use binding status to represent whether a local transport is currently online.
+Không dùng trạng thái binding để biểu thị việc transport cục bộ hiện có online hay không.
 
-## First Unity binding scope
+## Bài kiểm tra chất lượng
 
-The first live Unity transport should intentionally bind only this small semantic subset:
+Trước khi chấp nhận một Runtime Binding, hãy tự hỏi:
 
-```text
-unity.prefab.inspect
-unity.serialized-fields.inspect
-unity.playmode.verify
-```
+1. Mọi mã Capability được ánh xạ đã tồn tại trong tập hợp ngữ nghĩa đang hoạt động chưa?
+2. Tên thao tác transport cụ thể đã được xác minh thay vì suy đoán chưa?
+3. Ánh xạ có bảo toàn các ranh giới tác dụng phụ và bằng chứng của Capability không?
+4. Tính khả dụng và thông tin xác thực có được giữ ngoài các định nghĩa ngữ nghĩa chuẩn mực không?
+5. Runtime có thể phân biệt bằng chứng thu thập được với các trường hợp unavailable, denied, và transport_error không?
+6. Chính sách có vẫn kiểm soát việc thao tác có được phép thực thi không?
+7. Binding có được giới hạn ở tập hợp con nhỏ nhất đã được chứng minh không?
+8. Transport có thể được thay thế sau này mà không làm thay đổi các mã Capability/Skill/Workflow/Profile không?
 
-Why this subset:
-
-- prefab inspection proves serialized asset structure/configuration;
-- serialized-field inspection proves exact configured values/references;
-- Play Mode verification proves bounded runtime behavior;
-- together with existing ordinary deterministic C# test evidence, they exercise distinct evidence layers without binding the entire Unity catalog.
-
-`unity.component.inspect` may remain unbound initially because `unity.prefab.inspect` can already establish component presence on the concrete prefab for the first vertical slice.
-
-Do not add compile, test-run, console, scene, or project-inspection mappings until a live task demonstrates they are needed for the binding slice.
-
-## Transport discovery rule
-
-Before creating the first Unity binding:
-
-- inspect the actual local Codex/runtime transport configuration;
-- identify the real Unity transport/adapter;
-- inspect its concrete available operations and their input/output behavior;
-- confirm the target Unity project/editor can be reached;
-- then materialize only mappings that were actually verified.
-
-If repository files do not identify a transport, keep the System `binding_status: unbound` and request/inspect local runtime configuration rather than guessing MCP names.
-
-## Quality test
-
-Before accepting a Runtime Binding, ask:
-
-1. Does every mapped Capability id already exist in the active semantic set?
-2. Are concrete transport operation names verified rather than guessed?
-3. Does the mapping preserve the Capability's side-effect and evidence boundaries?
-4. Are availability and credentials kept out of canonical semantic definitions?
-5. Can the runtime distinguish acquired evidence from unavailable, denied, and transport-error acquisition?
-6. Does policy still control whether the operation may execute?
-7. Is the binding limited to the smallest proven subset?
-8. Could the transport be replaced later without changing Capability/Skill/Workflow/Profile ids?
-
-If not, keep the capability unbound.
+Nếu không, hãy giữ capability ở trạng thái chưa gắn kết (unbound).

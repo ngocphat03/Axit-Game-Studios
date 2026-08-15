@@ -1,166 +1,165 @@
-# Skill Flow Diagrams
+# Sơ đồ luồng Skill (Skill Flow Diagrams)
 
-Visual maps of how skills chain together across the 7 development phases.
-These show what runs before and after each skill, and what artifacts flow between them.
+Bản đồ trực quan về cách các skill liên kết với nhau xuyên suốt 7 giai đoạn phát triển.
+Các sơ đồ này cho thấy những gì chạy trước và sau mỗi skill, cùng các sản phẩm tài liệu luân chuyển giữa chúng.
 
 ---
 
-## Full Pipeline Overview (Zero to Ship)
+## Toàn cảnh Pipeline hoàn chỉnh (Từ số 0 đến Phát hành)
 
 ```
-PHASE 1: CONCEPT
-  /start ──────────────────────────────────────────────────────► routes to A/B/C/D
+GIAI ĐOẠN 1: Ý TƯỞNG (PHASE 1: CONCEPT)
+  /start ──────────────────────────────────────────────────────► điều hướng tới A/B/C/D
   /brainstorm ──────────────────────────────────────────────────► design/gdd/game-concept.md
   /setup-engine ────────────────────────────────────────────────► CLAUDE.md + technical-preferences.md
   /prototype [core-mechanic] ───────────────────────────────────► prototypes/[name]-concept/REPORT.md
-        │ PROCEED                                                  (validate idea BEFORE writing GDDs)
+        │ PROCEED                                                  (kiểm chứng ý tưởng TRƯỚC KHI viết GDD)
         ▼
-  /design-review [game-concept.md] ────────────────────────────► concept validated
-  /gate-check ─────────────────────────────────────────────────► PASS → advance to systems-design
+  /design-review [game-concept.md] ────────────────────────────► concept đã được xác thực
+  /gate-check ─────────────────────────────────────────────────► PASS → tiến sang systems-design
         │
         ▼
-PHASE 2: SYSTEMS DESIGN
+GIAI ĐOẠN 2: THIẾT KẾ HỆ THỐNG (PHASE 2: SYSTEMS DESIGN)
   /map-systems ────────────────────────────────────────────────► design/gdd/systems-index.md
         │
-        ▼ (for each system, in dependency order)
+        ▼ (cho từng hệ thống, theo thứ tự phụ thuộc)
   /design-system [name] ──────────────────────────────────────► design/gdd/[system].md
-  /design-review [system].md ─────────────────────────────────► per-GDD review comments
+  /design-review [system].md ─────────────────────────────────► nhận xét đánh giá từng GDD
         │
-        ▼ (after all MVP GDDs done)
+        ▼ (sau khi hoàn thành tất cả GDD MVP)
   /review-all-gdds ────────────────────────────────────────────► design/gdd/gdd-cross-review-[date].md
-  /gate-check ─────────────────────────────────────────────────► PASS → advance to technical-setup
+  /gate-check ─────────────────────────────────────────────────► PASS → tiến sang technical-setup
         │
         ▼
-PHASE 3: TECHNICAL SETUP
+GIAI ĐOẠN 3: THIẾT LẬP KỸ THUẬT (PHASE 3: TECHNICAL SETUP)
   /create-architecture ────────────────────────────────────────► docs/architecture/master.md
   /architecture-decision (×N) ─────────────────────────────────► docs/architecture/[adr-nnn].md
-  /architecture-review ────────────────────────────────────────► review report + docs/architecture/tr-registry.yaml
+  /architecture-review ────────────────────────────────────────► báo cáo review + docs/architecture/tr-registry.yaml
   /create-control-manifest ────────────────────────────────────► docs/architecture/control-manifest.md
-  /gate-check ─────────────────────────────────────────────────► PASS → advance to pre-production
+  /gate-check ─────────────────────────────────────────────────► PASS → tiến sang pre-production
         │
         ▼
-PHASE 4: PRE-PRODUCTION
-  [UX — before epics, so specs exist when stories are written]
+GIAI ĐOẠN 4: TIỀN SẢN XUẤT (PHASE 4: PRE-PRODUCTION)
+  [UX — trước epic, để đặc tả sẵn sàng khi viết story]
   /ux-design [screen/hud/patterns] ────────────────────────────► design/ux/*.md
-  /ux-review ──────────────────────────────────────────────────► UX specs approved (HARD gate for /team-ui)
+  /ux-review ──────────────────────────────────────────────────► đặc tả UX đã duyệt (CỔNG CỨNG cho /team-ui)
 
-  [Test infrastructure — scaffold before stories reference tests]
-  /test-setup ─────────────────────────────────────────────────► test framework + CI/CD pipeline
+  [Hạ tầng kiểm thử — dựng khung trước khi story tham chiếu test]
+  /test-setup ─────────────────────────────────────────────────► test framework + pipeline CI/CD
   /test-helpers ───────────────────────────────────────────────► tests/helpers/[engine-specific].gd
 
-  [Vertical slice — before epics, validate full game loop]
+  [Vertical slice — trước epic, xác thực toàn bộ game loop]
   /vertical-slice ─────────────────────────────────────────────► prototypes/[name]-vertical-slice/REPORT.md
   /playtest-report ────────────────────────────────────────────► production/playtests/
 
-  [Stories + sprint plan — only after vertical slice PROCEEDS]
+  [Stories + kế hoạch sprint — chỉ sau khi vertical slice PROCEED]
   /create-epics [layer] ───────────────────────────────────────► production/epics/*/EPIC.md
   /create-stories [epic-slug] ─────────────────────────────────► production/epics/*/story-*.md
   /sprint-plan new ────────────────────────────────────────────► production/sprints/sprint-01.md
-  /gate-check ─────────────────────────────────────────────────► PASS → advance to production
+  /gate-check ─────────────────────────────────────────────────► PASS → tiến sang production
         │
         ▼
-PHASE 5: PRODUCTION (repeating sprint loop)
-  /sprint-status ──────────────────────────────────────────────► sprint snapshot
-  /story-readiness [story] ────────────────────────────────────► story validated READY
+GIAI ĐOẠN 5: SẢN XUẤT (PHASE 5: PRODUCTION - vòng lặp sprint)
+  /sprint-status ──────────────────────────────────────────────► ảnh chụp nhanh sprint
+  /story-readiness [story] ────────────────────────────────────► story xác thực READY
         │
-        ▼ (pick up and implement)
-  /dev-story [story] ──────────────────────────────────────────► routes to correct programmer agent
+        ▼ (nhận story và triển khai code)
+  /dev-story [story] ──────────────────────────────────────────► điều phối tới đúng agent lập trình
         │
-        ▼ (during implementation, as needed)
-  /code-review ────────────────────────────────────────────────► code review report
-  /scope-check ────────────────────────────────────────────────► scope creep detected / clear
-  /content-audit ──────────────────────────────────────────────► GDD content gaps identified
+        ▼ (trong khi code, khi cần)
+  /code-review ────────────────────────────────────────────────► báo cáo code review
+  /scope-check ────────────────────────────────────────────────► phát hiện phình to quy mô / an toàn
+  /content-audit ──────────────────────────────────────────────► xác định khoảng trống nội dung GDD
   /bug-report ─────────────────────────────────────────────────► production/qa/bugs/bug-NNN.md
-  /bug-triage ─────────────────────────────────────────────────► bugs re-prioritized + assigned
+  /bug-triage ─────────────────────────────────────────────────► sắp xếp lại ưu tiên + phân công bug
 
-  [Team skills for feature areas — spawn when working a full feature]
+  [Team skills cho từng mảng tính năng — gọi khi làm tính năng đầy đủ]
   /team-combat / /team-narrative / /team-ui / /team-level / /team-audio
 
-  [QA cycle per sprint]
+  [Chu kỳ QA theo từng sprint]
   /qa-plan ────────────────────────────────────────────────────► production/qa/qa-plan-sprint-NN.md
-  /smoke-check ────────────────────────────────────────────────► smoke test gate (PASS/FAIL)
-  /regression-suite ───────────────────────────────────────────► coverage gaps + missing regression tests
-  /test-evidence-review ───────────────────────────────────────► evidence quality report
-  /test-flakiness ─────────────────────────────────────────────► flaky test report
+  /smoke-check ────────────────────────────────────────────────► cổng smoke test (PASS/FAIL)
+  /regression-suite ───────────────────────────────────────────► khoảng trống bao phủ + thiếu test hồi quy
+  /test-evidence-review ───────────────────────────────────────► báo cáo chất lượng bằng chứng test
+  /test-flakiness ─────────────────────────────────────────────► báo cáo test chập chờn
         │
         ▼
-  /story-done [story] ─────────────────────────────────────────► story closed + next surfaced
-  /sprint-plan [next] ─────────────────────────────────────────► next sprint
+  /story-done [story] ─────────────────────────────────────────► đóng story + hiển thị story tiếp theo
+  /sprint-plan [next] ─────────────────────────────────────────► sprint tiếp theo
         │
-        ▼ (after Production milestone)
-  /milestone-review ───────────────────────────────────────────► milestone report
-  /gate-check ─────────────────────────────────────────────────► PASS → advance to polish
+        ▼ (sau milestone Sản xuất)
+  /milestone-review ───────────────────────────────────────────► báo cáo milestone
+  /gate-check ─────────────────────────────────────────────────► PASS → tiến sang polish
         │
         ▼
-PHASE 6: POLISH
-  /perf-profile ───────────────────────────────────────────────► perf report + fixes
-  /balance-check ──────────────────────────────────────────────► balance report + fixes
-  /asset-audit ────────────────────────────────────────────────► asset compliance report
+GIAI ĐOẠN 6: ĐÁNH BÓNG (PHASE 6: POLISH)
+  /perf-profile ───────────────────────────────────────────────► báo cáo hiệu năng + bản sửa lỗi
+  /balance-check ──────────────────────────────────────────────► báo cáo cân bằng + bản sửa lỗi
+  /asset-audit ────────────────────────────────────────────────► báo cáo tuân thủ asset
   /tech-debt ──────────────────────────────────────────────────► docs/tech-debt-register.md
-  /soak-test ──────────────────────────────────────────────────► soak test protocol + results
-  /localize ───────────────────────────────────────────────────► localization readiness report
-  /team-polish ────────────────────────────────────────────────► polish sprint orchestrated
-  /team-qa ────────────────────────────────────────────────────► full QA cycle sign-off
-  /gate-check ─────────────────────────────────────────────────► PASS → advance to release
+  /soak-test ──────────────────────────────────────────────────► quy trình soak test + kết quả
+  /localize ───────────────────────────────────────────────────► báo cáo sẵn sàng đa ngôn ngữ
+  /team-polish ────────────────────────────────────────────────► điều phối sprint đánh bóng
+  /team-qa ────────────────────────────────────────────────────► ký duyệt chu kỳ QA đầy đủ
+  /gate-check ─────────────────────────────────────────────────► PASS → tiến sang release
         │
         ▼
-PHASE 7: RELEASE
-  /launch-checklist ───────────────────────────────────────────► launch readiness report
-  /release-checklist ──────────────────────────────────────────► platform-specific checklist
+GIAI ĐOẠN 7: PHÁT HÀNH (PHASE 7: RELEASE)
+  /launch-checklist ───────────────────────────────────────────► báo cáo sẵn sàng ra mắt
+  /release-checklist ──────────────────────────────────────────► checklist đặc thù theo nền tảng
   /changelog ──────────────────────────────────────────────────► CHANGELOG.md
-  /patch-notes ────────────────────────────────────────────────► player-facing notes
-  /team-release ───────────────────────────────────────────────► release pipeline orchestrated
+  /patch-notes ────────────────────────────────────────────────► patch notes cho người chơi
+  /team-release ───────────────────────────────────────────────► điều phối pipeline phát hành
         │
-        ▼ (post-launch, ongoing)
-  /hotfix ─────────────────────────────────────────────────────► emergency fix with audit trail
-  /team-live-ops ──────────────────────────────────────────────► live-ops content plan
+        ▼ (sau phát hành, liên tục)
+  /hotfix ─────────────────────────────────────────────────────► sửa lỗi khẩn cấp kèm audit trail
+  /team-live-ops ──────────────────────────────────────────────► kế hoạch nội dung live-ops
 ```
 
 ---
 
-## Skill Chain: /design-system in Detail
+## Chuỗi Skill: Chi tiết /design-system
 
-How a single GDD gets authored, reviewed, and handed to architecture:
+Cách một GDD đơn lẻ được soạn thảo, đánh giá và chuyển giao sang kiến trúc:
 
 ```
-systems-index.md (input)
-game-concept.md (input)
-upstream GDDs (input, if any)
+systems-index.md (đầu vào)
+game-concept.md (đầu vào)
+các GDD thượng nguồn (đầu vào, nếu có)
         │
         ▼
 /design-system [name]
         │
-        ├── Pre-check: feasibility table + engine risk flags
+        ├── Kiểm tra sơ bộ: bảng khả thi + cảnh báo rủi ro engine
         │
-        ├── Section cycle × 8:
-        │     question → options → decision → draft → approval → WRITE
-        │     [each section written to file immediately after approval]
+        ├── Chu kỳ từng phần × 8:
+        │     hỏi → lựa chọn → quyết định → bản thảo → phê duyệt → GHI FILE
+        │     [mỗi phần ghi vào file ngay sau khi được duyệt]
         │
-        └── Output: design/gdd/[system].md (complete, all 8 sections)
+        └── Đầu ra: design/gdd/[system].md (hoàn chỉnh, đủ 8 phần)
                 │
                 ▼
         /design-review design/gdd/[system].md
                 │
-                ├── APPROVED → mark DONE in systems-index, proceed to next system
-                ├── NEEDS REVISION → agent shows specific issues, re-enter section cycle
-                └── MAJOR REVISION → significant redesign needed before next system
+                ├── APPROVED → đánh dấu DONE trong systems-index, làm hệ thống tiếp theo
+                ├── NEEDS REVISION → agent chỉ ra vấn đề cụ thể, quay lại chu kỳ từng phần
+                └── MAJOR REVISION → cần thiết kế lại đáng kể trước khi làm hệ thống tiếp theo
                         │
-                        ▼ (after all MVP GDDs + cross-review)
+                        ▼ (sau khi xong tất cả GDD MVP + đánh giá chéo)
                 /review-all-gdds
                         │
-                        └── Output: gdd-cross-review-[date].md
+                        └── Đầu ra: gdd-cross-review-[date].md
 ```
 
 ---
 
-## Skill Chain: UX / UI Pipeline in Detail
+## Chuỗi Skill: Chi tiết Pipeline UX / UI
 
-UX specs are authored in Phase 4 (Pre-Production), before epics are written, so
-that story acceptance criteria can reference specific UX artifacts.
+Các đặc tả UX được soạn thảo trong Giai đoạn 4 (Tiền sản xuất), trước khi viết epic, để các tiêu chí chấp nhận của story có thể tham chiếu các sản phẩm UX cụ thể.
 
 ```
-design/gdd/*.md (UI/UX requirements extracted)
-design/player-journey.md (emotional arc, if authored)
+design/gdd/*.md (các yêu cầu UI/UX được trích xuất)
+design/player-journey.md (hành trình cảm xúc, nếu có)
         │
         ▼
 /ux-design hud              → design/ux/hud.md
@@ -170,193 +169,111 @@ design/player-journey.md (emotional arc, if authored)
         ▼
 /ux-review design/ux/
         │
-        ├── APPROVED → UX specs ready, proceed to /create-epics
-        ├── NEEDS REVISION → blocking issues listed → fix → re-run review
-        └── MAJOR REVISION → fundamental UX problems → redesign before epics
+        ├── APPROVED → đặc tả UX sẵn sàng, tiến hành /create-epics
+        ├── NEEDS REVISION → liệt kê vấn đề nghẽn → sửa → chạy lại review
+        └── MAJOR REVISION → lỗi UX căn bản → thiết kế lại trước khi viết epic
                 │
-                ▼ (after APPROVED — in Phase 5 when implementing UI features)
+                ▼ (sau khi APPROVED — trong Giai đoạn 5 khi triển khai tính năng UI)
         /team-ui
                 │
-                ├── Phase 1: /ux-design (if any specs still missing) + /ux-review
-                ├── Phase 2: visual design (art-director)
-                ├── Phase 3: layout implementation (ui-programmer)
-                ├── Phase 4: accessibility audit (accessibility-specialist)
-                └── Phase 5: final review
-
-Note: /ux-design and /ux-review belong in Phase 4 (Pre-Production).
-      /team-ui belongs in Phase 5 (Production) when a UI feature is being built.
+                ├── Phase 1: /ux-design (nếu còn thiếu đặc tả) + /ux-review
+                ├── Phase 2: thiết kế đồ họa thị giác (art-director)
+                ├── Phase 3: triển khai layout (ui-programmer)
+                ├── Phase 4: kiểm toán accessibility (accessibility-specialist)
+                └── Phase 5: đánh giá cuối cùng
 ```
 
 ---
 
-## Skill Chain: Dev Story Flow in Detail
+## Chuỗi Skill: Chi tiết Luồng Dev Story
 
-How a story moves from backlog to closed:
+Cách một story di chuyển từ backlog đến khi đóng:
 
 ```
 /story-readiness [story]
         │
-        ├── READY → Status: ready-for-dev → pick up for implementation
-        ├── NEEDS WORK → agent shows specific gaps → resolve → re-run readiness
-        └── BLOCKED → ADR still Proposed, or upstream story incomplete
+        ├── READY → Status: ready-for-dev → nhận để triển khai code
+        ├── NEEDS WORK → agent chỉ ra khoảng trống cụ thể → khắc phục → chạy lại readiness
+        └── BLOCKED → ADR vẫn đang Proposed, hoặc story thượng nguồn chưa xong
                 │
-                ▼ (after READY)
+                ▼ (sau khi READY)
         /dev-story [story]
                 │
-                ├── Reads: story file, linked GDD requirement, ADR decisions, control manifest
-                ├── Routes to: gameplay-programmer / engine-programmer / ui-programmer / etc.
+                ├── Đọc: file story, yêu cầu GDD liên kết, quyết định ADR, control manifest
+                ├── Điều phối tới: gameplay-programmer / engine-programmer / ui-programmer / v.v.
                 │
-                └── Implementation begins
+                └── Bắt đầu triển khai code
                         │
-                        ▼ (optional, during/after implementation)
-                /code-review          → architectural review of changeset
-                /scope-check          → verify no scope creep vs. original story criteria
-                /test-evidence-review → validate test files and manual evidence quality
+                        ▼ (tùy chọn, trong/sau khi code)
+                /code-review          → đánh giá kiến trúc của tập thay đổi
+                /scope-check          → xác minh không phình to quy mô so với tiêu chí ban đầu
+                /test-evidence-review → xác thực chất lượng file test và bằng chứng thủ công
                         │
                         ▼
                 /story-done [story]
                         │
-                        ├── COMPLETE → Status: Complete, sprint-status.yaml updated, next story surfaced
-                        ├── COMPLETE WITH NOTES → complete but some criteria deferred (logged)
-                        └── BLOCKED → acceptance criteria cannot be verified → investigate blocker
+                        ├── COMPLETE → Status: Complete, sprint-status.yaml cập nhật, hiển thị story tiếp theo
+                        ├── COMPLETE WITH NOTES → hoàn thành nhưng một số tiêu chí bị hoãn (đã ghi log)
+                        └── BLOCKED → không thể xác minh tiêu chí chấp nhận → điều tra điểm nghẽn
 ```
 
 ---
 
-## Skill Chain: Story Lifecycle (Backlog to Closed)
+## Luồng tiếp nhận dự án cũ (Brownfield Onboarding Flow)
 
-How a story gets from backlog to closed (summary view):
-
-```
-/create-epics [layer]
-        │
-        └── Output: production/epics/[slug]/EPIC.md
-                │
-                ▼
-        /create-stories [epic-slug]
-                │
-                └── Output: production/epics/[slug]/story-NNN-[slug].md
-                            (Status: Ready or Blocked if ADR is Proposed)
-                │
-                ▼
-        /story-readiness [story]
-                │
-                ├── READY → /dev-story → implement → /story-done
-                ├── NEEDS WORK → resolve gaps → re-run
-                └── BLOCKED → fix upstream dependency first
-```
-
----
-
-## Skill Chain: QA Pipeline in Detail
+Dành cho các dự án đã có sẵn code/tài liệu:
 
 ```
-[Phase 4 — one-time infrastructure setup]
-/test-setup ────────────────────────────────────────────────────► test framework scaffolded + CI/CD wired
-/test-helpers ──────────────────────────────────────────────────► tests/helpers/[engine].gd (GDUnit4, NUnit, etc.)
-
-[Phase 5 — per-sprint QA cycle]
-/qa-plan [sprint or feature]
-        │
-        ├── Reads: story files, GDDs, acceptance criteria
-        ├── Classifies each story by test type:
-        │     Logic → automated unit test (BLOCKING)
-        │     Integration → integration test or documented playtest (BLOCKING)
-        │     Visual/Feel → screenshot + lead sign-off (ADVISORY)
-        │     UI → manual walkthrough or interaction test (ADVISORY)
-        │     Config/Data → smoke check (ADVISORY)
-        └── Output: production/qa/qa-plan-sprint-NN.md
-                │
-                ▼
-        /smoke-check
-                │
-                ├── PASS → QA hand-off cleared
-                └── FAIL → block sprint close → fix critical paths first
-                        │
-                        ▼
-                /regression-suite
-                        │
-                        └── Coverage gaps + list of fixed bugs without regression tests
-                                │
-                                ▼
-                        /test-evidence-review
-                                │
-                                └── Validates evidence quality, not just existence
-                                        │
-                                        ▼ (if CI run history available)
-                        /test-flakiness
-                                │
-                                └── Flaky test report + fix recommendations
-
-[Phase 6 — extended stability testing]
-/soak-test ─────────────────────────────────────────────────────► soak test protocol + observed results
-/team-qa ───────────────────────────────────────────────────────► full QA cycle sign-off for release gate
-
-[Ongoing — bug management]
-/bug-report ────────────────────────────────────────────────────► production/qa/bugs/bug-NNN.md
-/bug-triage ────────────────────────────────────────────────────► open bugs re-prioritized + assigned
-
-[Meta — harness validation]
-/skill-test [lint|spec|catalog] ────────────────────────────────► skill file structural + behavioral check
-```
-
----
-
-## Brownfield Onboarding Flow
-
-For projects with existing work (use `/start` option D or run directly):
-
-```
-/project-stage-detect    → stage detection report
+/project-stage-detect    → báo cáo phát hiện giai đoạn
         │
         ▼
 /adopt
         │
-        ├── Phase 1: detect what exists
-        ├── Phase 2: FORMAT audit (not just existence)
-        ├── Phase 3: classify gaps (BLOCKING / HIGH / MEDIUM / LOW)
-        ├── Phase 4: ordered migration plan
-        ├── Phase 5: write docs/adoption-plan-[date].md
-        └── Phase 6: fix most urgent gap inline (optional)
+        ├── Phase 1: phát hiện những gì đang tồn tại
+        ├── Phase 2: audit ĐỊNH DẠNG (không chỉ sự tồn tại)
+        ├── Phase 3: phân loại khoảng trống (BLOCKING / HIGH / MEDIUM / LOW)
+        ├── Phase 4: lập kế hoạch migration có thứ tự
+        ├── Phase 5: ghi docs/adoption-plan-[date].md
+        └── Phase 6: sửa khoảng trống khẩn cấp nhất ngay tại chỗ (tùy chọn)
                 │
                 ▼
-        /design-system retrofit [path]    → fills missing GDD sections
-        /architecture-decision retrofit [path] → fills missing ADR sections
-        /gate-check                       → where are you in the pipeline?
+        /design-system retrofit [path]    → điền các phần GDD còn thiếu
+        /architecture-decision retrofit [path] → điền các phần ADR còn thiếu
+        /gate-check                       → xác định bạn đang ở đâu trong pipeline
 ```
 
 ---
 
-## How to Read These Diagrams
+## Cách đọc các sơ đồ này
 
-| Symbol | Meaning |
-|--------|---------|
-| `──►` | Produces this artifact |
-| `│ ▼` | Flows into next step |
-| `├──` | Branch (multiple possible outcomes) |
-| `×N` | Runs N times (once per system, story, etc.) |
-| `(input)` | Read by the skill but not produced here |
-| `[optional]` | Not required for the gate to pass |
-| `WRITE` (caps) | File written to disk immediately |
+| Ký hiệu | Ý nghĩa |
+|---|---|
+| `──►` | Tạo ra sản phẩm tài liệu này |
+| `│ ▼` | Chuyển tiếp sang bước tiếp theo |
+| `├──` | Phân nhánh (nhiều kết quả khả dĩ) |
+| `×N` | Chạy N lần (mỗi hệ thống, story một lần) |
+| `(đầu vào)` | Được đọc bởi skill nhưng không tạo ra ở đây |
+| `[tùy chọn]` | Không bắt buộc để vượt qua cổng |
+| `GHI FILE` | File được ghi xuống đĩa ngay lập tức |
 
 ---
 
-## Common Entry Points
+## Các điểm bắt đầu phổ biến
 
-| Where you are | Run this |
-|---------------|---------|
-| Brand new, no idea | `/start` → `/brainstorm` |
-| Have a concept, no engine | `/setup-engine` |
-| Have concept + engine | `/map-systems` |
-| Mid-systems design | `/design-system [next system]` or `/map-systems next` |
-| All GDDs done | `/review-all-gdds` → `/gate-check` |
-| In technical setup | `/create-architecture` → `/architecture-decision` |
-| Starting UX design | `/ux-design screen [name]` or `/ux-design hud` |
-| Scaffolding tests | `/test-setup` → `/test-helpers` |
-| Have stories, ready to code | `/story-readiness [story]` → `/dev-story [story]` |
-| Story done | `/story-done [story]` |
-| Running QA for a sprint | `/qa-plan` → `/smoke-check` → `/regression-suite` |
-| Bug backlog needs sorting | `/bug-triage` |
-| Extended stability testing | `/soak-test` |
-| Not sure | `/help` |
-| Existing project | `/adopt` |
+| Tình trạng hiện tại | Hãy chạy lệnh này |
+|---|---|
+| Dự án mới tinh, chưa có ý tưởng | `/start` → `/brainstorm` |
+| Đã có concept, chưa có engine | `/setup-engine` |
+| Đã có concept + engine | `/map-systems` |
+| Đang thiết kế hệ thống | `/design-system [tên hệ thống]` hoặc `/map-systems next` |
+| Đã xong tất cả GDD | `/review-all-gdds` → `/gate-check` |
+| Đang thiết lập kỹ thuật | `/create-architecture` → `/architecture-decision` |
+| Bắt đầu thiết kế UX | `/ux-design screen [tên]` hoặc `/ux-design hud` |
+| Dựng khung kiểm thử | `/test-setup` → `/test-helpers` |
+| Đã có story, sẵn sàng code | `/story-readiness [story]` → `/dev-story [story]` |
+| Đã code xong story | `/story-done [story]` |
+| Chạy QA cho một sprint | `/qa-plan` → `/smoke-check` → `/regression-suite` |
+| Backlog bug cần sắp xếp | `/bug-triage` |
+| Kiểm thử độ ổn định kéo dài | `/soak-test` |
+| Chưa rõ phải làm gì | `/help` |
+| Dự án có sẵn từ trước | `/adopt` |

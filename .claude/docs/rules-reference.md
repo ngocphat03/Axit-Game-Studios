@@ -1,17 +1,17 @@
-# Path-Specific Rules
+# Quy tắc theo đường dẫn (Path-Specific Rules)
 
-Rules in `.claude/rules/` are automatically enforced when editing files in matching paths:
+Các quy tắc trong `.claude/rules/` được tự động thực thi khi chỉnh sửa các file thuộc đường dẫn khớp:
 
-| Rule File | Path Pattern | Enforces |
-| ---- | ---- | ---- |
-| `gameplay-code.md` | `src/gameplay/**` | Data-driven values, delta time, no UI references |
-| `engine-code.md` | `src/core/**` | Zero allocs in hot paths, thread safety, API stability |
-| `ai-code.md` | `src/ai/**` | Performance budgets, debuggability, data-driven params |
-| `network-code.md` | `src/networking/**` | Server-authoritative, versioned messages, security |
-| `ui-code.md` | `src/ui/**` | No game state ownership, localization-ready, accessibility |
-| `design-docs.md` | `design/gdd/**` | Required 8 sections, formula format, edge cases |
-| `narrative.md` | `design/narrative/**` | Lore consistency, character voice, canon levels |
-| `data-files.md` | `assets/data/**` | JSON validity, naming conventions, schema rules |
-| `test-standards.md` | `tests/**` | Test naming, coverage requirements, fixture patterns |
-| `prototype-code.md` | `prototypes/**` | Relaxed standards, README required, hypothesis documented |
-| `shader-code.md` | `assets/shaders/**` | Naming conventions, performance targets, cross-platform rules |
+| File Quy tắc | Mẫu đường dẫn | Nội dung thực thi |
+|---|---|---|
+| `gameplay-code.md` | `src/gameplay/**` | Giá trị hướng dữ liệu, sử dụng delta time, không tham chiếu trực tiếp UI |
+| `engine-code.md` | `src/core/**` | Không phân bổ bộ nhớ (zero allocs) trong hot paths, an toàn luồng, API ổn định |
+| `ai-code.md` | `src/ai/**` | Ngân sách hiệu năng, khả năng debug, tham số hướng dữ liệu |
+| `network-code.md` | `src/networking/**` | Server có quyền quyết định (authoritative), định phiên bản thông điệp, bảo mật |
+| `ui-code.md` | `src/ui/**` | Không nắm giữ trạng thái game, sẵn sàng đa ngôn ngữ, hỗ trợ tiếp cận (accessibility) |
+| `design-docs.md` | `design/gdd/**` | Đủ 8 phần bắt buộc, định dạng công thức toán học, xử lý trường hợp biên |
+| `narrative.md` | `design/narrative/**` | Nhất quán cốt truyện, giọng văn nhân vật, các cấp độ canon |
+| `data-files.md` | `assets/data/**` | Tính hợp lệ của JSON, quy ước đặt tên, quy tắc schema |
+| `test-standards.md` | `tests/**` | Đặt tên bài test, yêu cầu độ bao phủ, mẫu dữ liệu fixture |
+| `prototype-code.md` | `prototypes/**` | Giảm bớt tiêu chuẩn khắt khe, bắt buộc có README, ghi lại giả thuyết thử nghiệm |
+| `shader-code.md` | `assets/shaders/**` | Quy ước đặt tên, mục tiêu hiệu năng, quy tắc đa nền tảng |

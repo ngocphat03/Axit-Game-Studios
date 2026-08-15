@@ -1,27 +1,26 @@
-# Setup Requirements
+# Yêu cầu cài đặt (Setup Requirements)
 
-This template requires a few tools to be installed for full functionality.
-All hooks fail gracefully if tools are missing — nothing will break, but
-you'll lose validation features.
+Template này yêu cầu một số công cụ được cài đặt để hoạt động đầy đủ tính năng.
+Tất cả các hook đều xử lý lỗi linh hoạt nếu thiếu công cụ — không có gì bị hỏng, nhưng bạn sẽ mất đi các tính năng kiểm tra xác thực.
 
-## Required
+## Bắt buộc
 
-| Tool | Purpose | Install |
-| ---- | ---- | ---- |
-| **Git** | Version control, branch management | [git-scm.com](https://git-scm.com/) |
+| Công cụ | Mục đích | Cài đặt |
+|---|---|---|
+| **Git** | Quản lý phiên bản, quản lý nhánh | [git-scm.com](https://git-scm.com/) |
 | **Claude Code** | AI agent CLI | `npm install -g @anthropic-ai/claude-code` |
 
-## Recommended
+## Khuyến nghị
 
-| Tool | Used By | Purpose | Install |
-| ---- | ---- | ---- | ---- |
-| **jq** | Hooks (7 of 12) | JSON parsing in commit/push/asset/agent hooks | See below |
-| **Python 3** | Hooks (2 of 12) | JSON validation for data files | [python.org](https://www.python.org/) |
-| **Bash** | All hooks | Shell script execution | Included with Git for Windows |
+| Công cụ | Được sử dụng bởi | Mục đích | Cài đặt |
+|---|---|---|---|
+| **jq** | Hooks (7/12) | Phân tích cú pháp JSON trong hook commit/push/asset/agent | Xem bên dưới |
+| **Python 3** | Hooks (2/12) | Xác thực JSON cho các file dữ liệu | [python.org](https://www.python.org/) |
+| **Bash** | Tất cả các hook | Thực thi shell script | Đã đi kèm với Git for Windows |
 
-### Installing jq
+### Cài đặt jq
 
-**Windows** (any of these):
+**Windows** (một trong các cách sau):
 ```
 winget install jqlang.jq
 choco install jq
@@ -40,41 +39,39 @@ sudo dnf install jq     # Fedora
 sudo pacman -S jq       # Arch
 ```
 
-## Platform Notes
+## Ghi chú theo nền tảng
 
 ### Windows
-- Git for Windows includes **Git Bash**, which provides the `bash` command
-  used by all hooks in `settings.json`
-- Ensure Git Bash is on your PATH (default if installed via the Git installer)
-- Hooks use `bash .claude/hooks/[name].sh` — this works on Windows because
-  Claude Code invokes commands through a shell that can find `bash.exe`
+- Git for Windows bao gồm **Git Bash**, cung cấp lệnh `bash` được sử dụng bởi tất cả các hook trong `settings.json`
+- Đảm bảo Git Bash nằm trong biến môi trường PATH của bạn (mặc định nếu cài qua trình cài đặt Git)
+- Các hook sử dụng `bash .claude/hooks/[name].sh` — hoạt động mượt mà trên Windows vì Claude Code gọi lệnh qua shell có thể tìm thấy `bash.exe`
 
 ### macOS / Linux
-- Bash is available natively
-- Install `jq` via your package manager for full hook support
+- Bash đã có sẵn theo mặc định
+- Cài đặt `jq` qua trình quản lý gói để hỗ trợ đầy đủ các hook
 
-## Verifying Your Setup
+## Kiểm tra môi trường cài đặt
 
-Run these commands to check prerequisites:
+Chạy các lệnh sau để kiểm tra điều kiện tiên quyết:
 
 ```bash
-git --version          # Should show git version
-bash --version         # Should show bash version
-jq --version           # Should show jq version (optional)
-python3 --version      # Should show python version (optional)
+git --version          # Hiển thị phiên bản git
+bash --version         # Hiển thị phiên bản bash
+jq --version           # Hiển thị phiên bản jq (tùy chọn)
+python3 --version      # Hiển thị phiên bản python (tùy chọn)
 ```
 
-## What Happens Without Optional Tools
+## Điều gì xảy ra nếu thiếu công cụ tùy chọn
 
-| Missing Tool | Effect |
-| ---- | ---- |
-| **jq** | Commit validation, push protection, asset validation, and agent audit hooks silently skip their checks. Commits and pushes still work. |
-| **Python 3** | JSON data file validation in commit and asset hooks is skipped. Invalid JSON can be committed without warning. |
-| **Both** | All hooks still execute without error (exit 0) but provide no validation. You're flying without safety nets. |
+| Công cụ bị thiếu | Ảnh hưởng |
+|---|---|
+| **jq** | Xác thực commit, bảo vệ push, xác thực asset và hook audit agent sẽ âm thầm bỏ qua kiểm tra. Commit và push vẫn diễn ra bình thường. |
+| **Python 3** | Xác thực file dữ liệu JSON trong hook commit và asset bị bỏ qua. JSON không hợp lệ có thể bị commit mà không có cảnh báo. |
+| **Cả hai** | Tất cả các hook vẫn chạy mà không báo lỗi (exit 0) nhưng không cung cấp tính năng xác thực nào. Bạn đang hoạt động không có lưới bảo vệ an toàn. |
 
-## Recommended IDE
+## IDE Khuyến nghị
 
-Claude Code works with any editor, but the template is optimized for:
-- **VS Code** with the Claude Code extension
-- **Cursor** (Claude Code compatible)
-- Terminal-based Claude Code CLI
+Claude Code hoạt động với bất kỳ trình soạn thảo nào, nhưng template được tối ưu hóa cho:
+- **VS Code** kèm extension Claude Code
+- **Cursor** (tương thích Claude Code)
+- Giao diện dòng lệnh Terminal Claude Code CLI

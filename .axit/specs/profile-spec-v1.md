@@ -1,29 +1,29 @@
-# Axit Profile Spec v1
+# Đặc tả Axit Profile v1 (Axit Profile Spec v1)
 
-## Purpose
+## Mục đích (Purpose)
 
-A Profile is a compact **responsibility and decision lens** for Codex/Axit work.
+Một Profile là một **lăng kính quyết định và trách nhiệm** tinh gọn cho công việc trong Codex/Axit.
 
-A Profile answers:
+Một Profile trả lời các câu hỏi:
 
-- What responsibility is this role accountable for?
-- When should this lens be used?
-- What decisions belong to it?
-- What decisions are outside its scope?
-- What project context must be read before acting?
-- What evidence should it expect before accepting an outcome?
+- Vai trò này chịu trách nhiệm cho những nghĩa vụ nào?
+- Khi nào nên sử dụng lăng kính này?
+- Những quyết định nào thuộc thẩm quyền của nó?
+- Những quyết định nào nằm ngoài phạm vi của nó?
+- Ngữ cảnh dự án nào bắt buộc phải đọc trước khi hành động?
+- Bằng chứng nào nó kỳ vọng phải có trước khi chấp nhận kết quả?
 
-A Profile does **not** define a step-by-step procedure. Procedures belong in Skills and Workflows.
+Một Profile **không** định nghĩa quy trình từng bước. Quy trình từng bước thuộc về các Skill và Workflow.
 
-## Canonical location
+## Vị trí chuẩn mực (Canonical location)
 
 ```text
 .axit/core/profiles/<profile-id>/PROFILE.md
 ```
 
-Project-specific profiles may use the same contract under a project-owned profile directory later.
+Các profile đặc thù của dự án có thể sử dụng cùng một hợp đồng này dưới thư mục profile do dự án sở hữu sau này.
 
-## Required frontmatter
+## Frontmatter bắt buộc (Required frontmatter)
 
 ```yaml
 ---
@@ -34,95 +34,95 @@ status: active
 ---
 ```
 
-Required fields:
+Các trường bắt buộc:
 
-- `spec_version` — must be `axit.profile/v1` for this version.
-- `id` — stable lowercase kebab-case identifier.
-- `summary` — one sentence describing the responsibility.
-- `status` — `draft`, `active`, or `deprecated`.
+- `spec_version` — phải là `axit.profile/v1` cho phiên bản này.
+- `id` — định danh ổn định viết thường nối dấu gạch ngang kebab-case.
+- `summary` — một câu mô tả trách nhiệm.
+- `status` — `draft`, `active`, hoặc `deprecated`.
 
-Do not add fields merely because a provider supports them.
+Không thêm các trường chỉ vì một provider hỗ trợ chúng.
 
-## Required sections
+## Các phần bắt buộc (Required sections)
 
-Every Profile must contain these sections.
+Mỗi Profile phải chứa đầy đủ các phần sau.
 
 ### `# Responsibility`
 
-Defines the single broad responsibility the Profile owns.
+Xác định trách nhiệm bao quát duy nhất mà Profile sở hữu.
 
-A Profile should be understandable without reading another Profile.
+Một Profile phải có thể hiểu được mà không cần phải đọc một Profile khác.
 
 ### `# Use When`
 
-Short conditions that make this Profile relevant.
+Các điều kiện ngắn gọn khiến Profile này trở nên phù hợp.
 
-These are semantic triggers, not provider routing syntax.
+Đây là các kích hoạt ngữ nghĩa, không phải cú pháp định tuyến của provider.
 
 ### `# Do Not Use For`
 
-States cases that belong to another responsibility lens or do not justify loading this Profile.
+Nêu các trường hợp thuộc về lăng kính trách nhiệm khác hoặc không xứng đáng để nạp Profile này.
 
-This section prevents Profile overuse.
+Phần này giúp ngăn chặn việc lạm dụng Profile.
 
 ### `# Decisions Owned`
 
-Lists decision categories this Profile may analyze and recommend.
+Liệt kê các danh mục quyết định mà Profile này có thể phân tích và đưa ra khuyến nghị.
 
-The user remains the final authority for product/strategic decisions unless project rules explicitly say otherwise.
+Người dùng luôn là người có thẩm quyền cuối cùng cho các quyết định sản phẩm/chiến lược trừ khi các quy tắc của dự án chỉ định khác một cách rõ ràng.
 
 ### `# Boundaries`
 
-Lists actions/decisions the Profile must not silently take.
+Liệt kê các hành động/quyết định mà Profile không được phép âm thầm thực hiện.
 
-When a boundary is crossed, surface the conflict or request the appropriate responsibility/decision instead of inventing authority.
+Khi một ranh giới bị vượt qua, hãy báo cáo xung đột hoặc yêu cầu trách nhiệm/quyết định phù hợp thay vì tự tạo ra thẩm quyền.
 
 ### `# Context Requirements`
 
-Defines the minimum categories of project context that should be read when relevant.
+Xác định các danh mục ngữ cảnh dự án tối thiểu cần được đọc khi có liên quan.
 
-Use semantic categories such as:
+Sử dụng các danh mục ngữ nghĩa như:
 
-- project manifest;
-- accepted architecture registry entries;
-- relevant system design;
-- affected source/module boundaries;
-- current validation constraints.
+- manifest của dự án;
+- các mục registry kiến trúc đã được chấp thuận;
+- thiết kế hệ thống liên quan;
+- ranh giới module/source bị ảnh hưởng;
+- các ràng buộc xác thực hiện tại.
 
-Do not hardcode one repository layout into the Core Profile when a semantic category is enough.
+Không hardcode bố cục của một repository cụ thể vào Core Profile khi một danh mục ngữ nghĩa là đã đủ.
 
 ### `# Verification Expectations`
 
-Defines what evidence should exist before the Profile considers its responsibility satisfied.
+Xác định bằng chứng nào cần tồn tại trước khi Profile coi trách nhiệm của mình đã được thỏa mãn.
 
-Examples include:
+Ví dụ bao gồm:
 
-- architecture registry consistency;
-- explicit state ownership;
-- interface contract coverage;
-- performance/testability consequences documented;
-- affected deterministic checks identified.
+- tính nhất quán của registry kiến trúc;
+- quyền sở hữu trạng thái rõ ràng;
+- độ bao phủ hợp đồng giao diện (interface contract);
+- các hệ quả về hiệu năng/khả năng kiểm thử được ghi nhận;
+- các kiểm tra mang tính tất định (deterministic checks) bị ảnh hưởng đã được xác định.
 
-A Profile does not execute every verification itself; it defines the quality bar for its responsibility.
+Một Profile không tự mình thực thi mọi kiểm tra xác minh; nó định nghĩa chuẩn mực chất lượng cho trách nhiệm của nó.
 
 ### `# Escalation`
 
-Defines when the Profile should stop and surface a decision/conflict to the user or another responsibility lens.
+Xác định khi nào Profile nên dừng lại và báo cáo quyết định/xung đột lên người dùng hoặc lăng kính trách nhiệm khác.
 
-Escalation is semantic. Do not encode a fixed multi-agent hierarchy.
+Báo cáo mang tính ngữ nghĩa. Không mã hóa cứng một hệ thống phân cấp đa agent cố định.
 
-## Optional sections
+## Các phần tùy chọn (Optional sections)
 
-Use only when the first real Profile needs them:
+Chỉ sử dụng khi Profile thực tế đầu tiên cần đến:
 
-- `# Default Heuristics` — compact reusable decision principles.
-- `# Typical Outputs` — common artifacts or findings produced by this lens.
+- `# Default Heuristics` — các nguyên tắc quyết định có thể tái sử dụng tinh gọn.
+- `# Typical Outputs` — các sản phẩm hoặc phát hiện phổ biến do lăng kính này tạo ra.
 
-Avoid adding optional sections by default.
+Tránh thêm các phần tùy chọn theo mặc định.
 
-## Forbidden concerns
+## Các mối bận tâm bị cấm (Forbidden concerns)
 
-Core Profiles must not contain provider/runtime configuration such as:
+Core Profiles không được chứa cấu hình provider/runtime như:
 
 ```text
 tools: Read, Write, Bash
@@ -130,31 +130,31 @@ model: opus / sonnet / gpt-*
 maxTurns
 memory
 AskUserQuestion
-Task/subagent syntax
+Cú pháp Task/subagent
 slash commands
-provider permission syntax
+cú pháp phân quyền provider
 ```
 
-They must also avoid owning concerns that belong elsewhere:
+Chúng cũng phải tránh sở hữu những mối bận tâm thuộc về nơi khác:
 
 ```text
-step-by-step procedure        -> Skill
-multi-step composition        -> Workflow
-domain theory/reference       -> Knowledge
-project-specific constraints  -> Project Rules / Registry
-runtime authorization         -> Runtime/Harness policy
-Codex discovery metadata      -> Codex compatibility layer
+quy trình từng bước              -> Skill
+kết hợp đa bước                 -> Workflow
+lý thuyết/tham chiếu lĩnh vực   -> Knowledge
+ràng buộc đặc thù dự án         -> Project Rules / Registry
+cấp quyền runtime               -> Runtime/Harness policy
+metadata khám phá của Codex     -> Tầng tương thích Codex
 ```
 
-## Profile quality test
+## Bài kiểm tra chất lượng Profile
 
-Before a Profile is accepted into Core, all answers should be yes:
+Trước khi một Profile được chấp nhận vào Core, tất cả câu trả lời phải là có:
 
-1. Is the responsibility useful across materially different game projects?
-2. Is it distinct from existing Core Profiles?
-3. Can specialization usually be supplied through Skills/Knowledge instead of another Profile?
-4. Can the Profile remain engine-, genre-, network-, and provider-neutral?
-5. Does it have clear boundaries and escalation behavior?
-6. Does it define a meaningful verification quality bar?
+1. Trách nhiệm này có hữu ích trên các dự án game khác biệt thực tế không?
+2. Nó có phân biệt rõ ràng với các Core Profile hiện có không?
+3. Tính chuyên môn hóa có thể được cung cấp qua Skills/Knowledge thay vì thêm một Profile khác không?
+4. Profile có thể duy trì tính trung lập với engine, thể loại, network, và provider không?
+5. Nó có ranh giới và hành vi báo cáo rõ ràng không?
+6. Nó có định nghĩa chuẩn chất lượng xác minh có ý nghĩa không?
 
-If not, keep the behavior project/domain-specific or represent it as a Skill/Knowledge artifact instead.
+Nếu không, hãy giữ hành vi đó thuộc về đặc thù dự án/lĩnh vực hoặc thể hiện nó dưới dạng sản phẩm Skill/Knowledge.

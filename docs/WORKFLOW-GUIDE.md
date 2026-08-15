@@ -1,73 +1,67 @@
-# Claude Code Game Studios -- Complete Workflow Guide
+# Claude Code Game Studios -- Hướng dẫn Workflow hoàn chỉnh
 
-> **How to go from zero to a shipped game using the Agent Architecture.**
+> **Làm thế nào để đi từ con số 0 đến một tựa game hoàn chỉnh phát hành bằng Kiến trúc Agent.**
 >
-> This guide walks you through every phase of game development using the
-> 49-agent system, 73 slash commands, and 12 automated hooks. It assumes you
-> have Claude Code installed and are working from the project root.
+> Hướng dẫn này sẽ dẫn dắt bạn qua từng giai đoạn phát triển game bằng hệ thống 49 agent, 73 slash command và 12 hook tự động. Tài liệu giả định bạn đã cài đặt Claude Code và đang làm việc từ thư mục gốc của dự án.
 >
-> The pipeline has 7 phases. Each phase has a formal gate (`/gate-check`)
-> that must pass before you advance. The authoritative phase sequence is
-> defined in `.claude/docs/workflow-catalog.yaml` and read by `/help`.
+> Pipeline bao gồm 7 giai đoạn. Mỗi giai đoạn đều có một cổng kiểm soát chính thức (`/gate-check`) phải vượt qua trước khi tiến bước. Trình tự giai đoạn chuẩn được định nghĩa trong `.claude/docs/workflow-catalog.yaml` và được đọc bởi `/help`.
 
 ---
 
-## Table of Contents
+## Mục lục
 
-1. [Quick Start](#quick-start)
-2. [Phase 1: Concept](#phase-1-concept)
-3. [Phase 2: Systems Design](#phase-2-systems-design)
-4. [Phase 3: Technical Setup](#phase-3-technical-setup)
-5. [Phase 4: Pre-Production](#phase-4-pre-production)
-6. [Phase 5: Production](#phase-5-production)
-7. [Phase 6: Polish](#phase-6-polish)
-8. [Phase 7: Release](#phase-7-release)
-9. [Cross-Cutting Concerns](#cross-cutting-concerns)
-10. [Appendix A: Agent Quick-Reference](#appendix-a-agent-quick-reference)
-11. [Appendix B: Slash Command Quick-Reference](#appendix-b-slash-command-quick-reference)
-12. [Appendix C: Common Workflows](#appendix-c-common-workflows)
+1. [Bắt đầu nhanh (Quick Start)](#bắt-đầu-nhanh-quick-start)
+2. [Giai đoạn 1: Ý tưởng (Phase 1: Concept)](#giai-đoạn-1-ý-tưởng-phase-1-concept)
+3. [Giai đoạn 2: Thiết kế hệ thống (Phase 2: Systems Design)](#giai-đoạn-2-thiết-kế-hệ-thống-phase-2-systems-design)
+4. [Giai đoạn 3: Thiết lập kỹ thuật (Phase 3: Technical Setup)](#giai-đoạn-3-thiết-lập-kỹ-thuật-phase-3-technical-setup)
+5. [Giai đoạn 4: Tiền sản xuất (Phase 4: Pre-Production)](#giai-đoạn-4-tiền-sản-xuất-phase-4-pre-production)
+6. [Giai đoạn 5: Sản xuất (Phase 5: Production)](#giai-đoạn-5-sản-xuất-phase-5-production)
+7. [Giai đoạn 6: Đánh bóng (Phase 6: Polish)](#giai-đoạn-6-đánh-bóng-phase-6-polish)
+8. [Giai đoạn 7: Phát hành (Phase 7: Release)](#giai-đoạn-7-phát-hành-phase-7-release)
+9. [Các vấn đề xuyên suốt (Cross-Cutting Concerns)](#các-vấn-đề-xuyên-suốt-cross-cutting-concerns)
+10. [Phụ lục A: Tra cứu nhanh Agent](#phụ-lục-a-tra-cứu-nhanh-agent)
+11. [Phụ lục B: Tra cứu nhanh Slash Command](#phụ-lục-b-tra-cứu-nhanh-slash-command)
+12. [Phụ lục C: Các Workflow phổ biến](#phụ-lục-c-các-workflow-phổ-biến)
 
 ---
 
-## Quick Start
+## Bắt đầu nhanh (Quick Start)
 
-### What You Need
+### Những gì bạn cần chuẩn bị
 
-Before you start, make sure you have:
+Trước khi bắt đầu, hãy đảm bảo bạn có:
 
-- **Claude Code** installed and working
-- **Git** with Git Bash (Windows) or standard terminal (Mac/Linux)
-- **jq** (optional but recommended -- hooks fall back to `grep` if missing)
-- **Python 3** (optional -- some hooks use it for JSON validation)
+- **Claude Code** đã cài đặt và hoạt động tốt
+- **Git** với Git Bash (trên Windows) hoặc terminal tiêu chuẩn (trên Mac/Linux)
+- **jq** (tùy chọn nhưng khuyến nghị -- hook sẽ dùng `grep` dự phòng nếu thiếu)
+- **Python 3** (tùy chọn -- một số hook dùng để xác thực JSON)
 
-### Step 1: Clone and Open
+### Bước 1: Clone và Mở dự án
 
 ```bash
 git clone <repo-url> my-game
 cd my-game
 ```
 
-### Step 2: Run /start
+### Bước 2: Chạy /start
 
-If this is your first session:
+Nếu đây là phiên làm việc đầu tiên của bạn:
 
 ```
 /start
 ```
 
-This guided onboarding asks where you are and routes you to the right phase:
+Quy trình onboarding có hướng dẫn này sẽ hỏi về tình trạng hiện tại và điều hướng bạn tới đúng giai đoạn:
 
-- **Path A** -- No idea yet: routes to `/brainstorm`
-- **Path B** -- Vague idea: routes to `/brainstorm` with seed
-- **Path C** -- Clear concept: routes to `/setup-engine` and `/map-systems`
-- **Path D1** -- Existing project, few artifacts: normal flow
-- **Path D2** -- Existing project, GDDs/ADRs exist: runs `/project-stage-detect`
-  then `/adopt` for brownfield migration
+- **Nhánh A** -- Chưa có ý tưởng: chuyển tới `/brainstorm`
+- **Nhánh B** -- Đã có ý tưởng sơ khai: chuyển tới `/brainstorm` với hạt giống ý tưởng (seed)
+- **Nhánh C** -- Đã có concept rõ ràng: chuyển tới `/setup-engine` và `/map-systems`
+- **Nhánh D1** -- Dự án đã có, ít tài liệu: luồng làm việc thông thường
+- **Nhánh D2** -- Dự án đã có, đã có GDD/ADR: chạy `/project-stage-detect` sau đó chạy `/adopt` để tiếp nhận dự án cũ (brownfield migration)
 
-### Step 3: Verify Hooks Are Working
+### Bước 3: Xác minh Hooks đang hoạt động
 
-Start a new Claude Code session. You should see output from the
-`session-start.sh` hook:
+Khởi động một phiên Claude Code mới. Bạn sẽ thấy output từ hook `session-start.sh`:
 
 ```
 === Claude Code Game Studios -- Session Context ===
@@ -77,78 +71,69 @@ Recent commits:
 ===================================
 ```
 
-If you see this, hooks are working. If not, check `.claude/settings.json` to
-make sure the hook paths are correct for your OS.
+Nếu bạn thấy thông điệp này, hooks đang hoạt động tốt. Nếu không, hãy kiểm tra `.claude/settings.json` để đảm bảo đường dẫn hook chính xác cho hệ điều hành của bạn.
 
-### Step 4: Ask for Help Anytime
+### Bước 4: Nhận trợ giúp bất cứ lúc nào
 
-At any point, run:
+Tại bất kỳ thời điểm nào, hãy chạy:
 
 ```
 /help
 ```
 
-This reads your current phase from `production/stage.txt`, checks which
-artifacts exist, and tells you exactly what to do next. It distinguishes
-between REQUIRED next steps and OPTIONAL opportunities.
+Lệnh này sẽ đọc giai đoạn hiện tại từ `production/stage.txt`, kiểm tra xem tài liệu sản phẩm nào đã tồn tại, và chỉ dẫn chính xác những việc bạn cần làm tiếp theo. Nó phân biệt rõ ràng giữa các bước BẮT BUỘC (REQUIRED) và các cơ hội TÙY CHỌN (OPTIONAL).
 
-### Step 5: Create Your Directory Structure
+### Bước 5: Tạo cấu trúc thư mục của bạn
 
-Directories are created as needed. The system expects this layout:
+Các thư mục sẽ được tạo khi có nhu cầu. Hệ thống kỳ vọng bố cục cấu trúc sau:
 
 ```
-src/                  # Game source code
-  core/               # Engine/framework code
-  gameplay/           # Gameplay systems
-  ai/                 # AI systems
-  networking/         # Multiplayer code
-  ui/                 # UI code
-  tools/              # Dev tools
-assets/               # Game assets
+src/                  # Source code của game
+  core/               # Code nền tảng/engine/framework
+  gameplay/           # Hệ thống gameplay
+  ai/                 # Hệ thống AI
+  networking/         # Code nhiều người chơi (multiplayer)
+  ui/                 # Code giao diện người dùng
+  tools/              # Công cụ dev nội bộ
+assets/               # Tài nguyên game (Assets)
   art/                # Sprites, models, textures
-  audio/              # Music, SFX
-  vfx/                # Particle effects
-  shaders/            # Shader files
-  data/               # JSON config/balance data
-design/               # Design documents
-  gdd/                # Game design documents
-  narrative/          # Story, lore, dialogue
-  levels/             # Level design documents
-  balance/            # Balance spreadsheets and data
-  ux/                 # UX specifications
-docs/                 # Technical documentation
-  architecture/       # Architecture Decision Records
-  api/                # API documentation
-  postmortems/        # Post-mortems
-tests/                # Test suites
-prototypes/           # Throwaway prototypes
-production/           # Sprint plans, milestones, releases
+  audio/              # Nhạc nền, âm thanh SFX
+  vfx/                # Hiệu ứng hạt (Particle effects)
+  shaders/            # File Shader
+  data/               # Dữ liệu cân bằng/cấu hình JSON
+design/               # Tài liệu thiết kế (Design documents)
+  gdd/                # Game design documents (GDD)
+  narrative/          # Cốt truyện, lore, hội thoại
+  levels/             # Tài liệu thiết kế màn chơi
+  balance/            # Bảng tính và dữ liệu cân bằng
+  ux/                 # Đặc tả UX
+docs/                 # Tài liệu kỹ thuật
+  architecture/       # Architecture Decision Records (ADRs)
+  api/                # Tài liệu API
+  postmortems/        # Báo cáo tổng kết sau dự án
+tests/                # Bộ kiểm thử (Test suites)
+prototypes/           # Bản mẫu thử nghiệm ngắn hạn
+production/           # Kế hoạch sprint, milestones, phát hành
   sprints/
   milestones/
   releases/
-  epics/              # Epic and story files (from /create-epics + /create-stories)
-  playtests/          # Playtest reports
-  session-state/      # Ephemeral session state (gitignored)
-  session-logs/       # Session audit trail (gitignored)
+  epics/              # Các file Epic và Story (từ /create-epics + /create-stories)
+  playtests/          # Báo cáo chơi thử (Playtest reports)
+  session-state/      # Trạng thái phiên làm việc ngắn hạn (gitignored)
+  session-logs/       # Audit trail của phiên làm việc (gitignored)
 ```
 
-> **Tip:** You do not need all of these on day one. Create directories as you
-> reach the phase that needs them. The important thing is to follow this
-> structure when you do create them, because the **rules system** enforces
-> standards based on file paths. Code in `src/gameplay/` gets gameplay rules,
-> code in `src/ai/` gets AI rules, and so on.
+> **Mẹo:** Bạn không cần tạo tất cả các thư mục này ngay ngày đầu tiên. Hãy tạo chúng khi bạn tiến đến giai đoạn cần dùng. Điều quan trọng là phải tuân theo cấu trúc này khi tạo, bởi vì **hệ thống rules** thực thi các tiêu chuẩn dựa trên đường dẫn file. Code trong `src/gameplay/` sẽ áp dụng rules gameplay, code trong `src/ai/` sẽ áp dụng rules AI, v.v.
 
 ---
 
-## Phase 1: Concept
+## Giai đoạn 1: Ý tưởng (Phase 1: Concept)
 
-### What Happens in This Phase
+### Những gì diễn ra trong giai đoạn này
 
-You go from "no idea" or "vague idea" to a structured game concept document
-with defined pillars and a player journey. This is where you figure out
-**what** you are making and **why**.
+Bạn đi từ chỗ "chưa có ý tưởng" hoặc "ý tưởng mơ hồ" tới một tài liệu concept game có cấu trúc với các trụ cột (pillars) và hành trình người chơi được xác định rõ ràng. Đây là lúc bạn xác định **bạn đang làm gì** và **tại sao**.
 
-### Phase 1 Pipeline
+### Pipeline Giai đoạn 1
 
 ```
 /brainstorm  -->  game-concept.md  -->  /design-review  -->  /setup-engine
@@ -172,121 +157,109 @@ with defined pillars and a player journey. This is where you figure out
                                                              priority tiers)
 ```
 
-### Step 1.1: Brainstorm With /brainstorm
+### Bước 1.1: Brainstorm với /brainstorm
 
-This is your starting point. Run the brainstorm skill:
+Đây là điểm khởi đầu của bạn. Chạy skill brainstorm:
 
 ```
 /brainstorm
 ```
 
-Or with a genre hint:
+Hoặc kèm theo gợi ý thể loại:
 
 ```
 /brainstorm roguelike deckbuilder
 ```
 
-**What happens:** The brainstorm skill guides you through a collaborative 6-phase
-ideation process using professional studio techniques:
+**Điều gì diễn ra:** Skill brainstorm sẽ dẫn dắt bạn qua quy trình tư duy cộng tác 6 giai đoạn áp dụng các kỹ thuật studio chuyên nghiệp:
 
-1. Asks about your interests, themes, and constraints
-2. Generates 10 concept seeds with MDA (Mechanics, Dynamics, Aesthetics) analysis
-3. You pick 2-3 favorites for deep analysis
-4. Performs player motivation mapping and audience targeting
-5. You choose the winning concept
-6. Formalizes it into `design/gdd/game-concept.md`
+1. Đặt câu hỏi về sở thích, chủ đề và các ràng buộc của bạn
+2. Tạo ra 10 hạt giống ý tưởng kèm phân tích MDA (Mechanics, Dynamics, Aesthetics)
+3. Bạn chọn 2-3 ý tưởng yêu thích để phân tích sâu
+4. Thực hiện lập sơ đồ động lực người chơi và nhắm mục tiêu đối tượng
+5. Bạn chọn ý tưởng chiến thắng cuối cùng
+6. Chuẩn hóa thành file `design/gdd/game-concept.md`
 
-The concept document includes:
+Tài liệu concept bao gồm:
 
-- Elevator pitch (one sentence)
-- Core fantasy (what the player imagines themselves doing)
-- MDA breakdown
-- Target audience (Bartle types, demographics)
-- Core loop diagram
-- Unique selling proposition
-- Comparable titles and differentiation
-- Game pillars (3-5 non-negotiable design values)
-- Anti-pillars (things the game intentionally avoids)
+- Elevator pitch (tóm tắt trong một câu)
+- Cảm xúc trải nghiệm cốt lõi (Core fantasy - người chơi tưởng tượng mình đang làm gì)
+- Phân tích chi tiết MDA
+- Đối tượng mục tiêu (Bartle types, nhân khẩu học)
+- Sơ đồ vòng lặp cốt lõi (Core loop diagram)
+- Điểm bán hàng độc nhất (Unique selling proposition - USP)
+- Các tựa game tương đương và điểm khác biệt
+- Các trụ cột của game (3-5 giá trị thiết kế không thể thương lượng)
+- Các phản trụ cột (Anti-pillars - những điều trò chơi chủ ý né tránh)
 
-### Step 1.2: Review the Concept (Optional but Recommended)
+### Bước 1.2: Đánh giá Concept (Tùy chọn nhưng khuyến nghị)
 
 ```
 /design-review design/gdd/game-concept.md
 ```
 
-Validates structure and completeness before you proceed.
+Xác thực cấu trúc và tính đầy đủ trước khi bạn tiếp tục.
 
-### Step 1.3: Choose Your Engine
+### Bước 1.3: Chọn Game Engine
 
 ```
 /setup-engine
 ```
 
-Or with a specific engine:
+Hoặc chỉ định engine cụ thể:
 
 ```
 /setup-engine godot 4.6
 ```
 
-**What /setup-engine does:**
+**Những gì /setup-engine thực hiện:**
 
-- Populates `.claude/docs/technical-preferences.md` with naming conventions,
-  performance budgets, and engine-specific defaults
-- Detects knowledge gaps (engine version newer than LLM training data) and
-  advises cross-referencing `docs/engine-reference/`
-- Creates version-pinned reference docs in `docs/engine-reference/`
+- Điền thông tin vào `.claude/docs/technical-preferences.md` với quy ước đặt tên, giới hạn hiệu năng, và các mặc định theo engine
+- Phát hiện khoảng trống kiến thức (phiên bản engine mới hơn dữ liệu huấn luyện của LLM) và khuyên bạn đối chiếu `docs/engine-reference/`
+- Tạo các tài liệu tham chiếu đã ghim phiên bản trong `docs/engine-reference/`
 
-**Why this matters:** Once you set the engine, the system knows which
-engine-specialist agents to use. If you pick Godot, agents like
-`godot-specialist`, `godot-gdscript-specialist`, and `godot-shader-specialist`
-become your go-to experts.
+**Tại sao điều này quan trọng:** Sau khi bạn thiết lập engine, hệ thống sẽ biết nên sử dụng những agent chuyên viên engine nào. Nếu bạn chọn Godot, các agent như `godot-specialist`, `godot-gdscript-specialist`, và `godot-shader-specialist` sẽ trở thành chuyên gia đồng hành cùng bạn.
 
-### Step 1.4: Decompose Your Concept Into Systems
+### Bước 1.4: Phân rã Concept thành các Hệ thống (Decompose into Systems)
 
-Before writing individual GDDs, enumerate all the systems your game needs:
+Trước khi viết từng GDD riêng lẻ, hãy liệt kê tất cả các hệ thống mà trò chơi cần:
 
 ```
 /map-systems
 ```
 
-This creates `design/gdd/systems-index.md` -- a master tracking document that:
+Lệnh này tạo ra file `design/gdd/systems-index.md` -- một tài liệu tổng thể giúp:
 
-- Lists every system your game needs (combat, movement, UI, etc.)
-- Maps dependencies between systems
-- Assigns priority tiers (MVP, Vertical Slice, Alpha, Full Vision)
-- Determines design order (Foundation > Core > Feature > Presentation > Polish)
+- Liệt kê mọi hệ thống game cần có (combat, movement, UI, v.v.)
+- Lập sơ đồ phụ thuộc giữa các hệ thống
+- Phân tầng ưu tiên (MVP, Vertical Slice, Alpha, Full Vision)
+- Xác định thứ tự thiết kế (Foundation > Core > Feature > Presentation > Polish)
 
-This step is **required** before proceeding to Phase 2. Research from 155 game
-postmortems confirms that skipping systems enumeration costs 5-10x more in
-production.
+Bước này là **bắt buộc** trước khi chuyển sang Giai đoạn 2. Nghiên cứu từ 155 báo cáo tổng kết game (postmortems) xác nhận rằng việc bỏ qua khâu liệt kê hệ thống sẽ làm tốn kém gấp 5-10 lần chi phí trong giai đoạn sản xuất.
 
-### Phase 1 Gate
+### Cổng Giai đoạn 1 (Phase 1 Gate)
 
 ```
 /gate-check concept
 ```
 
-**Requirements to pass:**
+**Yêu cầu để vượt qua:**
 
-- Engine configured in `technical-preferences.md`
-- `design/gdd/game-concept.md` exists with pillars
-- `design/gdd/systems-index.md` exists with dependency ordering
+- Engine đã được cấu hình trong `technical-preferences.md`
+- `design/gdd/game-concept.md` đã tồn tại kèm theo các trụ cột
+- `design/gdd/systems-index.md` đã tồn tại kèm thứ tự phụ thuộc
 
-**Verdict:** PASS / CONCERNS / FAIL. CONCERNS is passable with acknowledged
-risks. FAIL blocks advancement.
+**Kết luận:** PASS / CONCERNS / FAIL. CONCERNS có thể vượt qua nếu chấp nhận các rủi ro đã ghi nhận. FAIL sẽ chặn việc chuyển giai đoạn.
 
 ---
 
-## Phase 2: Systems Design
+## Giai đoạn 2: Thiết kế hệ thống (Phase 2: Systems Design)
 
-### What Happens in This Phase
+### Những gì diễn ra trong giai đoạn này
 
-You create all the design documents that define how your game works. Nothing
-gets coded yet -- this is pure design. Each system identified in the systems
-index gets its own GDD, authored section by section, reviewed individually,
-and then all GDDs are cross-checked for consistency.
+Bạn tạo ra tất cả các tài liệu thiết kế xác định cách thức trò chơi hoạt động. Chưa có dòng code nào được viết — đây là khâu thiết kế thuần túy. Mỗi hệ thống được xác định trong `systems-index` sẽ có GDD riêng, được soạn thảo từng phần, được đánh giá riêng lẻ, và sau đó tất cả GDD sẽ được kiểm tra chéo về tính nhất quán.
 
-### Phase 2 Pipeline
+### Pipeline Giai đoạn 2
 
 ```
 /map-systems next  -->  /design-system  -->  /design-review
@@ -296,7 +269,7 @@ and then all GDDs are cross-checked for consistency.
   from systems-index   GDD authoring          required sections
                        (incremental writes)   APPROVED/NEEDS REVISION
        |
-       |  (repeat for each MVP system)
+       |  (lặp lại cho từng hệ thống MVP)
        v
 /review-all-gdds
        |
@@ -305,138 +278,127 @@ and then all GDDs are cross-checked for consistency.
   PASS / CONCERNS / FAIL
 ```
 
-### Step 2.1: Author System GDDs
+### Bước 2.1: Soạn thảo System GDDs
 
-Design each system in dependency order using the guided workflow:
+Thiết kế từng hệ thống theo thứ tự phụ thuộc bằng workflow có hướng dẫn:
 
 ```
 /map-systems next
 ```
 
-This picks the highest-priority undesigned system and hands off to
-`/design-system`, which guides you through creating its GDD section by section.
+Lệnh này chọn hệ thống chưa được thiết kế có độ ưu tiên cao nhất và chuyển giao sang `/design-system`, hướng dẫn bạn tạo GDD từng phần một.
 
-You can also design a specific system directly:
+Bạn cũng có thể trực tiếp thiết kế một hệ thống cụ thể:
 
 ```
 /design-system combat-system
 ```
 
-**What /design-system does:**
+**Những gì /design-system thực hiện:**
 
-1. Reads your game concept, systems index, and any upstream/downstream GDDs
-2. Runs a Technical Feasibility Pre-Check (domain mapping + feasibility brief)
-3. Walks you through each of the 8 required GDD sections one at a time
-4. Each section follows: Context > Questions > Options > Decision > Draft > Approval > Write
-5. Each section is written to file immediately after approval (survives crashes)
-6. Flags conflicts with existing approved GDDs
-7. Routes to specialist agents per category (systems-designer for math,
-   economy-designer for economy, narrative-director for story systems)
+1. Đọc game concept, systems index, và các GDD liên quan ở thượng nguồn/hạ nguồn
+2. Chạy kiểm tra sơ bộ tính khả thi kỹ thuật (Technical Feasibility Pre-Check)
+3. Hướng dẫn bạn qua từng phần trong số 8 phần bắt buộc của GDD
+4. Mỗi phần tuân theo: Ngữ cảnh > Câu hỏi > Lựa chọn > Quyết định > Bản thảo > Phê duyệt > Ghi file
+5. Mỗi phần được ghi ngay vào file sau khi phê duyệt (bảo toàn khi có sự cố)
+6. Cảnh báo các xung đột với những GDD đã duyệt trước đó
+7. Điều hướng đến các agent chuyên viên theo danh mục (`systems-designer` cho công thức toán học, `economy-designer` cho kinh tế, `narrative-director` cho hệ thống cốt truyện)
 
-**The 8 required GDD sections:**
+**8 phần bắt buộc của GDD:**
 
-| # | Section | What Goes Here |
-|---|---------|---------------|
-| 1 | **Overview** | One-paragraph summary of the system |
-| 2 | **Player Fantasy** | What the player imagines/feels when using this system |
-| 3 | **Detailed Rules** | Unambiguous mechanical rules |
-| 4 | **Formulas** | Every calculation, with variable definitions and ranges |
-| 5 | **Edge Cases** | What happens in weird situations? Explicitly resolved. |
-| 6 | **Dependencies** | What other systems this connects to (bidirectional) |
-| 7 | **Tuning Knobs** | Which values designers can safely change, with safe ranges |
-| 8 | **Acceptance Criteria** | How do you test that this works? Specific, measurable. |
+| # | Mục | Nội dung cần có |
+|---|---|---|
+| 1 | **Tổng quan (Overview)** | Một đoạn văn tóm tắt hệ thống |
+| 2 | **Cảm xúc người chơi (Player Fantasy)** | Người chơi tưởng tượng/cảm thấy gì khi sử dụng hệ thống này |
+| 3 | **Quy tắc chi tiết (Detailed Rules)** | Các quy tắc cơ chế rõ ràng, không mơ hồ |
+| 4 | **Công thức (Formulas)** | Mọi phép tính toán, kèm định nghĩa biến và phạm vi giá trị |
+| 5 | **Trường hợp biên (Edge Cases)** | Điều gì xảy ra trong các tình huống bất thường? Phải giải quyết rõ ràng. |
+| 6 | **Phụ thuộc (Dependencies)** | Kết nối với những hệ thống nào khác (hai chiều) |
+| 7 | **Tham số tinh chỉnh (Tuning Knobs)** | Những giá trị nào designer có thể chỉnh sửa an toàn, kèm khoảng giá trị an toàn |
+| 8 | **Tiêu chí chấp nhận (Acceptance Criteria)** | Làm sao kiểm thử hệ thống hoạt động đúng? Phải cụ thể, đo lường được. |
 
-Plus a **Game Feel** section: feel reference, input responsiveness (ms/frames),
-animation feel targets (startup/active/recovery), impact moments, weight profile.
+Kèm theo mục **Cảm giác chơi (Game Feel)**: tham chiếu cảm giác, độ phản hồi input (ms/frames), mục tiêu hoạt ảnh (startup/active/recovery), khoảnh khắc tác động, trọng lượng chuyển động.
 
-### Step 2.2: Review Each GDD
+### Bước 2.2: Đánh giá từng GDD
 
-Before the next system starts, validate the current one:
+Trước khi bắt đầu hệ thống tiếp theo, hãy xác thực hệ thống hiện tại:
 
 ```
 /design-review design/gdd/combat-system.md
 ```
 
-Checks all 8 sections for completeness, formula clarity, edge case resolution,
-bidirectional dependencies, and testable acceptance criteria.
+Kiểm tra cả 8 phần về tính đầy đủ, độ rõ ràng của công thức, giải quyết trường hợp biên, phụ thuộc hai chiều và tiêu chí chấp nhận có thể kiểm thử được.
 
-**Verdict:** APPROVED / NEEDS REVISION / MAJOR REVISION. Only APPROVED GDDs
-should proceed.
+**Kết luận:** APPROVED / NEEDS REVISION / MAJOR REVISION. Chỉ những GDD đạt APPROVED mới nên đi tiếp.
 
-### Step 2.3: Small Changes Without Full GDDs
+### Bước 2.3: Các thay đổi nhỏ không cần GDD đầy đủ
 
-For tuning changes, small additions, or tweaks that do not warrant a full GDD:
+Đối với các tinh chỉnh số liệu, bổ sung nhỏ không cần tới một GDD hoàn chỉnh:
 
 ```
-/quick-design "add 10% damage bonus for flanking attacks"
+/quick-design "thêm 10% sát thương thưởng cho đòn đánh bọc sườn"
 ```
 
-This creates a lightweight spec in `design/quick-specs/` instead of a full
-8-section GDD. Use it for tuning, number changes, and small additions.
+Lệnh này tạo một đặc tả tinh gọn trong `design/quick-specs/` thay vì tạo GDD 8 phần đầy đủ.
 
-### Step 2.4: Cross-GDD Consistency Review
+### Bước 2.4: Đánh giá tính nhất quán xuyên suốt các GDD
 
-After all MVP system GDDs are approved individually:
+Sau khi tất cả các GDD của hệ thống MVP được duyệt riêng lẻ:
 
 ```
 /review-all-gdds
 ```
 
-This reads ALL GDDs simultaneously and runs two analysis phases:
+Lệnh này đọc TẤT CẢ các GDD cùng lúc và chạy hai giai đoạn phân tích:
 
-**Phase 1 -- Cross-GDD Consistency:**
-- Dependency bidirectionality (A references B, does B reference A?)
-- Rule contradictions between systems
-- Stale references to renamed or removed systems
-- Ownership conflicts (two systems claiming the same responsibility)
-- Formula range compatibility (does System A's output fit System B's input?)
-- Acceptance criteria cross-check
+**Phase 1 -- Tính nhất quán chéo giữa các GDD:**
+- Tính hai chiều của phụ thuộc (A tham chiếu B, B có tham chiếu A không?)
+- Mâu thuẫn quy tắc giữa các hệ thống
+- Tham chiếu cũ tới các hệ thống đã đổi tên hoặc xóa
+- Xung đột quyền sở hữu (hai hệ thống cùng nhận một trách nhiệm)
+- Tương thích phạm vi công thức (đầu ra của Hệ thống A có khớp đầu vào Hệ thống B?)
+- Kiểm tra chéo tiêu chí chấp nhận
 
-**Phase 2 -- Design Theory (Game Design Holism):**
-- Competing progression loops (do two systems fight for the same reward space?)
-- Cognitive load (more than 4 active systems at once?)
-- Dominant strategies (one approach that makes all others irrelevant)
-- Economic loop analysis (sources and sinks balanced?)
-- Difficulty curve consistency across systems
-- Pillar alignment and anti-pillar violations
-- Player fantasy coherence
+**Phase 2 -- Lý thuyết thiết kế game (Game Design Holism):**
+- Các vòng lặp tiến trình cạnh tranh nhau (hai hệ thống có tranh giành cùng một không gian phần thưởng?)
+- Tải trọng nhận thức (Cognitive load - có quá 4 hệ thống hoạt động cùng lúc không?)
+- Chiến lược áp đảo (Dominant strategies - một cách chơi làm lu mờ tất cả cách khác)
+- Phân tích vòng lặp kinh tế (nguồn tạo tiền và nguồn tiêu tiền có cân bằng?)
+- Tính nhất quán của đường cong độ khó trên các hệ thống
+- Sự liên kết với trụ cột và vi phạm phản trụ cột
+- Sự mạch lạc của trải nghiệm người chơi
 
-**Output:** `design/gdd/gdd-cross-review-[date].md` with a verdict.
+**Đầu ra:** `design/gdd/gdd-cross-review-[date].md` kèm kết luận.
 
-### Step 2.5: Narrative Design (If Applicable)
+### Bước 2.5: Thiết kế cốt truyện (Nếu có)
 
-If your game has story, lore, or dialogue, this is when you build it:
+Nếu trò chơi của bạn có cốt truyện, truyền thuyết lore, hoặc hội thoại:
 
-1. **World-building** -- Use `world-builder` to define factions, history,
-   geography, and rules of your world
-2. **Story structure** -- Use `narrative-director` to design story arcs,
-   character arcs, and narrative beats
-3. **Character sheets** -- Use the `narrative-character-sheet.md` template
+1. **Xây dựng thế giới (World-building)** -- Sử dụng `world-builder` để xác định phe phái, lịch sử, địa lý và quy tắc thế giới
+2. **Cấu trúc cốt truyện (Story structure)** -- Sử dụng `narrative-director` để thiết kế các tuyến truyện (arcs), tuyến nhân vật và các nhịp tự sự (narrative beats)
+3. **Hồ sơ nhân vật (Character sheets)** -- Sử dụng template `narrative-character-sheet.md`
 
-### Phase 2 Gate
+### Cổng Giai đoạn 2 (Phase 2 Gate)
 
 ```
 /gate-check systems-design
 ```
 
-**Requirements to pass:**
+**Yêu cầu để vượt qua:**
 
-- All MVP systems in `systems-index.md` have `Status: Approved`
-- Each MVP system has a reviewed GDD
-- Cross-GDD review report exists (`design/gdd/gdd-cross-review-*.md`)
-  with verdict of PASS or CONCERNS (not FAIL)
+- Tất cả các hệ thống MVP trong `systems-index.md` đều có `Status: Approved`
+- Mỗi hệ thống MVP đều có GDD đã được đánh giá
+- Báo cáo đánh giá chéo GDD đã tồn tại (`design/gdd/gdd-cross-review-*.md`) với kết luận PASS hoặc CONCERNS (không được là FAIL)
 
 ---
 
-## Phase 3: Technical Setup
+## Giai đoạn 3: Thiết lập kỹ thuật (Phase 3: Technical Setup)
 
-### What Happens in This Phase
+### Những gì diễn ra trong giai đoạn này
 
-You make key technical decisions, document them as Architecture Decision Records
-(ADRs), validate them through review, and produce a control manifest that
-gives programmers flat, actionable rules. You also establish UX foundations.
+Bạn đưa ra các quyết định kỹ thuật quan trọng, ghi lại dưới dạng Hồ sơ quyết định kiến trúc (Architecture Decision Records - ADRs), xác thực qua đánh giá, và tạo ra một control manifest cung cấp các quy tắc rõ ràng, có thể thực thi cho lập trình viên. Bạn cũng thiết lập các nền tảng UX.
 
-### Phase 3 Pipeline
+### Pipeline Giai đoạn 3
 
 ```
 /create-architecture  -->  /architecture-decision (x N)  -->  /architecture-review
@@ -453,114 +415,104 @@ gives programmers flat, actionable rules. You also establish UX foundations.
                                                          Flat programmer rules
                                                          docs/architecture/
                                                          control-manifest.md
-        Also in this phase:
+        Các phần khác trong giai đoạn này:
         -------------------
         /ux-design  -->  /ux-review
-        Accessibility requirements doc
-        Interaction pattern library
+        Tài liệu yêu cầu Accessibility
+        Thư viện Interaction pattern library
 ```
 
-### Step 3.1: Master Architecture Document
+### Bước 3.1: Tài liệu Kiến trúc tổng thể
 
 ```
 /create-architecture
 ```
 
-Creates the overarching architecture document in `docs/architecture/architecture.md`
-covering system boundaries, data flow, and integration points.
+Tạo tài liệu kiến trúc bao quát trong `docs/architecture/architecture.md` bao gồm ranh giới hệ thống, luồng dữ liệu và các điểm tích hợp.
 
-### Step 3.2: Architecture Decision Records (ADRs)
+### Bước 3.2: Hồ sơ quyết định kiến trúc (ADRs)
 
-For each significant technical decision:
+Cho từng quyết định kỹ thuật quan trọng:
 
 ```
-/architecture-decision "State Machine vs Behavior Tree for NPC AI"
+/architecture-decision "State Machine vs Behavior Tree cho NPC AI"
 ```
 
-**What happens:** The skill guides you through creating an ADR with:
-- Context and decision drivers
-- All options with pros/cons and engine compatibility
-- Chosen option with rationale
-- Consequences (positive, negative, risks)
-- Dependencies (Depends On, Enables, Blocks, Ordering Note)
-- GDD Requirements Addressed (linked by TR-ID)
+**Điều gì diễn ra:** Skill hướng dẫn bạn tạo một ADR bao gồm:
+- Bối cảnh và các yếu tố thúc đẩy quyết định
+- Tất cả các lựa chọn kèm ưu/nhược điểm và độ tương thích engine
+- Lựa chọn được chọn kèm lập luận
+- Hệ quả (tích cực, tiêu cực, rủi ro)
+- Phụ thuộc (Depends On, Enables, Blocks, Ordering Note)
+- Yêu cầu GDD được giải quyết (liên kết qua TR-ID)
 
-ADRs go through a lifecycle: Proposed > Accepted > Superseded/Deprecated.
+ADRs trải qua vòng đời: Proposed > Accepted > Superseded/Deprecated.
 
-**Minimum 3 Foundation-layer ADRs are required** before the gate check.
+**Tối thiểu 3 ADR ở tầng Foundation là bắt buộc** trước khi kiểm tra cổng.
 
-**Retrofitting existing ADRs:** If you already have ADRs from a brownfield
-project:
+**Bổ sung cho ADR cũ (Retrofitting):** Nếu bạn đã có ADR từ dự án cũ:
 
 ```
 /architecture-decision retrofit docs/architecture/adr-005.md
 ```
 
-This detects which template sections are missing and adds only those, never
-overwriting existing content.
+Lệnh này phát hiện các phần còn thiếu so với template và chỉ bổ sung những phần đó, không bao giờ ghi đè nội dung hiện có.
 
-### Step 3.3: Architecture Review
+### Bước 3.3: Đánh giá Kiến trúc
 
 ```
 /architecture-review
 ```
 
-Validates all ADRs together:
-- Topological sort of ADR dependencies (detects cycles)
-- Engine compatibility verification
-- GDD Revision Flags (flags GDD sections that need updates based on ADR choices)
-- TR-ID registry maintenance (`docs/architecture/tr-registry.yaml`)
+Xác thực tất cả các ADR cùng nhau:
+- Sắp xếp thứ tự topo các phụ thuộc ADR (phát hiện chu trình lặp)
+- Xác minh độ tương thích với engine
+- Đánh dấu sửa đổi GDD (GDD Revision Flags - đánh dấu các mục GDD cần cập nhật dựa trên quyết định ADR)
+- Duy trì danh mục TR-ID (`docs/architecture/tr-registry.yaml`)
 
-### Step 3.4: Control Manifest
+### Bước 3.4: Control Manifest
 
 ```
 /create-control-manifest
 ```
 
-Takes all Accepted ADRs and produces a flat programmer rules sheet:
+Thu thập tất cả các ADR trạng thái Accepted và tạo ra bảng quy tắc ngắn gọn cho lập trình viên:
 
 ```
 docs/architecture/control-manifest.md
 ```
 
-This contains Required patterns, Forbidden patterns, and Guardrails organized
-by code layer. Stories created later embed the manifest version date so
-staleness can be detected.
+Chứa các mẫu Bắt buộc (Required), mẫu Bị cấm (Forbidden) và Lan can bảo vệ (Guardrails) được tổ chức theo từng tầng code. Các story được tạo sau này sẽ nhúng ngày phiên bản manifest để phát hiện tính lỗi thời.
 
-### Step 3.5: Accessibility Requirements
+### Bước 3.5: Yêu cầu Accessibility
 
-Create `design/accessibility-requirements.md` using the template. Commit to a
-tier (Basic / Standard / Comprehensive / Exemplary) and fill the 4-axis feature
-matrix (visual, motor, cognitive, auditory).
+Tạo `design/accessibility-requirements.md` bằng cách dùng template. Cam kết một phân tầng (Basic / Standard / Comprehensive / Exemplary) và điền ma trận tính năng 4 trục (thị giác, vận động, nhận thức, thính giác).
 
-This document is required in Phase 3 because UX specs (written in Phase 4)
-reference this tier — it is a design prerequisite, not a UX deliverable.
+Tài liệu này bắt buộc ở Giai đoạn 3 vì các đặc tả UX (viết trong Giai đoạn 4) sẽ tham chiếu phân tầng này.
 
-### Phase 3 Gate
+### Cổng Giai đoạn 3 (Phase 3 Gate)
 
 ```
 /gate-check technical-setup
 ```
 
-**Requirements to pass:**
+**Yêu cầu để vượt qua:**
 
-- `docs/architecture/architecture.md` exists
-- At least 3 ADRs exist and are Accepted
-- Architecture review report exists
-- `docs/architecture/control-manifest.md` exists
-- `design/accessibility-requirements.md` exists
+- `docs/architecture/architecture.md` đã tồn tại
+- Ít nhất 3 ADR tồn tại và ở trạng thái Accepted
+- Báo cáo đánh giá kiến trúc đã tồn tại
+- `docs/architecture/control-manifest.md` đã tồn tại
+- `design/accessibility-requirements.md` đã tồn tại
 
 ---
 
-## Phase 4: Pre-Production
+## Giai đoạn 4: Tiền sản xuất (Phase 4: Pre-Production)
 
-### What Happens in This Phase
+### Những gì diễn ra trong giai đoạn này
 
-You create UX specs for key screens, prototype risky mechanics, turn design
-documents into implementable stories, plan your first sprint, and build a
-Vertical Slice that proves the core loop is fun.
+Bạn tạo các đặc tả UX cho những màn hình chính, làm prototype cho các cơ chế rủi ro cao, biến tài liệu thiết kế thành các story có thể triển khai code, lên kế hoạch cho sprint đầu tiên, và xây dựng một Vertical Slice chứng minh vòng lặp cốt lõi thực sự vui nhộn.
 
-### Phase 4 Pipeline
+### Pipeline Giai đoạn 4
 
 ```
 /ux-design  -->  /vertical-slice  -->  /create-epics  -->  /create-stories  -->  /sprint-plan
@@ -582,711 +534,643 @@ Vertical Slice that proves the core loop is fun.
                                                           routes to right agent)
 ```
 
-### Step 4.1: UX Specs for Key Screens
+### Bước 4.1: Đặc tả UX cho các màn hình chính
 
-Before writing epics, create UX specs so that story authors know what screens
-exist and what player interactions they must support.
+Trước khi viết epic, hãy tạo các đặc tả UX để tác giả story biết màn hình nào tồn tại và các tương tác của người chơi mà nó cần hỗ trợ.
 
-**UX Specs:**
+**Đặc tả UX (UX Specs):**
 
 ```
 /ux-design main-menu
 /ux-design core-gameplay-hud
 ```
 
-Three modes: screen/flow, HUD, and interaction patterns. Output goes to
-`design/ux/`. Each spec includes: player need, layout zones, states,
-interaction map, data requirements, events fired, accessibility, localization.
+Ba chế độ: screen/flow, HUD, và interaction patterns. Đầu ra lưu vào `design/ux/`. Mỗi đặc tả bao gồm: nhu cầu người chơi, phân vùng layout, các trạng thái, sơ đồ tương tác, yêu cầu dữ liệu, sự kiện bắn ra, accessibility, đa ngôn ngữ localization.
 
-Reads your `accessibility-requirements.md` (written in Phase 3) and your
-input method config from `technical-preferences.md` to drive accessibility
-and input coverage checks — no need to re-specify them per screen.
+Đọc `accessibility-requirements.md` và cấu hình input từ `technical-preferences.md` để tự động kiểm tra độ bao phủ.
 
-> **Tip:** `/design-system` emits a 📌 UX Flag for every system with UI
-> requirements. Use those flags as a checklist for which screens need specs.
-
-**Interaction Pattern Library:**
+**Thư viện Pattern tương tác (Interaction Pattern Library):**
 
 ```
 /ux-design interaction-patterns
 ```
 
-Create `design/ux/interaction-patterns.md` — 16 standard controls plus
-game-specific patterns (inventory slot, ability icon, HUD bar, dialogue box,
-etc.) with animation and sound standards.
+Tạo `design/ux/interaction-patterns.md` — 16 điều khiển tiêu chuẩn kèm các pattern đặc thù của game (ô túi đồ, icon kỹ năng, thanh HUD, khung hội thoại, v.v.) với tiêu chuẩn âm thanh và animation.
 
-**UX Review:**
+**Đánh giá UX (UX Review):**
 
 ```
 /ux-review all
 ```
 
-Validates UX specs for GDD alignment and accessibility tier compliance.
-Produces APPROVED / NEEDS REVISION / MAJOR REVISION NEEDED verdict.
+Xác thực đặc tả UX về sự phù hợp với GDD và mức độ accessibility. Đưa ra kết luận: APPROVED / NEEDS REVISION / MAJOR REVISION NEEDED.
 
-### Step 4.2: Build the Vertical Slice
+### Bước 4.2: Xây dựng Vertical Slice
 
-The vertical slice is the production-quality proof that you can build the full
-game loop end-to-end before committing to full Production.
+Vertical Slice là minh chứng đạt chất lượng sản xuất cho thấy bạn có thể xây dựng toàn bộ game loop hoàn chỉnh trước khi bước vào giai đoạn Sản xuất hàng loạt (Production).
 
 ```
 /vertical-slice
 ```
 
-**What it proves:** Does a player, starting from nothing, experience the core
-fantasy within a few minutes, without developer guidance?
+**Mục tiêu chứng minh:** Một người chơi, bắt đầu từ con số 0, có trải nghiệm được cảm xúc cốt lõi trong vòng vài phút mà không cần lập trình viên hướng dẫn hay không?
 
-**What it builds:** A near-production-quality playable build covering at least
-one complete [start → challenge → resolution] cycle. Uses real architecture
-layers, real naming conventions, no hardcoded values — but not final art or
-audio. This is not a throwaway like the concept prototype; it demonstrates
-production pipeline feasibility.
+**Sản phẩm tạo ra:** Một bản build chơi được có chất lượng gần với bản chính thức, bao gồm ít nhất một chu kỳ hoàn chỉnh [bắt đầu → thử thách → giải quyết]. Sử dụng các tầng kiến trúc thật, quy ước đặt tên thật, không hardcode giá trị — nhưng chưa cần art hay âm thanh hoàn chỉnh cuối cùng.
 
-**Note on concept prototyping:** If you ran `/prototype` in Phase 1 (Concept),
-you already validated the core idea is fun. The vertical slice now validates
-you can build it properly. They answer different questions. If you skipped the
-concept prototype, now is a reasonable time to run one first before investing
-in the full slice.
+**Kết luận:** Vertical slice đưa ra kết luận PROCEED / PIVOT / KILL.
+- **PROCEED** → chuyển sang Bước 4.3 (epics và stories)
+- **PIVOT** → sửa đổi các GDD bị ảnh hưởng bằng `/design-system [mechanic]`, sau đó chạy lại `/vertical-slice`
+- **KILL** → quay lại `/brainstorm` với những bài học đã rút ra
 
-**Verdict:** The vertical slice produces a PROCEED / PIVOT / KILL verdict.
-- **PROCEED** → move to Step 4.3 (epics and stories)
-- **PIVOT** → revise affected GDDs with `/design-system [mechanic]`, then re-run `/vertical-slice`
-- **KILL** → return to `/brainstorm` with what you learned
-
-### Step 4.3: Create Epics and Stories From Design Artifacts
+### Bước 4.3: Tạo Epics và Stories từ các tài liệu thiết kế
 
 ```
 /create-epics layer: foundation
-/create-stories [epic-slug]   # repeat for each epic
+/create-stories [epic-slug]   # lặp lại cho từng epic
 /create-epics layer: core
-/create-stories [epic-slug]   # repeat for each core epic
+/create-stories [epic-slug]   # lặp lại cho từng core epic
 ```
 
-`/create-epics` reads your GDDs, ADRs, and architecture to define epic scope —
-one epic per architectural module. Then `/create-stories` breaks each epic into
-implementable story files in `production/epics/[slug]/`. Each story embeds:
-- GDD requirement references (TR-IDs, not quoted text -- stays fresh)
-- ADR references (only from Accepted ADRs; Proposed ADRs cause `Status: Blocked`)
-- Control manifest version date (for staleness detection)
-- Engine-specific implementation notes
-- Acceptance criteria from the GDD
+`/create-epics` đọc GDD, ADR và kiến trúc để xác định phạm vi epic — mỗi module kiến trúc tương ứng một epic. Sau đó `/create-stories` chia nhỏ từng epic thành các file story có thể triển khai trong `production/epics/[slug]/`. Mỗi story nhúng:
+- Tham chiếu yêu cầu GDD (mã TR-ID)
+- Tham chiếu ADR (chỉ từ các ADR đã Accepted)
+- Ngày phiên bản control manifest
+- Ghi chú triển khai đặc thù theo engine
+- Tiêu chí chấp nhận từ GDD
 
-Once stories exist, run `/dev-story [story-path]` to implement one — it routes
-automatically to the correct programmer agent.
+Khi đã có story, chạy `/dev-story [story-path]` để triển khai — hệ thống sẽ tự động điều phối tới đúng agent lập trình viên.
 
-### Step 4.4: Validate Stories Before Pickup
+### Bước 4.4: Xác thực Story trước khi bắt đầu làm
 
 ```
 /story-readiness production/epics/combat/story-combat-damage-calc.md
 ```
 
-Checks: Design completeness, Architecture coverage, Scope clarity, Definition
-of Done. Verdict: READY / NEEDS WORK / BLOCKED.
+Kiểm tra: Tính hoàn thiện của thiết kế, Độ bao phủ kiến trúc, Độ rõ ràng của phạm vi, Định nghĩa hoàn thành (DoD). Kết luận: READY / NEEDS WORK / BLOCKED.
 
-### Step 4.5: Effort Estimation
+### Bước 4.5: Ước lượng khối lượng (Effort Estimation)
 
 ```
 /estimate production/epics/combat/story-combat-damage-calc.md
 ```
 
-Provides effort estimates with risk assessment.
+Cung cấp ước lượng công sức kèm đánh giá rủi ro.
 
-### Step 4.6: Plan Your First Sprint
+### Bước 4.6: Lên kế hoạch cho Sprint đầu tiên
 
 ```
 /sprint-plan new
 ```
 
-**What happens:** The `producer` agent collaborates on sprint planning:
-- Asks for sprint goal and available time
-- Breaks the goal into Must Have / Should Have / Nice to Have tasks
-- Identifies risks and blockers
-- Creates `production/sprints/sprint-01.md`
-- Populates `production/sprint-status.yaml` (machine-readable story tracking)
+**Điều gì diễn ra:** Agent `producer` cộng tác lên kế hoạch sprint:
+- Hỏi mục tiêu sprint và quỹ thời gian khả dụng
+- Chia mục tiêu thành các tác vụ Bắt buộc có (Must Have) / Nên có (Should Have) / Có thì tốt (Nice to Have)
+- Xác định rủi ro và các điểm nghẽn
+- Tạo `production/sprints/sprint-01.md`
+- Cập nhật `production/sprint-status.yaml` (theo dõi story dưới dạng máy đọc được)
 
-### Step 4.7: Vertical Slice (Hard Gate)
+### Bước 4.7: Vertical Slice (Cổng cứng - Hard Gate)
 
-Before advancing to Production, you must build and playtest a Vertical Slice:
+Trước khi tiến sang giai đoạn Production, bạn phải hoàn thành và chơi thử Vertical Slice:
 
-- One complete end-to-end core loop, playable from start to finish
-- Representative quality (not placeholder everything)
-- Played unguided in at least 3 sessions
-- Playtest report written (`/playtest-report`)
+- Một vòng lặp cốt lõi hoàn chỉnh end-to-end, chơi được từ đầu đến cuối
+- Chất lượng mang tính đại diện (không phải toàn bộ là placeholder)
+- Đã được chơi không cần hướng dẫn trong ít nhất 3 phiên
+- Đã viết báo cáo chơi thử (`/playtest-report`)
 
-This is a **hard gate** -- `/gate-check` will auto-FAIL if a human has not
-played the build unguided.
+Đây là một **cổng cứng (hard gate)** -- `/gate-check` sẽ tự động FAIL nếu chưa có người thật chơi thử bản build một cách độc lập.
 
-### Phase 4 Gate
+### Cổng Giai đoạn 4 (Phase 4 Gate)
 
 ```
 /gate-check pre-production
 ```
 
-**Requirements to pass:**
+**Yêu cầu để vượt qua:**
 
-- At least 1 UX spec reviewed in `design/ux/`
-- UX review completed (APPROVED or NEEDS REVISION with documented risks)
-- At least 1 prototype with README
-- Story files exist in `production/epics/[epic-slug]/`
-- At least 1 sprint plan exists
-- At least 1 playtest report exists (Vertical Slice played in 3+ sessions)
+- Ít nhất 1 đặc tả UX đã được đánh giá trong `design/ux/`
+- Đánh giá UX đã hoàn tất (APPROVED hoặc NEEDS REVISION kèm rủi ro đã ghi nhận)
+- Ít nhất 1 prototype kèm README
+- Các file story đã tồn tại trong `production/epics/[epic-slug]/`
+- Ít nhất 1 kế hoạch sprint đã tồn tại
+- Ít nhất 1 báo cáo chơi thử tồn tại (Vertical Slice đã được chơi trong 3+ phiên)
 
 ---
 
-## Phase 5: Production
+## Giai đoạn 5: Sản xuất (Phase 5: Production)
 
-### What Happens in This Phase
+### Những gì diễn ra trong giai đoạn này
 
-This is the core production loop. You work in sprints (typically 1-2 weeks),
-implementing features story by story, tracking progress, and closing stories
-through a structured completion review. This phase repeats until your game
-is content-complete.
+Đây là vòng lặp sản xuất cốt lõi. Bạn làm việc theo các sprint (thường từ 1-2 tuần), triển khai các tính năng theo từng story, theo dõi tiến độ, và đóng story thông qua quy trình đánh giá hoàn thành có cấu trúc. Giai đoạn này lặp lại cho đến khi trò chơi hoàn thiện đầy đủ nội dung.
 
-### Phase 5 Pipeline (Per Sprint)
+### Pipeline Giai đoạn 5 (Theo từng Sprint)
 
 ```
-/sprint-plan new  -->  /story-readiness  -->  implement  -->  /story-done
+/sprint-plan new  -->  /story-readiness  -->  triển khai  -->  /story-done
        |                     |                    |                |
        v                     v                    v                v
-  Sprint created       Story validated      Code written     8-phase review:
-  sprint-status.yaml   READY verdict        Tests pass       verify criteria,
-  populated                                                  check deviations,
-                                                             update story status
+  Tạo Sprint           Xác thực Story       Viết Code        Đánh giá 8 bước:
+  Cập nhật             Kết luận READY       Vượt qua test    xác minh tiêu chí,
+  sprint-status.yaml                                         kiểm tra sai lệch,
+                                                             cập nhật trạng thái story
        |
-       |  (repeat per story until sprint complete)
+       |  (lặp lại cho từng story đến khi xong sprint)
        v
-  /sprint-status  (quick 30-line snapshot anytime)
-  /scope-check    (if scope is growing)
-  /retrospective  (at sprint end)
+  /sprint-status  (ảnh chụp nhanh 30 dòng bất cứ lúc nào)
+  /scope-check    (nếu quy mô phình to)
+  /retrospective  (ở cuối sprint)
 ```
 
-### Step 5.1: The Story Lifecycle
+### Bước 5.1: Vòng đời Story (The Story Lifecycle)
 
-The production phase centers on the **story lifecycle**:
+Giai đoạn sản xuất tập trung vào **vòng đời story**:
 
 ```
-/story-readiness  -->  implement  -->  /story-done  -->  next story
+/story-readiness  -->  triển khai code  -->  /story-done  -->  story tiếp theo
 ```
 
-**1. Story Readiness:** Before picking up a story, validate it:
+**1. Sẵn sàng Story (Story Readiness):** Trước khi nhận story, hãy xác thực:
 
 ```
 /story-readiness production/epics/combat/story-combat-damage-calc.md
 ```
 
-This checks design completeness, architecture coverage, ADR status (blocks
-if ADR is still Proposed), control manifest version (warns if stale), and
-scope clarity. Verdict: READY / NEEDS WORK / BLOCKED.
+Kiểm tra độ hoàn thiện thiết kế, độ bao phủ kiến trúc, trạng thái ADR, phiên bản control manifest, và độ rõ ràng của phạm vi. Kết luận: READY / NEEDS WORK / BLOCKED.
 
-**2. Implementation:** Work with the appropriate agents:
+**2. Triển khai (Implementation):** Làm việc với các agent phù hợp:
 
-- `gameplay-programmer` for gameplay systems
-- `engine-programmer` for core engine work
-- `ai-programmer` for AI behavior
-- `network-programmer` for multiplayer
-- `ui-programmer` for UI code
-- `tools-programmer` for dev tools
+- `gameplay-programmer` cho hệ thống gameplay
+- `engine-programmer` cho phần lõi engine
+- `ai-programmer` cho hành vi AI
+- `network-programmer` cho multiplayer
+- `ui-programmer` cho giao diện
+- `tools-programmer` cho công cụ dev
 
-All agents follow the collaborative protocol: they read the design doc, ask
-clarifying questions, present architectural options, get your approval, then
-implement.
+Tất cả agent đều tuân theo giao thức cộng tác: đọc design doc, hỏi câu hỏi làm rõ, đưa ra lựa chọn kiến trúc, xin phê duyệt rồi mới viết code.
 
-**3. Story Completion:** When a story is done:
+**3. Hoàn thành Story (Story Completion):** Khi một story đã làm xong:
 
 ```
 /story-done production/epics/combat/story-combat-damage-calc.md
 ```
 
-This runs an 8-phase completion review:
-1. Find and read the story file
-2. Load referenced GDD, ADRs, and control manifest
-3. Verify acceptance criteria (auto-checkable, manual, deferred)
-4. Check for GDD/ADR deviations (BLOCKING / ADVISORY / OUT OF SCOPE)
-5. Prompt for code review
-6. Generate completion report (COMPLETE / COMPLETE WITH NOTES / BLOCKED)
-7. Update story `Status: Complete` with completion notes
-8. Surface the next ready story
+Chạy quy trình đánh giá hoàn thành 8 bước:
+1. Tìm và đọc file story
+2. Tải GDD, ADR và control manifest được tham chiếu
+3. Xác minh tiêu chí chấp nhận (tự động kiểm tra, thủ công, hoãn lại)
+4. Kiểm tra các sai lệch GDD/ADR (BLOCKING / ADVISORY / OUT OF SCOPE)
+5. Nhắc nhở thực hiện code review
+6. Tạo báo cáo hoàn thành (COMPLETE / COMPLETE WITH NOTES / BLOCKED)
+7. Cập nhật story thành `Status: Complete` kèm ghi chú hoàn thành
+8. Hiển thị story sẵn sàng tiếp theo
 
-Tech debt discovered during review is logged to `docs/tech-debt-register.md`.
+Nợ kỹ thuật (Tech debt) phát hiện trong khi review được ghi vào `docs/tech-debt-register.md`.
 
-### Step 5.2: Sprint Tracking
+### Bước 5.2: Theo dõi Sprint
 
-Check progress anytime:
+Kiểm tra tiến độ bất cứ lúc nào:
 
 ```
 /sprint-status
 ```
 
-Quick 30-line snapshot reading from `production/sprint-status.yaml`.
+Ảnh chụp nhanh 30 dòng đọc từ `production/sprint-status.yaml`.
 
-If scope is growing:
+Nếu quy mô công việc đang phình to:
 
 ```
 /scope-check production/sprints/sprint-03.md
 ```
 
-This compares current scope against the original plan and flags scope increase,
-recommends cuts.
+So sánh phạm vi hiện tại với kế hoạch ban đầu, cảnh báo việc tăng quy mô và khuyến nghị cắt giảm.
 
-### Step 5.3: Content Tracking
+### Bước 5.3: Theo dõi nội dung
 
 ```
 /content-audit
 ```
 
-Compares GDD-specified content against what has been implemented. Catches
-content gaps early.
+So sánh nội dung chỉ định trong GDD với những gì đã thực sự được triển khai. Phát hiện sớm các khoảng trống nội dung.
 
-### Step 5.4: Design Change Propagation
+### Bước 5.4: Lan truyền thay đổi thiết kế
 
-When a GDD changes after stories have been created:
+Khi GDD thay đổi sau khi story đã được tạo:
 
 ```
 /propagate-design-change design/gdd/combat-system.md
 ```
 
-Git-diffs the GDD, finds affected ADRs, generates an impact report, and
-walks you through Superseded/update/keep decisions.
+So sánh git-diff GDD, tìm các ADR bị ảnh hưởng, tạo báo cáo tác động và hướng dẫn bạn đưa ra quyết định thay thế (Superseded) / cập nhật / giữ nguyên.
 
-### Step 5.5: Multi-System Features (Team Orchestration)
+### Bước 5.5: Tính năng đa hệ thống (Điều phối nhóm - Team Orchestration)
 
-For features spanning multiple domains, use team skills:
+Đối với các tính năng trải rộng trên nhiều lĩnh vực, sử dụng các team skill:
 
 ```
-/team-combat "healing ability with HoT and cleanse"
-/team-narrative "Act 2 story content"
-/team-ui "inventory screen redesign"
-/team-level "forest dungeon level"
-/team-audio "combat audio pass"
+/team-combat "kỹ năng hồi máu kèm HoT và giải hiệu ứng xấu"
+/team-narrative "Nội dung cốt truyện Hồi 2"
+/team-ui "thiết kế lại màn hình túi đồ"
+/team-level "màn chơi dungeon trong rừng"
+/team-audio "hoàn thiện âm thanh chiến đấu"
 ```
 
-Each team skill coordinates a 6-phase collaborative workflow:
-1. **Design** -- game-designer asks questions, presents options
-2. **Architecture** -- lead-programmer proposes code structure
-3. **Parallel Implementation** -- specialists work simultaneously
-4. **Integration** -- gameplay-programmer wires everything together
-5. **Validation** -- qa-tester runs against acceptance criteria
-6. **Report** -- coordinator summarizes status
+Mỗi team skill điều phối quy trình cộng tác 6 giai đoạn:
+1. **Design** -- game-designer đặt câu hỏi, đưa ra lựa chọn
+2. **Architecture** -- lead-programmer đề xuất cấu trúc code
+3. **Parallel Implementation** -- các chuyên viên làm việc song song
+4. **Integration** -- gameplay-programmer kết nối mọi thứ lại
+5. **Validation** -- qa-tester chạy kiểm tra tiêu chí chấp nhận
+6. **Report** -- coordinator tóm tắt trạng thái
 
-The orchestration is automated, but **decision points stay with you**.
+Việc điều phối diễn ra tự động, nhưng **các điểm quyết định luôn thuộc về bạn**.
 
-### Step 5.6: Sprint Review and Next Sprint
+### Bước 5.6: Tổng kết Sprint và Sprint tiếp theo
 
-At the end of a sprint:
+Ở cuối mỗi sprint:
 
 ```
 /retrospective
 ```
 
-Analyzes planned vs. completed, velocity, blockers, and actionable improvements.
+Phân tích kế hoạch so với thực tế hoàn thành, vận tốc (velocity), các điểm nghẽn và cải tiến hành động.
 
-Then plan the next sprint:
+Sau đó lên kế hoạch sprint tiếp theo:
 
 ```
 /sprint-plan new
 ```
 
-### Step 5.7: Milestone Reviews
+### Bước 5.7: Đánh giá Milestone
 
-At milestone checkpoints:
+Tại các điểm kiểm tra milestone:
 
 ```
 /milestone-review "alpha"
 ```
 
-Produces feature completeness, quality metrics, risk assessment, and go/no-go
-recommendation.
+Đưa ra mức độ hoàn thiện tính năng, chỉ số chất lượng, đánh giá rủi ro và khuyến nghị go/no-go.
 
-### Phase 5 Gate
+### Cổng Giai đoạn 5 (Phase 5 Gate)
 
 ```
 /gate-check production
 ```
 
-**Requirements to pass:**
+**Yêu cầu để vượt qua:**
 
-- All MVP stories complete
-- Playtesting: 3 sessions covering new player, mid-game, and difficulty curve
-- Fun hypothesis validated
-- No confusion loops in playtest data
+- Tất cả các story MVP đã hoàn thành
+- Chơi thử: 3 phiên bao gồm trải nghiệm người chơi mới, giữa game, và đường cong độ khó
+- Giả thuyết trải nghiệm vui (Fun hypothesis) đã được kiểm chứng
+- Không có vòng lặp gây bối rối trong dữ liệu chơi thử
 
 ---
 
-## Phase 6: Polish
+## Giai đoạn 6: Đánh bóng (Phase 6: Polish)
 
-### What Happens in This Phase
+### Những gì diễn ra trong giai đoạn này
 
-Your game is feature-complete. Now you make it good. This phase focuses on
-performance, balance, accessibility, audio, visual polish, and playtesting.
+Trò chơi của bạn đã hoàn thiện về tính năng (feature-complete). Bây giờ là lúc làm cho nó thật sự xuất sắc. Giai đoạn này tập trung vào hiệu năng, cân bằng, accessibility, âm thanh, trau chuốt hình ảnh và chơi thử diện rộng.
 
-### Phase 6 Pipeline
+### Pipeline Giai đoạn 6
 
 ```
 /perf-profile  -->  /balance-check  -->  /asset-audit  -->  /playtest-report (x3)
        |                  |                    |                    |
        v                  v                    v                    v
-  Profile CPU/GPU    Analyze formulas     Verify naming,      Cover: new player,
-  memory, optimize   and data for         formats, sizes      mid-game, difficulty
-  bottlenecks        broken progressions                      curve
+  Profile CPU/GPU    Phân tích công       Xác minh quy ước     Bao phủ: người chơi mới,
+  bộ nhớ, tối ưu     thức & dữ liệu       đặt tên, định dạng,  giữa game, đường cong
+  điểm nghẽn         tìm mất cân bằng     dung lượng           độ khó
 
   /tech-debt  -->  /team-polish
        |                |
        v                v
-  Track and        Coordinated pass:
-  prioritize       performance + art +
-  debt items       audio + UX + QA
+  Theo dõi & ưu    Đợt trau chuốt phối hợp:
+  tiên hóa nợ      hiệu năng + art +
+  kỹ thuật         âm thanh + UX + QA
 ```
 
-### Step 6.1: Performance Profiling
+### Bước 6.1: Đo kiểm hiệu năng (Performance Profiling)
 
 ```
 /perf-profile
 ```
 
-Guides you through structured performance profiling:
-- Establish targets (FPS, memory, platform)
-- Identify bottlenecks ranked by impact
-- Generate actionable optimization tasks with code locations and expected gains
+Hướng dẫn bạn qua quy trình profiling hiệu năng có cấu trúc:
+- Thiết lập mục tiêu (FPS, dung lượng RAM, nền tảng)
+- Xác định điểm nghẽn xếp hạng theo mức độ ảnh hưởng
+- Tạo các tác vụ tối ưu hóa cụ thể kèm vị trí code và mức tăng hiệu năng kỳ vọng
 
-### Step 6.2: Balance Analysis
+### Bước 6.2: Phân tích cân bằng (Balance Analysis)
 
 ```
 /balance-check assets/data/combat_damage.json
 ```
 
-Analyzes balance data for statistical outliers, broken progression curves,
-degenerate strategies, and economy imbalances.
+Phân tích dữ liệu cân bằng để tìm các điểm ngoại lai thống kê, đường cong tiến trình bị hỏng, chiến lược tiêu cực và mất cân bằng kinh tế.
 
-### Step 6.3: Asset Audit
+### Bước 6.3: Audit tài nguyên (Asset Audit)
 
 ```
 /asset-audit
 ```
 
-Verifies naming conventions, file format standards, and size budgets across
-all assets.
+Xác minh quy ước đặt tên, tiêu chuẩn định dạng file và giới hạn dung lượng trên toàn bộ asset.
 
-### Step 6.4: Playtesting (Required: 3 Sessions)
+### Bước 6.4: Chơi thử (Bắt buộc: 3 phiên)
 
 ```
 /playtest-report
 ```
 
-Generates structured playtest reports. Three sessions are required, covering:
-- New player experience
-- Mid-game systems
-- Difficulty curve
+Tạo các báo cáo chơi thử có cấu trúc. Yêu cầu đủ 3 phiên bao quát:
+- Trải nghiệm người chơi mới
+- Hệ thống giai đoạn giữa game
+- Đường cong độ khó
 
-### Step 6.5: Technical Debt Assessment
+### Bước 6.5: Đánh giá nợ kỹ thuật
 
 ```
 /tech-debt
 ```
 
-Scans for TODO/FIXME/HACK comments, code duplication, overly complex functions,
-missing tests, and outdated dependencies. Each item categorized and prioritized.
+Quét các comment TODO/FIXME/HACK, trùng lặp code, hàm quá phức tạp, thiếu test và dependencies lỗi thời. Mỗi mục được phân loại và sắp xếp thứ tự ưu tiên.
 
-### Step 6.6: Coordinated Polish Pass
+### Bước 6.6: Đợt đánh bóng phối hợp (Coordinated Polish Pass)
 
 ```
-/team-polish "combat system"
+/team-polish "hệ thống chiến đấu"
 ```
 
-Coordinates 4 specialists in parallel:
-1. Performance optimization (performance-analyst)
-2. Visual polish (technical-artist)
-3. Audio polish (sound-designer)
-4. Feel/juice (gameplay-programmer + technical-artist)
+Điều phối 4 chuyên viên song song:
+1. Tối ưu hiệu năng (`performance-analyst`)
+2. Trau chuốt hình ảnh (`technical-artist`)
+3. Trau chuốt âm thanh (`sound-designer`)
+4. Cảm giác game feel / juice (`gameplay-programmer` + `technical-artist`)
 
-You set priorities; the team executes with your approval at each step.
+Bạn đặt ưu tiên; nhóm thực thi kèm theo sự phê duyệt của bạn ở từng bước.
 
-### Step 6.7: Localization and Accessibility
+### Bước 6.7: Đa ngôn ngữ và Accessibility
 
 ```
 /localize src/
 ```
 
-Scans for hardcoded strings, concatenation that breaks translation, text that
-does not account for expansion, and missing locale files.
+Quét các chuỗi văn bản bị hardcode, nối chuỗi làm hỏng bản dịch, văn bản không tính đến việc mở rộng độ dài khi dịch, và các file ngôn ngữ còn thiếu.
 
-Accessibility is audited against the tier committed in Phase 3's accessibility
-requirements document.
+Accessibility được kiểm tra đối chiếu phân tầng đã cam kết ở Giai đoạn 3.
 
-### Phase 6 Gate
+### Cổng Giai đoạn 6 (Phase 6 Gate)
 
 ```
 /gate-check polish
 ```
 
-**Requirements to pass:**
+**Yêu cầu để vượt qua:**
 
-- At least 3 playtest reports exist
-- Coordinated polish pass completed (`/team-polish`)
-- No blocking performance issues
-- Accessibility tier requirements met
+- Ít nhất 3 báo cáo chơi thử đã tồn tại
+- Đợt đánh bóng phối hợp đã hoàn tất (`/team-polish`)
+- Không có lỗi hiệu năng nghiêm trọng gây nghẽn
+- Đạt đầy đủ các yêu cầu phân tầng accessibility
 
 ---
 
-## Phase 7: Release
+## Giai đoạn 7: Phát hành (Phase 7: Release)
 
-### What Happens in This Phase
+### Những gì diễn ra trong giai đoạn này
 
-Your game is polished, tested, and ready. Now you ship it.
+Trò chơi đã được trau chuốt, kiểm thử kỹ lưỡng và sẵn sàng. Bây giờ là lúc phát hành ra thị trường.
 
-### Phase 7 Pipeline
+### Pipeline Giai đoạn 7
 
 ```
 /release-checklist  -->  /launch-checklist  -->  /team-release
         |                       |                      |
         v                       v                      v
-  Pre-release             Full cross-department    Coordinate:
-  validation across       validation (Go/No-Go     build, QA sign-off,
-  code, content,          per department)           deployment, launch
-  store, legal
-                    Also: /changelog, /patch-notes, /hotfix
+  Xác thực tiền           Xác thực liên phòng      Điều phối:
+  phát hành trên code,    ban đầy đủ (Go/No-Go     bản build, QA duyệt,
+  nội dung, store, pháp lý cho từng phòng ban)     triển khai, phát hành
+                    Ngoài ra: /changelog, /patch-notes, /hotfix
 ```
 
-### Step 7.1: Release Checklist
+### Bước 7.1: Checklist phát hành
 
 ```
 /release-checklist v1.0.0
 ```
 
-Generates a comprehensive pre-release checklist covering:
-- Build verification (all platforms compile and run)
-- Certification requirements (platform-specific)
-- Store metadata (descriptions, screenshots, trailers)
-- Legal compliance (EULA, privacy policy, ratings)
-- Save game compatibility
-- Analytics verification
+Tạo danh sách kiểm tra tiền phát hành toàn diện bao gồm:
+- Xác minh bản build (tất cả các nền tảng đều compile và chạy tốt)
+- Yêu cầu chứng nhận Certification (theo từng nền tảng console/store)
+- Dữ liệu Store (mô tả, ảnh chụp màn hình, trailer)
+- Tuân thủ pháp lý (EULA, chính sách quyền riêng tư, phân loại độ tuổi)
+- Tính tương thích của file lưu game (Save game compatibility)
+- Xác minh hệ thống Analytics
 
-### Step 7.2: Launch Readiness (Full Validation)
+### Bước 7.2: Sẵn sàng ra mắt (Xác thực toàn diện)
 
 ```
 /launch-checklist
 ```
 
-Complete cross-department validation:
+Xác thực đầy đủ xuyên suốt các phòng ban:
 
-| Department | What Is Checked |
-|-----------|---------------|
-| **Engineering** | Build stability, crash rates, memory leaks, load times |
-| **Design** | Feature completeness, tutorial flow, difficulty curve |
-| **Art** | Asset quality, missing textures, LOD levels |
-| **Audio** | Missing sounds, mixing levels, spatial audio |
-| **QA** | Open bug count by severity, regression suite pass rate |
-| **Narrative** | Dialogue completeness, lore consistency, typos |
-| **Localization** | All strings translated, no truncation, locale testing |
-| **Accessibility** | Compliance checklist, assistive feature testing |
-| **Store** | Metadata complete, screenshots approved, pricing set |
-| **Marketing** | Press kit ready, launch trailer, social media scheduled |
-| **Community** | Patch notes draft, FAQ prepared, support channels ready |
-| **Infrastructure** | Servers scaled, CDN configured, monitoring active |
-| **Legal** | EULA finalized, privacy policy, COPPA/GDPR compliance |
+| Phòng ban | Những gì được kiểm tra |
+|---|---|
+| **Kỹ thuật (Engineering)** | Độ ổn định bản build, tỷ lệ crash, rò rỉ bộ nhớ, thời gian load |
+| **Thiết kế (Design)** | Tính hoàn thiện tính năng, luồng hướng dẫn tutorial, đường cong độ khó |
+| **Mỹ thuật (Art)** | Chất lượng asset, texture bị thiếu, các mức LOD |
+| **Âm thanh (Audio)** | Âm thanh bị thiếu, mức cân bằng mixing, âm thanh không gian |
+| **QA** | Số lượng bug mở theo mức độ nghiêm trọng, tỷ lệ pass bộ test hồi quy |
+| **Cốt truyện (Narrative)** | Độ hoàn thiện hội thoại, tính nhất quán của lore, lỗi chính tả |
+| **Đa ngôn ngữ (Localization)** | Tất cả chuỗi đã dịch, không bị tràn/cắt chữ, kiểm thử từng ngôn ngữ |
+| **Accessibility** | Checklist tuân thủ, kiểm thử các tính năng hỗ trợ |
+| **Store** | Metadata đầy đủ, screenshot đã duyệt, giá bán đã thiết lập |
+| **Marketing** | Press kit sẵn sàng, trailer ra mắt, lịch đăng mạng xã hội |
+| **Cộng đồng (Community)** | Bản thảo Patch notes, chuẩn bị FAQ, các kênh hỗ trợ sẵn sàng |
+| **Hạ tầng (Infrastructure)** | Máy chủ đã mở rộng scale, CDN đã cấu hình, hệ thống giám sát hoạt động |
+| **Pháp lý (Legal)** | EULA hoàn thiện, chính sách quyền riêng tư, tuân thủ COPPA/GDPR |
 
-Each item gets a **Go / No-Go** status. All must be Go to ship.
+Mỗi mục nhận trạng thái **Go / No-Go**. Tất cả phải đạt Go mới được phát hành.
 
-### Step 7.3: Generate Player-Facing Content
+### Bước 7.3: Tạo nội dung hướng tới người chơi
 
 ```
 /patch-notes v1.0.0
 ```
 
-Generates player-friendly patch notes from git history and sprint data.
-Translates developer language into player language.
+Tạo patch notes thân thiện với người chơi từ lịch sử git và dữ liệu sprint. Dịch ngôn ngữ lập trình viên sang ngôn ngữ game thủ.
 
 ```
 /changelog v1.0.0
 ```
 
-Generates an internal changelog (more technical, for the team).
+Tạo changelog nội bộ (thiên về kỹ thuật, dành cho đội ngũ phát triển).
 
-### Step 7.4: Coordinate the Release
+### Bước 7.4: Điều phối phát hành
 
 ```
 /team-release
 ```
 
-Coordinates release-manager, QA, and DevOps through:
-1. Pre-release validation
-2. Build management
-3. Final QA sign-off
-4. Deployment preparation
-5. Go/No-Go decision
+Điều phối `release-manager`, QA, và DevOps qua:
+1. Xác thực tiền phát hành
+2. Quản lý bản build
+3. Ký duyệt QA cuối cùng
+4. Chuẩn bị triển khai
+5. Quyết định Go/No-Go
 
-### Step 7.5: Ship
+### Bước 7.5: Phát hành game (Ship)
 
-The `validate-push` hook will warn you when pushing to `main` or `develop`.
-This is intentional -- release pushes should be deliberate:
+Hook `validate-push` sẽ cảnh báo bạn khi push vào nhánh `main` hoặc `develop`. Điều này là chủ ý -- việc push phát hành phải được thực hiện có chủ đích:
 
 ```bash
 git tag v1.0.0
 git push origin main --tags
 ```
 
-### Step 7.6: Post-Launch
+### Bước 7.6: Sau phát hành (Post-Launch)
 
-**Hotfix workflow** for critical production bugs:
-
-```
-/hotfix "Players losing save data when inventory exceeds 99 items"
-```
-
-Bypasses normal sprint processes with a full audit trail:
-1. Creates a hotfix branch
-2. Implements the fix
-3. Ensures backport to development branch
-4. Documents the incident
-
-**Post-mortem** after launch stabilizes:
+**Workflow Hotfix** cho các lỗi nghiêm trọng trên production:
 
 ```
-Ask Claude to create a post-mortem using the template at
+/hotfix "Người chơi bị mất dữ liệu lưu game khi túi đồ vượt quá 99 vật phẩm"
+```
+
+Bỏ qua các quy trình sprint thông thường kèm audit trail đầy đủ:
+1. Tạo nhánh hotfix
+2. Triển khai bản sửa lỗi
+3. Đảm bảo backport ngược lại vào nhánh phát triển
+4. Ghi nhận tài liệu sự cố
+
+**Báo cáo tổng kết sau dự án (Post-mortem)** sau khi đợt ra mắt đã ổn định:
+
+```
+Yêu cầu Claude tạo tài liệu post-mortem bằng cách sử dụng template tại
 .claude/docs/templates/post-mortem.md
 ```
 
 ---
 
-## Cross-Cutting Concerns
+## Các vấn đề xuyên suốt (Cross-Cutting Concerns)
 
-These topics apply across all phases.
+Các chủ đề này áp dụng xuyên suốt tất cả các giai đoạn.
 
-### Director Review Modes
+### Các chế độ đánh giá của Director (Director Review Modes)
 
-Director gates are specialist agents that review your work at key workflow steps.
-By default they run at every checkpoint. You can control how much review you get.
+Director gates là các agent chuyên gia đánh giá công việc của bạn tại các bước workflow quan trọng. Theo mặc định, chúng chạy ở mọi điểm kiểm tra. Bạn có thể kiểm soát mức độ đánh giá mình muốn nhận.
 
-**Set your review intensity once during `/start`.** Saved to `production/review-mode.txt`.
+**Thiết lập mức độ đánh giá một lần trong khi chạy `/start`.** Được lưu vào `production/review-mode.txt`.
 
-| Mode | What runs | Best for |
-|------|-----------|----------|
-| `full` | All director gates at every step | New projects, learning the system |
-| `lean` | Directors only at phase transitions (`/gate-check`) | Experienced devs |
-| `solo` | No director reviews | Game jams, prototypes, maximum speed |
+| Chế độ | Những gì chạy | Phù hợp nhất cho |
+|---|---|---|
+| `full` | Tất cả các cổng director ở mọi bước | Dự án mới, người mới học hệ thống |
+| `lean` | Director chỉ chạy ở các điểm chuyển giai đoạn (`/gate-check`) | Lập trình viên có kinh nghiệm |
+| `solo` | Không có đánh giá từ director | Game jams, prototypes, tốc độ tối đa |
 
-**Override for a single run** without changing your global setting:
+**Ghi đè cho một lần chạy duy nhất** mà không thay đổi cài đặt toàn cục của bạn:
 
 ```
 /brainstorm space horror --review full
 /architecture-decision --review solo
 ```
 
-The `--review` flag works on all gate-using skills. Change the global mode at any
-time by editing `production/review-mode.txt` directly or re-running `/start`.
+Cờ `--review` hoạt động trên tất cả các skill có dùng cổng kiểm duyệt. Thay đổi chế độ toàn cục bất cứ lúc nào bằng cách sửa trực tiếp `production/review-mode.txt` hoặc chạy lại `/start`.
 
-Full gate definitions and check pattern: `.claude/docs/director-gates.md`
+Chi tiết định nghĩa các cổng: `.claude/docs/director-gates.md`
 
 ---
 
-### The Collaboration Protocol
+### Giao thức cộng tác (The Collaboration Protocol)
 
-This system is **user-driven collaborative**, not autonomous.
+Hệ thống này là **cộng tác định hướng bởi người dùng (user-driven collaborative)**, không phải tự động đơn phương.
 
-**Pattern:** Question > Options > Decision > Draft > Approval
+**Mô hình:** Hỏi > Lựa chọn > Quyết định > Bản thảo > Phê duyệt (Question > Options > Decision > Draft > Approval)
 
-Every agent interaction follows this pattern:
-1. Agent asks clarifying questions
-2. Agent presents 2-4 options with trade-offs and reasoning
-3. You decide
-4. Agent drafts based on your decision
-5. You review and refine
-6. Agent asks "May I write this to [filepath]?" before writing
+Mọi tương tác của agent đều tuân theo mô hình:
+1. Agent đặt câu hỏi làm rõ
+2. Agent đưa ra 2-4 lựa chọn kèm các đánh đổi và lập luận
+3. Bạn đưa ra quyết định
+4. Agent soạn thảo bản thảo dựa trên quyết định của bạn
+5. Bạn đánh giá và tinh chỉnh
+6. Agent hỏi "Tôi có thể ghi nội dung này vào [filepath] không?" trước khi ghi file
 
-See `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` for the full protocol with
-examples.
+Xem `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` để biết toàn bộ giao thức kèm ví dụ.
 
-### The AskUserQuestion Tool
+### Công cụ AskUserQuestion
 
-Agents use the `AskUserQuestion` tool for structured option presentation.
-The pattern is Explain then Capture: full analysis in conversation text first,
-then a clean UI picker for the decision. Use it for design choices,
-architecture decisions, and strategic questions. Do not use it for open-ended
-discovery questions or simple yes/no confirmations.
+Agent sử dụng công cụ `AskUserQuestion` để trình bày lựa chọn có cấu trúc. Mô hình là Giải thích trước rồi mới Ghi nhận (Explain then Capture): phân tích đầy đủ trong văn bản hội thoại trước, sau đó dùng bộ chọn UI gọn gàng để chốt quyết định. Dùng cho các lựa chọn thiết kế, quyết định kiến trúc và các câu hỏi chiến lược. Không dùng cho các câu hỏi khám phá mở hoặc xác nhận có/không đơn giản.
 
-### Agent Coordination (3-Tier Hierarchy)
+### Phối hợp Agent (Hệ thống phân cấp 3 tầng)
 
 ```
-Tier 1 (Directors):    creative-director, technical-director, producer
+Tier 1 (Giám đốc - Directors):    creative-director, technical-director, producer
                                           |
-Tier 2 (Leads):        game-designer, lead-programmer, art-director,
-                       audio-director, narrative-director, qa-lead,
-                       release-manager, localization-lead
+Tier 2 (Trưởng bộ phận - Leads):  game-designer, lead-programmer, art-director,
+                                  audio-director, narrative-director, qa-lead,
+                                  release-manager, localization-lead
                                           |
-Tier 3 (Specialists):  gameplay-programmer, engine-programmer,
-                       ai-programmer, network-programmer, ui-programmer,
-                       tools-programmer, systems-designer, level-designer,
-                       economy-designer, world-builder, writer,
-                       technical-artist, sound-designer, ux-designer,
-                       qa-tester, performance-analyst, devops-engineer,
-                       analytics-engineer, accessibility-specialist,
-                       live-ops-designer, prototyper, security-engineer,
-                       community-manager, godot-specialist,
-                       godot-gdscript-specialist, godot-shader-specialist,
-                       godot-csharp-specialist, godot-gdextension-specialist,
-                       unity-specialist, unity-dots-specialist,
-                       unity-shader-specialist, unity-addressables-specialist,
-                       unity-ui-specialist, unreal-specialist,
-                       ue-blueprint-specialist, ue-gas-specialist,
-                       ue-replication-specialist, ue-umg-specialist
+Tier 3 (Chuyên viên - Specialists): gameplay-programmer, engine-programmer,
+                                  ai-programmer, network-programmer, ui-programmer,
+                                  tools-programmer, systems-designer, level-designer,
+                                  economy-designer, world-builder, writer,
+                                  technical-artist, sound-designer, ux-designer,
+                                  qa-tester, performance-analyst, devops-engineer,
+                                  analytics-engineer, accessibility-specialist,
+                                  live-ops-designer, prototyper, security-engineer,
+                                  community-manager, godot-specialist,
+                                  godot-gdscript-specialist, godot-shader-specialist,
+                                  godot-csharp-specialist, godot-gdextension-specialist,
+                                  unity-specialist, unity-dots-specialist,
+                                  unity-shader-specialist, unity-addressables-specialist,
+                                  unity-ui-specialist, unreal-specialist,
+                                  ue-blueprint-specialist, ue-gas-specialist,
+                                  ue-replication-specialist, ue-umg-specialist
 ```
 
-**Coordination rules:**
-- Vertical delegation: Directors > Leads > Specialists. Never skip tiers for
-  complex decisions.
-- Horizontal consultation: Agents at the same tier may consult each other but
-  must not make binding decisions outside their domain.
-- Conflict resolution: Design conflicts go to `creative-director`. Technical
-  conflicts go to `technical-director`. Scope conflicts go to `producer`.
-- No unilateral cross-domain changes.
+**Quy tắc điều phối:**
+- Phân quyền theo chiều dọc: Giám đốc > Trưởng bộ phận > Chuyên viên. Không bao giờ nhảy cóc tầng đối với các quyết định phức tạp.
+- Tham vấn theo chiều ngang: Các agent cùng tầng có thể tham vấn nhau nhưng không được đưa ra quyết định ràng buộc ngoài phạm vi của mình.
+- Giải quyết xung đột: Xung đột thiết kế chuyển lên `creative-director`. Xung đột kỹ thuật chuyển lên `technical-director`. Xung đột quy mô chuyển lên `producer`.
+- Không tự ý thực hiện các thay đổi chéo lĩnh vực một cách đơn phương.
 
-### Automated Hooks (Safety Net)
+### Hooks tự động hóa (Lưới an toàn)
 
-The system has 12 hooks that run automatically:
+Hệ thống có 12 hook tự động chạy:
 
-| Hook | Trigger | What It Does |
-|------|---------|-------------|
-| `session-start.sh` | Session start | Shows branch, recent commits, detects active.md for recovery |
-| `detect-gaps.sh` | Session start | Detects fresh projects (no engine, no concept) and suggests `/start` |
-| `pre-compact.sh` | Before compaction | Dumps session state into conversation for auto-recovery |
-| `post-compact.sh` | After compaction | Reminds Claude to restore session state from `active.md` |
-| `notify.sh` | Notification event | Shows Windows toast notification via PowerShell |
-| `validate-commit.sh` | Before commit | Checks for design doc references, valid JSON, no hardcoded values |
-| `validate-push.sh` | Before push | Warns on pushes to main/develop |
-| `validate-assets.sh` | Before commit | Checks asset naming and size |
-| `validate-skill-change.sh` | Skill file written | Advises running `/skill-test` after `.claude/skills/` changes |
-| `log-agent.sh` | Agent start | Logs agent invocations for audit trail |
-| `log-agent-stop.sh` | Agent stop | Completes agent audit trail (start + stop) |
-| `session-stop.sh` | Session end | Final session logging |
+| Hook | Điều kiện kích hoạt | Chức năng |
+|---|---|---|
+| `session-start.sh` | Bắt đầu phiên | Hiển thị branch, các commit gần đây, phát hiện active.md để phục hồi |
+| `detect-gaps.sh` | Bắt đầu phiên | Phát hiện dự án mới (chưa có engine, chưa có concept) và gợi ý `/start` |
+| `pre-compact.sh` | Trước khi compact | Đưa trạng thái phiên vào hội thoại để tự động phục hồi |
+| `post-compact.sh` | Sau khi compact | Nhắc nhở Claude khôi phục trạng thái phiên từ `active.md` |
+| `notify.sh` | Sự kiện thông báo | Hiển thị thông báo Windows toast qua PowerShell |
+| `validate-commit.sh` | Trước khi commit | Kiểm tra tham chiếu design doc, tính hợp lệ JSON, không hardcode |
+| `validate-push.sh` | Trước khi push | Cảnh báo khi push vào main/develop |
+| `validate-assets.sh` | Trước khi commit | Kiểm tra đặt tên và dung lượng asset |
+| `validate-skill-change.sh` | Ghi file skill | Khuyến nghị chạy `/skill-test` sau khi sửa `.claude/skills/` |
+| `log-agent.sh` | Agent khởi động | Ghi log quá trình gọi agent phục vụ audit trail |
+| `log-agent-stop.sh` | Agent kết thúc | Hoàn tất audit trail của agent (bắt đầu + kết thúc) |
+| `session-stop.sh` | Đóng phiên | Ghi log phiên làm việc lần cuối |
 
-### Context Resilience
+### Khả năng phục hồi ngữ cảnh (Context Resilience)
 
-**Session state file:** `production/session-state/active.md` is a living
-checkpoint. Update it after each significant milestone. After any disruption
-(compaction, crash, `/clear`), read this file first.
+**File trạng thái phiên làm việc:** `production/session-state/active.md` là một checkpoint sống. Cập nhật nó sau mỗi milestone quan trọng. Sau bất kỳ gián đoạn nào (compaction, crash, `/clear`), hãy đọc file này trước tiên.
 
-**Incremental writing:** When creating multi-section documents, write each
-section to file immediately after approval. This means completed sections
-survive crashes and context compactions. Previous discussion about written
-sections can be safely compacted.
+**Ghi file tăng dần (Incremental writing):** Khi tạo tài liệu nhiều phần, hãy ghi từng phần vào file ngay sau khi được duyệt. Điều này giúp các phần đã hoàn thành tồn tại qua các sự cố crash và context compaction. Các thảo luận trước đó về những phần đã ghi có thể được compact an toàn.
 
-**Automatic recovery:** The `session-start.sh` hook detects and previews
-`active.md` automatically. The `pre-compact.sh` hook dumps state into the
-conversation before compaction.
+**Tự động phục hồi:** Hook `session-start.sh` tự động phát hiện và xem trước `active.md`. Hook `pre-compact.sh` đưa trạng thái vào hội thoại trước khi compaction diễn ra.
 
-**Sprint status tracking:** `production/sprint-status.yaml` is the
-machine-readable story tracker. Written by `/sprint-plan` (init) and
-`/story-done` (status updates). Read by `/sprint-status`, `/help`, and
-`/story-done` (next story). Eliminates fragile markdown scanning.
+**Theo dõi trạng thái Sprint:** `production/sprint-status.yaml` là công cụ theo dõi story dạng máy đọc được. Được ghi bởi `/sprint-plan` (khởi tạo) và `/story-done` (cập nhật trạng thái). Được đọc bởi `/sprint-status`, `/help`, và `/story-done` (story tiếp theo). Loại bỏ hoàn toàn việc quét markdown mong manh.
 
-### Brownfield Adoption
+### Tiếp nhận dự án có sẵn (Brownfield Adoption)
 
-For existing projects that already have some artifacts:
+Đối với các dự án hiện có đã có sẵn một số tài liệu/code:
 
 ```
 /adopt
 ```
 
-Or targeted:
+Hoặc nhắm mục tiêu:
 
 ```
 /adopt gdds
@@ -1295,23 +1179,18 @@ Or targeted:
 /adopt infra
 ```
 
-This audits existing artifacts for **format** (not existence), classifies gaps
-as BLOCKING/HIGH/MEDIUM/LOW, builds an ordered migration plan, and writes
-`docs/adoption-plan-[date].md`. Core principle: MIGRATION not REPLACEMENT --
-it never regenerates existing work, only fills gaps.
+Lệnh này audit các sản phẩm hiện có về **định dạng** (không phải sự tồn tại), phân loại khoảng trống thành BLOCKING/HIGH/MEDIUM/LOW, xây dựng kế hoạch migration có thứ tự, và ghi ra `docs/adoption-plan-[date].md`. Nguyên tắc cốt lõi: MIGRATION chứ không phải REPLACEMENT -- không bao giờ tạo lại công việc hiện có, chỉ bổ sung các phần còn thiếu.
 
-Individual skills also support retrofit mode:
+Các skill riêng lẻ cũng hỗ trợ chế độ retrofit:
 
 ```
 /design-system retrofit design/gdd/combat-system.md
 /architecture-decision retrofit docs/architecture/adr-005.md
 ```
 
-These detect which sections are present vs. missing and fill only the gaps.
+### Hệ thống Cổng (Gate System)
 
-### Gate System
-
-Phase gates are formal checkpoints. Run `/gate-check` with the transition name:
+Các cổng giai đoạn là những điểm kiểm tra chính thức. Chạy `/gate-check` kèm theo tên bước chuyển đổi:
 
 ```
 /gate-check concept              # Concept -> Systems Design
@@ -1322,83 +1201,82 @@ Phase gates are formal checkpoints. Run `/gate-check` with the transition name:
 /gate-check polish               # Polish -> Release
 ```
 
-**Verdicts:**
-- **PASS** -- all requirements met, advance to next phase
-- **CONCERNS** -- requirements met with acknowledged risks, passable
-- **FAIL** -- requirements not met, blocks advancement with specific remediation
+**Kết luận:**
+- **PASS** -- đạt đủ tất cả yêu cầu, chuyển sang giai đoạn tiếp theo
+- **CONCERNS** -- đạt yêu cầu kèm rủi ro đã ghi nhận, được phép vượt qua
+- **FAIL** -- không đạt yêu cầu, chặn chuyển giai đoạn kèm chỉ dẫn khắc phục cụ thể
 
-When a gate passes, `production/stage.txt` is updated (only then), which
-controls the status line and `/help` behavior.
+Khi một cổng PASS, file `production/stage.txt` sẽ được cập nhật (chỉ khi đó), điều khiển status line và hành vi của `/help`.
 
-### Reverse Documentation
+### Tài liệu hóa ngược (Reverse Documentation)
 
-For code that exists without design docs (common after brownfield adoption):
+Đối với code đã tồn tại nhưng chưa có design docs (thường thấy sau khi tiếp nhận dự án cũ):
 
 ```
 /reverse-document src/gameplay/combat/
 ```
 
-Reads existing code and generates GDD-format design documentation from it.
+Đọc code hiện có và tạo ra tài liệu thiết kế chuẩn định dạng GDD từ code đó.
 
 ---
 
-## Appendix A: Agent Quick-Reference
+## Phụ lục A: Tra cứu nhanh Agent
 
-### "I need to do X -- which agent do I use?"
+### "Tôi cần làm việc X -- tôi nên dùng Agent nào?"
 
-| I need to... | Agent | Tier |
-|-------------|-------|------|
-| Come up with a game idea | `/brainstorm` skill | -- |
-| Design a game mechanic | `game-designer` | 2 |
-| Design specific formulas/numbers | `systems-designer` | 3 |
-| Design a game level | `level-designer` | 3 |
-| Design loot tables / economy | `economy-designer` | 3 |
-| Build world lore | `world-builder` | 3 |
-| Write dialogue | `writer` | 3 |
-| Plan the story | `narrative-director` | 2 |
-| Plan a sprint | `producer` | 1 |
-| Make a creative decision | `creative-director` | 1 |
-| Make a technical decision | `technical-director` | 1 |
-| Implement gameplay code | `gameplay-programmer` | 3 |
-| Implement core engine systems | `engine-programmer` | 3 |
-| Implement AI behavior | `ai-programmer` | 3 |
-| Implement multiplayer | `network-programmer` | 3 |
-| Implement UI | `ui-programmer` | 3 |
-| Build dev tools | `tools-programmer` | 3 |
-| Review code architecture | `lead-programmer` | 2 |
-| Create shaders / VFX | `technical-artist` | 3 |
-| Define visual style | `art-director` | 2 |
-| Define audio style | `audio-director` | 2 |
-| Design sound effects | `sound-designer` | 3 |
-| Design UX flows | `ux-designer` | 3 |
-| Write test cases | `qa-tester` | 3 |
-| Plan test strategy | `qa-lead` | 2 |
-| Profile performance | `performance-analyst` | 3 |
-| Set up CI/CD | `devops-engineer` | 3 |
-| Design analytics | `analytics-engineer` | 3 |
-| Check accessibility | `accessibility-specialist` | 3 |
-| Plan live operations | `live-ops-designer` | 3 |
-| Manage a release | `release-manager` | 2 |
-| Manage localization | `localization-lead` | 2 |
-| Prototype quickly | `prototyper` | 3 |
-| Audit security | `security-engineer` | 3 |
-| Communicate with players | `community-manager` | 3 |
-| Godot-specific help | `godot-specialist` | 3 |
-| GDScript-specific help | `godot-gdscript-specialist` | 3 |
-| Godot shader help | `godot-shader-specialist` | 3 |
-| GDExtension modules | `godot-gdextension-specialist` | 3 |
-| Unity-specific help | `unity-specialist` | 3 |
+| Tôi cần... | Agent | Tầng (Tier) |
+|---|---|---|
+| Nghĩ ý tưởng game | `/brainstorm` skill | -- |
+| Thiết kế một cơ chế game | `game-designer` | 2 |
+| Thiết kế công thức/số liệu cụ thể | `systems-designer` | 3 |
+| Thiết kế màn chơi | `level-designer` | 3 |
+| Thiết kế bảng loot / kinh tế | `economy-designer` | 3 |
+| Xây dựng thế giới lore | `world-builder` | 3 |
+| Viết lời thoại | `writer` | 3 |
+| Lên kế hoạch cốt truyện | `narrative-director` | 2 |
+| Lên kế hoạch sprint | `producer` | 1 |
+| Đưa ra quyết định sáng tạo | `creative-director` | 1 |
+| Đưa ra quyết định kỹ thuật | `technical-director` | 1 |
+| Triển khai code gameplay | `gameplay-programmer` | 3 |
+| Triển khai hệ thống lõi engine | `engine-programmer` | 3 |
+| Triển khai hành vi AI | `ai-programmer` | 3 |
+| Triển khai multiplayer | `network-programmer` | 3 |
+| Triển khai UI | `ui-programmer` | 3 |
+| Xây dựng công cụ dev | `tools-programmer` | 3 |
+| Đánh giá kiến trúc code | `lead-programmer` | 2 |
+| Tạo shader / VFX | `technical-artist` | 3 |
+| Định hình phong cách hình ảnh | `art-director` | 2 |
+| Định hình phong cách âm thanh | `audio-director` | 2 |
+| Thiết kế hiệu ứng âm thanh | `sound-designer` | 3 |
+| Thiết kế luồng UX | `ux-designer` | 3 |
+| Viết test cases | `qa-tester` | 3 |
+| Lên chiến lược kiểm thử | `qa-lead` | 2 |
+| Đo kiểm hiệu năng (Profile) | `performance-analyst` | 3 |
+| Thiết lập CI/CD | `devops-engineer` | 3 |
+| Thiết kế analytics | `analytics-engineer` | 3 |
+| Kiểm tra accessibility | `accessibility-specialist` | 3 |
+| Lên kế hoạch live operations | `live-ops-designer` | 3 |
+| Quản lý phát hành | `release-manager` | 2 |
+| Quản lý đa ngôn ngữ | `localization-lead` | 2 |
+| Tạo prototype nhanh | `prototyper` | 3 |
+| Kiểm toán bảo mật | `security-engineer` | 3 |
+| Giao tiếp với người chơi | `community-manager` | 3 |
+| Trợ giúp chuyên sâu Godot | `godot-specialist` | 3 |
+| Trợ giúp chuyên sâu GDScript | `godot-gdscript-specialist` | 3 |
+| Trợ giúp Shader Godot | `godot-shader-specialist` | 3 |
+| Module GDExtension | `godot-gdextension-specialist` | 3 |
+| Trợ giúp chuyên sâu Unity | `unity-specialist` | 3 |
 | Unity DOTS/ECS | `unity-dots-specialist` | 3 |
-| Unity shaders/VFX | `unity-shader-specialist` | 3 |
+| Unity Shaders/VFX | `unity-shader-specialist` | 3 |
 | Unity Addressables | `unity-addressables-specialist` | 3 |
 | Unity UI Toolkit | `unity-ui-specialist` | 3 |
-| Unreal-specific help | `unreal-specialist` | 3 |
+| Trợ giúp chuyên sâu Unreal | `unreal-specialist` | 3 |
 | Unreal GAS | `ue-gas-specialist` | 3 |
 | Unreal Blueprints | `ue-blueprint-specialist` | 3 |
-| Unreal replication | `ue-replication-specialist` | 3 |
+| Unreal Replication | `ue-replication-specialist` | 3 |
 | Unreal UMG/CommonUI | `ue-umg-specialist` | 3 |
 
-### Agent Hierarchy
+### Sơ đồ phân cấp Agent
 
 ```
                     creative-director / technical-director / producer
@@ -1414,290 +1292,268 @@ Reads existing code and generates GDD-format design documentation from it.
                    ui, tools)
 ```
 
-**Escalation rule:** If two agents disagree, go up. Design conflicts go to
-`creative-director`. Technical conflicts go to `technical-director`. Scope
-conflicts go to `producer`.
+**Quy tắc báo cáo (Escalation rule):** Nếu hai agent bất đồng, chuyển lên cấp trên. Xung đột thiết kế lên `creative-director`. Xung đột kỹ thuật lên `technical-director`. Xung đột quy mô lên `producer`.
 
 ---
 
-## Appendix B: Slash Command Quick-Reference
+## Phụ lục B: Tra cứu nhanh Slash Command
 
-### All 73 Commands by Category
+### Tất cả 73 lệnh theo danh mục
 
-#### Onboarding and Navigation (6)
+#### Onboarding và Điều hướng (6)
 
-| Command | Purpose | Phase |
-|---------|---------|-------|
-| `/start` | Guided onboarding, routes to right workflow | Any (first session) |
-| `/help` | Context-aware "what do I do next?" | Any |
-| `/project-stage-detect` | Full project audit to determine current phase | Any |
-| `/setup-engine` | Configure engine, pin version, set preferences | 1 |
-| `/adopt` | Brownfield audit and migration plan | Any (existing projects) |
-| `/skill-improve` | Improve a skill via test-fix-retest loop | Any |
+| Lệnh | Mục đích | Giai đoạn |
+|---|---|---|
+| `/start` | Onboarding có hướng dẫn, điều hướng tới đúng workflow | Mọi giai đoạn (phiên đầu) |
+| `/help` | Nhận biết ngữ cảnh "tôi cần làm gì tiếp theo?" | Mọi giai đoạn |
+| `/project-stage-detect` | Audit toàn diện dự án để xác định giai đoạn hiện tại | Mọi giai đoạn |
+| `/setup-engine` | Cấu hình engine, ghim phiên bản, thiết lập tùy chọn | 1 |
+| `/adopt` | Audit và kế hoạch migration cho dự án cũ | Mọi giai đoạn (dự án có sẵn) |
+| `/skill-improve` | Cải tiến skill qua vòng lặp test-fix-retest | Mọi giai đoạn |
 
 #### Game Design (6)
 
-| Command | Purpose | Phase |
-|---------|---------|-------|
-| `/brainstorm` | Collaborative ideation with MDA analysis | 1 |
-| `/map-systems` | Decompose concept into systems index | 1-2 |
-| `/design-system` | Guided section-by-section GDD authoring | 2 |
-| `/quick-design` | Lightweight spec for small changes | 2+ |
-| `/review-all-gdds` | Cross-GDD consistency and design theory review | 2 |
-| `/propagate-design-change` | Find ADRs/stories affected by GDD changes | 5 |
+| Lệnh | Mục đích | Giai đoạn |
+|---|---|---|
+| `/brainstorm` | Tư duy ý tưởng cộng tác kèm phân tích MDA | 1 |
+| `/map-systems` | Phân rã concept thành chỉ mục các hệ thống | 1-2 |
+| `/design-system` | Soạn thảo GDD từng phần có hướng dẫn | 2 |
+| `/quick-design` | Đặc tả tinh gọn cho các thay đổi nhỏ | 2+ |
+| `/review-all-gdds` | Đánh giá tính nhất quán chéo và lý thuyết thiết kế | 2 |
+| `/propagate-design-change` | Tìm các ADR/story bị ảnh hưởng khi GDD thay đổi | 5 |
 
-#### UX and Interface (2)
+#### UX và Giao diện (2)
 
-| Command | Purpose | Phase |
-|---------|---------|-------|
-| `/ux-design` | Author UX specs (screen/flow, HUD, patterns) | 4 |
-| `/ux-review` | Validate UX specs for accessibility and GDD alignment | 4 |
+| Lệnh | Mục đích | Giai đoạn |
+|---|---|---|
+| `/ux-design` | Soạn thảo đặc tả UX (màn hình/luồng, HUD, patterns) | 4 |
+| `/ux-review` | Xác thực đặc tả UX về accessibility và độ khớp GDD | 4 |
 
-#### Architecture (4)
+#### Kiến trúc (4)
 
-| Command | Purpose | Phase |
-|---------|---------|-------|
-| `/create-architecture` | Master architecture document | 3 |
-| `/architecture-decision` | Create or retrofit an ADR | 3 |
-| `/architecture-review` | Validate all ADRs, dependency ordering | 3 |
-| `/create-control-manifest` | Flat programmer rules from Accepted ADRs | 3 |
+| Lệnh | Mục đích | Giai đoạn |
+|---|---|---|
+| `/create-architecture` | Tài liệu kiến trúc tổng thể | 3 |
+| `/architecture-decision` | Tạo hoặc bổ sung một ADR | 3 |
+| `/architecture-review` | Xác thực tất cả các ADR, thứ tự phụ thuộc | 3 |
+| `/create-control-manifest` | Tạo quy tắc lập trình viên từ các ADR đã duyệt | 3 |
 
-#### Stories and Sprints (8)
+#### Stories và Sprints (8)
 
-| Command | Purpose | Phase |
-|---------|---------|-------|
-| `/create-epics` | Translate GDDs + ADRs into epics (one per module) | 4 |
-| `/create-stories` | Break a single epic into story files | 4 |
-| `/dev-story` | Implement a story — routes to the correct programmer agent | 5 |
-| `/sprint-plan` | Create or manage sprint plans | 4-5 |
-| `/sprint-status` | Quick 30-line sprint snapshot | 5 |
-| `/story-readiness` | Validate story is implementation-ready | 4-5 |
-| `/story-done` | 8-phase story completion review | 5 |
-| `/estimate` | Effort estimation with risk assessment | 4-5 |
+| Lệnh | Mục đích | Giai đoạn |
+|---|---|---|
+| `/create-epics` | Chuyển đổi GDDs + ADRs thành epics (mỗi module một epic) | 4 |
+| `/create-stories` | Chia nhỏ một epic thành các file story | 4 |
+| `/dev-story` | Triển khai một story — tự điều hướng tới đúng agent lập trình | 5 |
+| `/sprint-plan` | Tạo hoặc quản lý kế hoạch sprint | 4-5 |
+| `/sprint-status` | Xem nhanh ảnh chụp trạng thái sprint 30 dòng | 5 |
+| `/story-readiness` | Xác thực story đã sẵn sàng để code | 4-5 |
+| `/story-done` | Đánh giá hoàn thành story 8 bước | 5 |
+| `/estimate` | Ước lượng công sức kèm đánh giá rủi ro | 4-5 |
 
-#### Reviews and Analysis (13)
+#### Đánh giá và Phân tích (13)
 
-| Command | Purpose | Phase |
-|---------|---------|-------|
-| `/design-review` | Validate GDD against 8-section standard | 1-2 |
-| `/code-review` | Architectural code review | 5+ |
-| `/balance-check` | Game balance formula analysis | 5-6 |
-| `/asset-audit` | Asset naming, format, size verification | 6 |
-| `/asset-spec` | Per-asset visual specs and AI generation prompts | 5-6 |
-| `/content-audit` | GDD-specified content vs. implemented | 5 |
-| `/consistency-check` | Cross-GDD entity and formula inconsistency scan | 2+ |
-| `/scope-check` | Scope creep detection | 5 |
-| `/perf-profile` | Performance profiling workflow | 6 |
-| `/tech-debt` | Tech debt scanning and prioritization | 6 |
-| `/gate-check` | Formal phase gate with PASS/CONCERNS/FAIL | All transitions |
-| `/reverse-document` | Generate design docs from existing code | Any |
-| `/security-audit` | Security vulnerability audit (save, network, input) | 6-7 |
+| Lệnh | Mục đích | Giai đoạn |
+|---|---|---|
+| `/design-review` | Xác thực GDD theo chuẩn 8 phần | 1-2 |
+| `/code-review` | Đánh giá kiến trúc code | 5+ |
+| `/balance-check` | Phân tích công thức cân bằng game | 5-6 |
+| `/asset-audit` | Xác minh đặt tên, định dạng, dung lượng asset | 6 |
+| `/asset-spec` | Đặc tả thị giác và prompt sinh AI cho từng asset | 5-6 |
+| `/content-audit` | Nội dung chỉ định trong GDD vs thực tế đã code | 5 |
+| `/consistency-check` | Quét tính không nhất quán của thực thể và công thức | 2+ |
+| `/scope-check` | Phát hiện phình to quy mô (scope creep) | 5 |
+| `/perf-profile` | Quy trình đo kiểm và tối ưu hiệu năng | 6 |
+| `/tech-debt` | Quét và sắp xếp thứ tự ưu tiên nợ kỹ thuật | 6 |
+| `/gate-check` | Cổng kiểm soát giai đoạn chính thức với PASS/CONCERNS/FAIL | Tất cả các chuyển giao |
+| `/reverse-document` | Tạo tài liệu thiết kế từ code hiện có | Mọi giai đoạn |
+| `/security-audit` | Kiểm toán lỗ hổng bảo mật (save game, network, input) | 6-7 |
 
-#### QA and Testing (9)
+#### QA và Kiểm thử (9)
 
-| Command | Purpose | Phase |
-|---------|---------|-------|
-| `/qa-plan` | Generate QA test plan for a sprint or feature | 5 |
-| `/smoke-check` | Critical path smoke test gate before QA hand-off | 5-6 |
-| `/soak-test` | Soak test protocol for extended play sessions | 6 |
-| `/regression-suite` | Map test coverage, identify fixed bugs lacking regression tests | 5-6 |
-| `/test-setup` | Scaffold test framework and CI/CD pipeline | 4 |
-| `/test-helpers` | Generate engine-specific test helper libraries | 4-5 |
-| `/test-evidence-review` | Quality review of test files and manual evidence | 5 |
-| `/test-flakiness` | Detect non-deterministic tests from CI logs | 5-6 |
-| `/skill-test` | Validate skill files for structural and behavioral correctness | Any |
+| Lệnh | Mục đích | Giai đoạn |
+|---|---|---|
+| `/qa-plan` | Tạo kế hoạch kiểm thử QA cho sprint hoặc tính năng | 5 |
+| `/smoke-check` | Cổng smoke test luồng quan trọng trước khi giao QA | 5-6 |
+| `/soak-test` | Quy trình soak test cho các phiên chơi kéo dài | 6 |
+| `/regression-suite` | Lập sơ đồ test coverage, tìm bug đã sửa thiếu test | 5-6 |
+| `/test-setup` | Dựng khung test và pipeline CI/CD | 4 |
+| `/test-helpers` | Tạo các thư viện helper test đặc thù cho engine | 4-5 |
+| `/test-evidence-review` | Đánh giá chất lượng file test và tài liệu bằng chứng | 5 |
+| `/test-flakiness` | Phát hiện test chập chờn từ log CI | 5-6 |
+| `/skill-test` | Xác thực file skill về cấu trúc và hành vi | Mọi giai đoạn |
 
-#### Production Management (6)
+#### Quản lý Sản xuất (6)
 
-| Command | Purpose | Phase |
-|---------|---------|-------|
-| `/milestone-review` | Milestone progress and go/no-go | 5 |
-| `/retrospective` | Sprint retrospective analysis | 5 |
-| `/bug-report` | Structured bug report creation | 5+ |
-| `/bug-triage` | Re-evaluate open bugs for priority, severity, and owner | 5+ |
-| `/playtest-report` | Structured playtest session report | 4-6 |
-| `/onboard` | Onboard a new team member | Any |
+| Lệnh | Mục đích | Giai đoạn |
+|---|---|---|
+| `/milestone-review` | Tiến độ milestone và quyết định go/no-go | 5 |
+| `/retrospective` | Phân tích tổng kết sprint (retrospective) | 5 |
+| `/bug-report` | Tạo báo cáo bug có cấu trúc | 5+ |
+| `/bug-triage` | Đánh giá lại bug mở về độ ưu tiên, nghiêm trọng và người phụ trách | 5+ |
+| `/playtest-report` | Báo cáo phiên chơi thử có cấu trúc | 4-6 |
+| `/onboard` | Onboarding thành viên mới vào nhóm | Mọi giai đoạn |
 
-#### Release (6)
+#### Phát hành (6)
 
-| Command | Purpose | Phase |
-|---------|---------|-------|
-| `/release-checklist` | Pre-release validation | 7 |
-| `/launch-checklist` | Full cross-department launch readiness | 7 |
-| `/changelog` | Auto-generate internal changelog | 7 |
-| `/patch-notes` | Player-facing patch notes | 7 |
-| `/hotfix` | Emergency fix workflow | 7+ |
-| `/day-one-patch` | Scoped patch for issues found after gold master | 7+ |
+| Lệnh | Mục đích | Giai đoạn |
+|---|---|---|
+| `/release-checklist` | Xác thực tiền phát hành | 7 |
+| `/launch-checklist` | Đánh giá sẵn sàng ra mắt liên phòng ban đầy đủ | 7 |
+| `/changelog` | Tự động tạo changelog nội bộ | 7 |
+| `/patch-notes` | Tạo patch notes hướng tới người chơi | 7 |
+| `/hotfix` | Quy trình sửa lỗi khẩn cấp | 7+ |
+| `/day-one-patch` | Bản vá có phạm vi cho các lỗi phát hiện sau bản gold master | 7+ |
 
-#### Creative (4)
+#### Sáng tạo (4)
 
-| Command | Purpose | Phase |
-|---------|---------|-------|
-| `/prototype` | Concept prototype — validate core idea before GDDs | 1 |
-| `/art-bible` | Guided Art Bible authoring — visual identity spec | 1-2 |
-| `/vertical-slice` | Production-quality end-to-end build before Production | 4 |
-| `/localize` | String extraction and validation | 6-7 |
+| Lệnh | Mục đích | Giai đoạn |
+|---|---|---|
+| `/prototype` | Prototype concept — kiểm chứng ý tưởng cốt lõi trước GDD | 1 |
+| `/art-bible` | Soạn thảo Art Bible có hướng dẫn — đặc tả nhận diện thị giác | 1-2 |
+| `/vertical-slice` | Bản build hoàn chỉnh chất lượng sản xuất trước Production | 4 |
+| `/localize` | Trích xuất và xác thực chuỗi đa ngôn ngữ | 6-7 |
 
-#### Team Orchestration (9)
+#### Phối hợp nhóm (Team Orchestration) (9)
 
-| Command | Purpose | Phase |
-|---------|---------|-------|
-| `/team-combat` | Combat feature: design through implementation | 5 |
-| `/team-narrative` | Narrative content: structure through dialogue | 5 |
-| `/team-ui` | UI feature: UX spec through polished implementation | 5 |
-| `/team-level` | Level: layout through dressed encounters | 5 |
-| `/team-audio` | Audio: direction through implemented events | 5-6 |
-| `/team-polish` | Coordinated polish: perf + art + audio + QA | 6 |
-| `/team-release` | Release coordination: build + QA + deployment | 7 |
-| `/team-live-ops` | Live-ops planning: seasonal events, battle pass, retention | 7+ |
-| `/team-qa` | Full QA cycle: strategy, execution, coverage, sign-off | 6-7 |
+| Lệnh | Mục đích | Giai đoạn |
+|---|---|---|
+| `/team-combat` | Tính năng chiến đấu: từ thiết kế đến triển khai code | 5 |
+| `/team-narrative` | Nội dung cốt truyện: từ cấu trúc đến lời thoại | 5 |
+| `/team-ui` | Tính năng UI: từ đặc tả UX đến triển khai hoàn thiện | 5 |
+| `/team-level` | Màn chơi: từ bố cục layout đến sắp đặt chạm trán | 5 |
+| `/team-audio` | Âm thanh: từ định hướng đến tích hợp sự kiện | 5-6 |
+| `/team-polish` | Đánh bóng phối hợp: hiệu năng + art + audio + QA | 6 |
+| `/team-release` | Phối hợp phát hành: build + QA + triển khai | 7 |
+| `/team-live-ops` | Kế hoạch live-ops: sự kiện mùa, battle pass, giữ chân người chơi | 7+ |
+| `/team-qa` | Chu kỳ QA đầy đủ: chiến lược, thực thi, bao phủ, ký duyệt | 6-7 |
 
 ---
 
-## Appendix C: Common Workflows
+## Phụ lục C: Các Workflow phổ biến
 
-### Workflow 1: "I just started and have no game idea"
-
-```
-1. /start (routes you based on where you are)
-2. /brainstorm (collaborative ideation, pick a concept)
-3. /setup-engine (pin engine and version)
-4. /design-review on concept doc (optional, recommended)
-5. /map-systems (decompose concept into systems with deps and priorities)
-6. /gate-check concept (verify you're ready for Systems Design)
-7. /design-system per system (guided GDD authoring)
-```
-
-### Workflow 2: "I have designs and want to start coding"
+### Workflow 1: "Tôi vừa mới bắt đầu và chưa có ý tưởng game"
 
 ```
-1. /design-review on each GDD (make sure they're solid)
-2. /review-all-gdds (cross-GDD consistency)
+1. /start (điều hướng bạn dựa trên tình trạng hiện tại)
+2. /brainstorm (tư duy cộng tác, chọn một concept)
+3. /setup-engine (ghim engine và phiên bản)
+4. /design-review trên concept doc (tùy chọn, khuyến nghị)
+5. /map-systems (phân rã concept thành các hệ thống kèm phụ thuộc và ưu tiên)
+6. /gate-check concept (xác minh bạn đã sẵn sàng cho Thiết kế Hệ thống)
+7. /design-system cho từng hệ thống (soạn thảo GDD có hướng dẫn)
+```
+
+### Workflow 2: "Tôi đã có thiết kế và muốn bắt đầu viết code"
+
+```
+1. /design-review trên từng GDD (đảm bảo thiết kế vững chắc)
+2. /review-all-gdds (kiểm tra tính nhất quán chéo GDD)
 3. /gate-check systems-design
-4. /create-architecture + /architecture-decision (per major decision)
+4. /create-architecture + /architecture-decision (cho từng quyết định lớn)
 5. /architecture-review
 6. /create-control-manifest
 7. /gate-check technical-setup
-8. /create-epics layer: foundation + /create-stories [slug] (define epics, break into stories)
+8. /create-epics layer: foundation + /create-stories [slug] (xác định epic, chia story)
 9. /sprint-plan new
-10. /story-readiness -> implement -> /story-done (story lifecycle)
+10. /story-readiness -> triển khai code -> /story-done (vòng đời story)
 ```
 
-### Workflow 3: "I need to add a complex feature mid-production"
+### Workflow 3: "Tôi cần thêm một tính năng phức tạp giữa giai đoạn sản xuất"
 
 ```
-1. /design-system or /quick-design (depending on scope)
-2. /design-review to validate
-3. /propagate-design-change if modifying existing GDDs
-4. /estimate for effort and risk
-5. /team-combat, /team-narrative, /team-ui, etc. (appropriate team skill)
-6. /story-done when complete
-7. /balance-check if it affects game balance
+1. /design-system hoặc /quick-design (tùy theo quy mô)
+2. /design-review để xác thực
+3. /propagate-design-change nếu sửa đổi các GDD hiện có
+4. /estimate để ước lượng công sức và rủi ro
+5. /team-combat, /team-narrative, /team-ui, v.v. (chọn team skill phù hợp)
+6. /story-done khi hoàn thành
+7. /balance-check nếu tính năng ảnh hưởng đến cân bằng game
 ```
 
-### Workflow 4: "Something broke in production"
+### Workflow 4: "Có lỗi phát sinh trên production"
 
 ```
-1. /hotfix "description of the issue"
-2. Fix is implemented on hotfix branch
-3. /code-review the fix
-4. Run tests
-5. /release-checklist for hotfix build
-6. Deploy and backport
+1. /hotfix "mô tả sự cố"
+2. Bản sửa lỗi được thực hiện trên nhánh hotfix
+3. /code-review bản sửa lỗi
+4. Chạy kiểm thử tests
+5. /release-checklist cho bản build hotfix
+6. Triển khai và backport ngược lại nhánh chính
 ```
 
-### Workflow 5: "I have an existing project and want to use this system"
+### Workflow 5: "Tôi có dự án cũ và muốn áp dụng hệ thống này"
 
 ```
-1. /start (choose Path D -- existing work)
-2. /project-stage-detect (determines current phase)
-3. /adopt (audits existing artifacts, builds migration plan)
-4. /design-system retrofit [path] (fill GDD gaps)
-5. /architecture-decision retrofit [path] (fill ADR gaps)
-6. /gate-check at appropriate transition
+1. /start (chọn Nhánh D -- công việc có sẵn)
+2. /project-stage-detect (xác định giai đoạn hiện tại)
+3. /adopt (audit các tài liệu hiện có, lập kế hoạch migration)
+4. /design-system retrofit [path] (bổ sung khoảng trống GDD)
+5. /architecture-decision retrofit [path] (bổ sung khoảng trống ADR)
+6. /gate-check tại điểm chuyển đổi phù hợp
 ```
 
-### Workflow 6: "Starting a new sprint"
+### Workflow 6: "Bắt đầu một Sprint mới"
 
 ```
-1. /retrospective (review last sprint)
-2. /sprint-plan new (create next sprint)
-3. /scope-check (ensure scope is manageable)
-4. /story-readiness per story before pickup
-5. Implement stories
-6. /story-done per completed story
-7. /sprint-status for quick progress checks
+1. /retrospective (đánh giá sprint trước)
+2. /sprint-plan new (tạo sprint tiếp theo)
+3. /scope-check (đảm bảo quy mô có thể quản lý được)
+4. /story-readiness cho từng story trước khi bắt đầu code
+5. Triển khai các stories
+6. /story-done cho mỗi story hoàn thành
+7. /sprint-status để kiểm tra tiến độ nhanh
 ```
 
-### Workflow 7: "Shipping the game"
+### Workflow 7: "Phát hành trò chơi"
 
 ```
-1. /gate-check polish (verify Polish phase is complete)
-2. /tech-debt (decide what's acceptable at launch)
-3. /localize (final localization pass)
+1. /gate-check polish (xác minh giai đoạn Đánh bóng đã hoàn tất)
+2. /tech-debt (quyết định những gì chấp nhận được khi phát hành)
+3. /localize (đợt kiểm tra đa ngôn ngữ cuối cùng)
 4. /release-checklist v1.0.0
-5. /launch-checklist (full cross-department validation)
-6. /team-release (coordinate the release)
-7. /patch-notes and /changelog
-8. Ship!
-9. /hotfix if anything breaks post-launch
-10. Post-mortem after launch stabilizes
+5. /launch-checklist (xác thực toàn diện liên phòng ban)
+6. /team-release (điều phối đợt phát hành)
+7. /patch-notes và /changelog
+8. Phát hành game!
+9. /hotfix nếu có bất kỳ sự cố nào phát sinh sau ra mắt
+10. Post-mortem sau khi đợt ra mắt đã ổn định
 ```
 
-### Workflow 8: "I'm lost / don't know what to do next"
+### Workflow 8: "Tôi bị lạc lối / không biết phải làm gì tiếp theo"
 
 ```
-1. /help (reads your phase, checks artifacts, tells you what's next)
-2. If /help doesn't help: /project-stage-detect (full audit)
-3. If stage seems wrong: /gate-check at the transition you think you're at
+1. /help (đọc giai đoạn hiện tại, kiểm tra tài liệu, chỉ dẫn bước tiếp theo)
+2. Nếu /help chưa đủ rõ ràng: /project-stage-detect (audit toàn diện)
+3. Nếu giai đoạn có vẻ sai: /gate-check tại điểm chuyển đổi mà bạn nghĩ mình đang ở đó
 ```
 
 ---
 
-## Tips for Getting the Most Out of the System
+## Các mẹo để khai thác tối đa hệ thống
 
-1. **Always start with design, then implement.** The agent system is built
-   around the assumption that a design document exists before code is written.
-   Agents reference GDDs constantly.
+1. **Luôn bắt đầu với thiết kế, sau đó mới triển khai code.** Hệ thống agent được xây dựng dựa trên giả định rằng tài liệu thiết kế phải tồn tại trước khi viết code. Các agent liên tục tham chiếu GDD.
 
-2. **Use team skills for cross-cutting features.** Do not try to manually
-   coordinate 4 agents yourself -- let `/team-combat`, `/team-narrative`,
-   etc. handle the orchestration.
+2. **Sử dụng team skills cho các tính năng liên phòng ban.** Đừng tự mình điều phối thủ công 4 agent — hãy để `/team-combat`, `/team-narrative`, v.v. xử lý khâu điều phối.
 
-3. **Trust the rules system.** When a rule flags something in your code, fix
-   it. The rules encode hard-won game development wisdom (data-driven values,
-   delta time, accessibility, etc.).
+3. **Tin tưởng hệ thống rules.** Khi một rule cảnh báo điều gì đó trong code của bạn, hãy sửa nó. Các rules đã đúc kết những bài học xương máu trong phát triển game (giá trị data-driven, delta time, accessibility, v.v.).
 
-4. **Compact proactively.** At ~65-70% context usage, compact or `/clear`.
-   The pre-compact hook saves your progress. Do not wait until you are at the
-   limit.
+4. **Chủ động compact ngữ cảnh.** Khi mức sử dụng context đạt ~65-70%, hãy compact hoặc gõ `/clear`. Hook pre-compact sẽ lưu lại tiến trình của bạn. Đừng đợi đến khi chạm giới hạn trần.
 
-5. **Use the right tier of agent.** Do not ask `creative-director` to write a
-   shader. Do not ask `qa-tester` to make design decisions. The hierarchy
-   exists for a reason.
+5. **Sử dụng đúng tầng agent.** Đừng yêu cầu `creative-director` viết shader. Đừng yêu cầu `qa-tester` đưa ra quyết định thiết kế. Hệ thống phân cấp tồn tại là có lý do.
 
-6. **Run /help when uncertain.** It reads your actual project state and tells
-   you the single most important next step.
+6. **Chạy /help khi phân vân.** Lệnh sẽ đọc trạng thái thực tế của dự án và cho bạn biết bước tiếp theo quan trọng nhất.
 
-7. **Run `/design-review` before handing designs to programmers.** This
-   catches incomplete specs early, saving rework.
+7. **Chạy `/design-review` trước khi giao thiết kế cho lập trình viên.** Việc này giúp phát hiện sớm các đặc tả chưa hoàn thiện, tránh phải làm lại nhiều lần.
 
-8. **Run `/code-review` after every major feature.** Catch architectural
-   issues before they propagate.
+8. **Chạy `/code-review` sau mỗi tính năng lớn.** Bắt sớm các vấn đề kiến trúc trước khi chúng lan rộng.
 
-9. **Prototype risky mechanics first.** A day of prototyping can save a week
-   of production on a mechanic that does not work.
+9. **Làm prototype cho các cơ chế rủi ro trước.** Một ngày làm prototype có thể tiết kiệm cả tuần sản xuất cho một cơ chế chơi không thấy vui.
 
-10. **Keep your sprint plans honest.** Use `/scope-check` regularly. Scope
-    creep is the number one killer of indie games.
+10. **Giữ kế hoạch sprint trung thực.** Thường xuyên dùng `/scope-check`. Phình to quy mô (scope creep) là kẻ thù số một của các nhà phát triển game indie.
 
-11. **Document decisions with ADRs.** Future-you will thank present-you for
-    recording *why* things were built the way they were.
+11. **Ghi lại các quyết định bằng ADR.** Bản thân bạn trong tương lai sẽ cảm ơn bạn ở hiện tại vì đã ghi lại *tại sao* mọi thứ lại được xây dựng theo cách đó.
 
-12. **Use the story lifecycle religiously.** `/story-readiness` before pickup,
-    `/story-done` after completion. This catches deviations early and keeps
-    the pipeline honest.
+12. **Tuân thủ nghiêm ngặt vòng đời story.** Dùng `/story-readiness` trước khi nhận làm, `/story-done` sau khi hoàn thành. Việc này phát hiện sớm các sai lệch và giữ cho pipeline luôn minh bạch.
 
-13. **Write to files early and often.** Incremental section writing means your
-    design decisions survive crashes and compactions. The file is the memory,
-    not the conversation.
+13. **Ghi file sớm và thường xuyên.** Ghi từng phần tăng dần giúp các quyết định thiết kế của bạn tồn tại qua các sự cố crash và compaction. File lưu trên đĩa chính là bộ nhớ bền vững, không phải cuộc trò chuyện tạm thời.
