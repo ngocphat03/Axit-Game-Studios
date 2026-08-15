@@ -1,6 +1,6 @@
-# Axit Workspace
+# Axit Workspace — Antigravity Orchestrator
 
-This repository is a Codex-first product workspace. Codex is expected to run from the repository root.
+This repository is an Antigravity-first product workspace running with Gemini models.
 
 ## Orchestrator-only execution
 
@@ -26,34 +26,32 @@ Parallelize read-heavy independent exploration when useful. Serialize write-heav
 
 Before spawning delegated work, read `.axit/policies/model-routing.md`.
 
-Workspace defaults are:
+Workspace defaults with Gemini are:
 
 ```text
-primary orchestrator = gpt-5.6-sol / xhigh
-all child lanes       = gpt-5.6-luna / medium
+primary orchestrator = gemini-2.5-pro / high
+all child lanes       = gemini-2.5-flash / medium (or gemini-2.5-pro for complex verification)
 ```
 
 This applies to explorers, workers, Unity/MCP evidence lanes, repair/recovery agents, independent verifiers, closure verifiers, report authors, and custom sub-agents.
 
-A child lane must not autonomously escalate to Terra/Sol or above `medium` reasoning. When a child underperforms, first sharpen/distill context, steer/resume, replace with another Luna/medium child when needed, or decompose the task. Exhausting the normal recovery budget does not authorize model escalation.
-
-Only an explicit current human instruction may override child model/reasoning for a bounded scope. Record such an override in milestone evidence and do not carry it forward silently.
+A child lane must not autonomously escalate models or reasoning beyond its assigned scope. When a child underperforms, first sharpen/distill context, steer/resume, replace with another child when needed, or decompose the task.
 
 Use concurrency only for materially independent lanes. Read-only work may parallelize; overlapping writes, Runtime Binding/state/report writes, and Unity/editor mutations must remain serialized. Do not spawn agents merely to fill available slots, and close obsolete/completed lanes promptly.
 
 ### Manual Unity MCP prerequisite
 
-MCP for Unity setup is user-owned and must be completed before any accepted milestone that requires Unity MCP evidence begins.
+MCP for Unity setup is user-owned and must be configured in `.agents/mcp_config.json` before any accepted milestone that requires Unity MCP evidence begins.
 
 The orchestrator and sub-agents may inspect and use the currently available Unity MCP transport, but they must not:
 
 - install or upgrade CoplayDev/unity-mcp;
 - add/remove Unity packages solely to set up MCP;
-- edit global/user Codex MCP configuration;
+- edit global/user IDE MCP configuration;
 - start/configure/repair the Unity MCP bridge on the user's behalf;
 - invent a missing transport or operation name.
 
-If an accepted milestone requires Unity MCP and the expected transport is missing, unreachable, or not connected to the intended QuickGun editor/project at readiness, stop with `HARD_BLOCKER: UNITY_MCP_NOT_READY` and report only the observed missing prerequisite. Do not attempt setup.
+If an accepted milestone requires Unity MCP and the expected transport is missing, unreachable, or not connected to the intended Unity editor/project at readiness, stop with `HARD_BLOCKER: UNITY_MCP_NOT_READY` and report only the observed missing prerequisite. Do not attempt setup.
 
 ### Sub-agent recovery
 
@@ -65,10 +63,6 @@ If a sub-agent pauses, blocks, times out, or returns an incomplete result, the o
 4. allow at most two bounded recovery/replacement attempts for the same lane or required failure;
 5. after recovery, reacquire current evidence rather than reusing stale results;
 6. checkpoint meaningful current progress in `.axit/state/active.md` or the current milestone artifact through a delegated write lane and continue automatically.
-
-Do not stop merely because one sub-agent is blocked when another safe route or replacement lane can complete the accepted task.
-
-Do not apply recovery policy to missing/unready user-owned Unity MCP setup: that is a manual prerequisite, not an agent-repair lane.
 
 ### Hard-stop conditions
 
@@ -84,29 +78,9 @@ Stop the continuous run and ask the user only when at least one of these becomes
 - the same required failure remains after two bounded repair/replacement loops;
 - any milestone-specific hard blocker declared by the current accepted plan.
 
-Git modified/deleted/untracked/nested/submodule state is not itself a blocker when `.axit/workspace.yaml -> safety.check_git_status` is `false`; `AGENTS.override.md` defines the status-gating override.
-
-Routine phase completion is not a reason to ask for confirmation.
-
-### Continuous roadmap routing
-
-When the user asks to continue the Axit roadmap:
-
-1. read `.axit/state/active.md`;
-2. resolve the **current milestone** and its explicit execution-plan pointer from that state;
-3. execute that current accepted milestone continuously until `MILESTONE_DONE`, `FAILED`, or a declared `HARD_BLOCKER`;
-4. follow `.axit/roadmap/milestone-closure.md`;
-5. stop for human promotion review and do not start the next milestone automatically.
-
-If active state says no milestone is currently authorized, do not infer or auto-start the next mockup milestone.
-
-Do **not** hardcode or fall back to an older plan such as `.axit/plans/continuous-runtime-binding-v1.md` unless the current active state explicitly points to it.
-
-Keep user-facing progress concise. Do not emit long phase-by-phase essays unless asked.
-
 ## Root routing
 
-- `.axit/` is the Axit source of truth; `.agents/skills/` is Codex Skill discovery only.
+- `.axit/` is the Axit source of truth; `.agents/skills/` is Antigravity Skill discovery.
 - Read `.axit/workspace.yaml` when a task touches product source under `src/` or spans multiple components.
 - Map affected source paths to registered Systems, then read only the relevant `.axit/systems/<system-id>/` context.
 - Read `.axit/registry/architecture.yaml` and `.axit/registry/integrations.yaml` when a change crosses System boundaries, ownership, or public contracts.
@@ -126,36 +100,10 @@ Keep user-facing progress concise. Do not emit long phase-by-phase essays unless
 - When a System needs editor/runtime evidence, read `.axit/systems/<system-id>/capabilities.yaml` if present, then load only the referenced capability set needed for the criterion.
 - Use only capability ids explicitly declared in the active capability sets. Do not invent, alias, rename, abbreviate, or synthesize capability ids.
 - If no declared capability matches an evidence need, describe that need in ordinary language and use legitimate project validation evidence when sufficient; otherwise report a capability gap. Do not fabricate an id.
-- Ordinary project evidence such as standalone tests or source inspection is not automatically an Axit Capability and must not be relabeled as one unless a declared capability actually covers that mechanism.
-- Capability ids must remain transport-neutral. Do not replace semantic ids with MCP, CLI, provider, or editor command names.
-- A declared capability does not mean a runtime binding is currently available and does not grant permission to execute it.
 - Capability output is evidence only. `verify-change` still decides REQUIRED vs SUPPORTING evidence and PASS/FAIL/BLOCKED.
-- Missing/unbound acquisition is not proof that the product failed; distinguish unavailable evidence from an observed product failure.
 
 ## Runtime Binding routing
 
 - Runtime Bindings live under `.axit/bindings/` only after a real transport and concrete operation names have been verified.
 - Provider/tool-specific operation names belong in Runtime Bindings, not canonical Capability ids.
-- Do not invent MCP/CLI/editor operation names from memory, examples, or capability names.
-- A source-controlled binding definition does not prove the transport is currently connected; resolve availability in the current runtime/environment.
-- Keep credentials, tokens, endpoints, ports, and other secrets or ephemeral machine state outside canonical `.axit` files.
-- Runtime/Harness policy still owns authorization; a binding never grants permission by itself.
 - Distinguish acquisition outcomes: `acquired`, `unavailable`, `denied`, and `transport_error`. None is a verification verdict by itself.
-- If no reviewed binding is available for a selected Capability, report the capability as unbound/unavailable rather than silently substituting another transport.
-- For path-addressed runtime evidence, follow `.axit/checklists/runtime-binding-validation.md` Case 8: resolve the current full runtime identity before use; do not infer the complete live path from prefab-relative hierarchy.
-
-## System discipline
-
-- `src/*` contains interacting Systems such as game client, backend, CMS, and services; they are not separate Axit projects by default.
-- A System may have its own Git repository, submodule, nested repository, or separate tracking boundary without becoming a separate Axit Workspace.
-- System-local Rules/Architecture/repository metadata belong under `.axit/systems/<system-id>/`.
-- Cross-system relationships belong in root registries.
-- Point Axit metadata to executable contracts such as OpenAPI/protobuf/schema/source files; do not duplicate those contracts in `.axit`.
-- Prefer repository-level contract/integration/e2e tests for behavior that spans Systems.
-- Evidence provenance must distinguish Workspace-canonical, System-canonical, local/separately-tracked, and ephemeral runtime evidence as defined by `.axit/roadmap/milestone-closure.md`.
-
-## Migration boundary
-
-- `.claude/` is legacy/reference material only.
-- Do not bulk-migrate legacy agents, skills, or workflows.
-- Keep the reviewed Core stable unless real usage demonstrates a reusable gap.

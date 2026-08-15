@@ -2,7 +2,7 @@
 
 `.axit/` là nguồn sự thật (source of truth) do Axit quản lý dành cho các hành vi Core có thể tái sử dụng, điều hướng Workspace/System gốc, các Capability ngữ nghĩa, Runtime Bindings, các registry, kế hoạch thực thi và trạng thái tác vụ tinh gọn.
 
-Việc tích hợp với Codex được thiết kế tinh gọn có chủ đích: file gốc `AGENTS.md` điều hướng ngữ cảnh, `.agents/skills/` hiển thị các Skill đang hoạt động để khám phá, và thư mục gốc `.codex/` chứa cấu hình phiên làm việc/runtime của Codex chứ không chứa chân lý ngữ nghĩa của Axit.
+Dự án vận hành trên nền tảng **Google Antigravity & Gemini**: file gốc `AGENTS.md` và `GEMINI.md` điều hướng ngữ cảnh và quy tắc, `.agents/skills/` hiển thị các Skill để Antigravity tự động phát hiện, và `.agents/` chứa cấu hình rules, hooks, MCP server.
 
 ## Bố cục cấu trúc (Layout)
 
@@ -69,7 +69,7 @@ Chân lý cấp Workspace và liên hệ thống (cross-system). `architecture.y
 Lộ trình thực thi có giới hạn kết hợp các hành vi Axit đã được chấp thuận qua một đợt chạy dài hơn. Một Plan không tự động là một Core Workflow và không được sao chép lại quy trình Skill/Workflow đã ổn định. Sử dụng Plan cho việc sắp xếp trình tự giai đoạn, giới hạn thực thi phân quyền, các điểm checkpoint và điều kiện dừng khẩn cấp (hard-stop).
 
 ### `state/`
-Trạng thái tác vụ tinh gọn lưu bằng file cho các phiên làm việc Codex gốc. Đây là một điểm kiểm tra (checkpoint), không phải lịch sử hội thoại.
+Trạng thái tác vụ tinh gọn lưu bằng file cho các phiên làm việc gốc. Đây là một điểm kiểm tra (checkpoint), không phải lịch sử hội thoại.
 
 ### `specs/`
 Các hợp đồng Axit cho Profiles, Skills, Workflows, điều hướng Workspace/System, Capabilities, Runtime Bindings, và các registry.
@@ -83,11 +83,11 @@ Ghi chú xác thực và bằng chứng kiểm thử hồi quy ở cấp framewo
 ### `knowledge/`
 Kiến thức Axit có thể tái sử dụng đã được tuyển chọn. Tài liệu tham chiếu đặc thù theo System hoặc workspace thuộc về phạm vi sở hữu hẹp nhất tương ứng.
 
-## Ranh giới Runtime của Codex
+## Ranh giới Runtime của Antigravity
 
-Thư mục gốc `.codex/` được phép chứa cấu hình runtime đặc thù của Codex như model mặc định, cài đặt sub-agent, hành vi phê duyệt/sandbox, vai trò sub-agent tùy chỉnh và cấu hình client MCP.
+Thư mục `.agents/` chứa cấu hình của Antigravity như model mặc định, cài đặt sub-agent, rules phân cấp, hooks và client MCP.
 
-Cấu hình đó là mối quan tâm của adapter/runtime. Nó không được định nghĩa lại các Capability id của Axit, ngữ nghĩa xác minh, trách nhiệm của Profile, hoặc kiến trúc sản phẩm. Một runtime khác có thể tiếp nhận cùng ngữ nghĩa `.axit/` thông qua một tầng adapter khác.
+Cấu hình đó là mối quan tâm của adapter/runtime. Nó không được định nghĩa lại các Capability id của Axit, ngữ nghĩa xác minh, trách nhiệm của Profile, hoặc kiến trúc sản phẩm.
 
 ## Ranh giới Bằng chứng (Evidence boundary)
 
@@ -118,14 +118,14 @@ Ví dụ những thứ nên nằm ngoài `.axit` khi chúng đã tồn tại s�
 
 `.axit` ghi lại quyền sở hữu, mối quan hệ, các ràng buộc, ngữ nghĩa capability và các luồng xác minh.
 
-## Ranh giới Codex Skill
+## Ranh giới Antigravity Skill
 
 ```text
 .axit/core/skills/<skill>/SKILL.md
         = Core Skill chuẩn mực
 
 .agents/skills/<skill>/SKILL.md
-        = Bản chiếu/shim khám phá cho Codex
+        = Bản chiếu/shim khám phá cho Antigravity
 ```
 
-Chỉ những Skill đang hoạt động mới được hiển thị để khám phá. Capabilities và Plans không được chiếu dưới dạng Skill. Không coi `.agents/` hoặc `.codex/` là nguồn sự thật ngữ nghĩa thứ hai của Axit.
+Chỉ những Skill đang hoạt động mới được hiển thị để khám phá. Capabilities và Plans không được chiếu dưới dạng Skill.

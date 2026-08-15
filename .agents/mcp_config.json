@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "unity-mcp": {
+      "command": "node",
+      "args": ["tools/unity-mcp/build/index.js"],
+      "env": {
+        "UNITY_PROJECT_PATH": "${workspaceFolder}"
+      }
+    }
+  }
+}

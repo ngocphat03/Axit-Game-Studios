@@ -41,11 +41,11 @@ validation:
   end_to_end_tests: tests/e2e
 
 notes:
-  - "Open Codex from repository root; route tasks through this workspace manifest rather than relying on nested working directories."
+  - "Open Antigravity from repository root; route tasks through this workspace manifest rather than relying on nested working directories."
   - "Use project_memory + decision_log to restore durable design context; use active_state for current execution state."
   - "milestone_map is an alignment mockup, not an executable continuous plan."
   - "Every milestone execution plan must follow milestone_closure before returning MILESTONE_DONE and must stop for human promotion review."
-  - "model_routing_policy is mandatory for continuous execution: primary Sol/xhigh; all child lanes Luna/medium unless the user explicitly overrides a bounded scope."
+  - "model_routing_policy is mandatory for continuous execution: primary Gemini Pro; all child lanes Gemini Flash/Pro unless the user explicitly overrides a bounded scope."
   - "When safety.check_git_status is false, do not use root, nested-repository, or submodule Git status as a readiness gate or blocker."
   - "Set safety.check_git_status to true in workspaces that explicitly require clean-worktree/status validation."
   - "Add backend, CMS, or service systems here when their source roots exist and their boundaries are understood."

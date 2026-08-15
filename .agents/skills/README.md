@@ -1,20 +1,11 @@
-# Codex Skill Compatibility Layer
+# Antigravity Skill Layer (.agents/skills/)
 
-This directory exists only because Codex discovers repository skills under `.agents/skills/`.
+Thư mục này chứa các **Skill** được Google Antigravity tự động phát hiện và kích hoạt theo nhu cầu (Progressive Disclosure).
 
-It is not the Axit source of truth.
-
-Canonical Core Skills live at:
-
+Mỗi thư mục con đại diện cho một skill với cấu trúc:
 ```text
-.axit/core/skills/<skill-id>/SKILL.md
+.agents/skills/<skill_name>/
+└── SKILL.md
 ```
 
-Current Codex discovery entries:
-
-- `implement-change` -> canonical `.axit/core/skills/implement-change/SKILL.md`
-- `verify-change` -> canonical `.axit/core/skills/verify-change/SKILL.md`
-
-Until repository symlink handling is standardized in this branch, a discovery entry may be a tiny `SKILL.md` shim that contains only Codex discovery metadata and points Codex to the canonical Axit file. Do not duplicate the full procedure here.
-
-Do not copy legacy Game Studios skills here in bulk.
+Tất cả các skill đều có YAML frontmatter chuẩn (`name`, `description`) để Antigravity nhận biết khi nào cần nạp vào context.
