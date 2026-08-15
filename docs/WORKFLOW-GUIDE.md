@@ -1,10 +1,10 @@
-# Claude Code Game Studios -- Hướng dẫn Workflow hoàn chỉnh
+# Axit Game Studios -- Hướng dẫn Workflow hoàn chỉnh
 
 > **Làm thế nào để đi từ con số 0 đến một tựa game hoàn chỉnh phát hành bằng Kiến trúc Agent.**
 >
-> Hướng dẫn này sẽ dẫn dắt bạn qua từng giai đoạn phát triển game bằng hệ thống 49 agent, 73 slash command và 12 hook tự động. Tài liệu giả định bạn đã cài đặt Claude Code và đang làm việc từ thư mục gốc của dự án.
+> Hướng dẫn này sẽ dẫn dắt bạn qua từng giai đoạn phát triển game bằng hệ thống Agents & Skills trên nền tảng Google Antigravity & Gemini.
 >
-> Pipeline bao gồm 7 giai đoạn. Mỗi giai đoạn đều có một cổng kiểm soát chính thức (`/gate-check`) phải vượt qua trước khi tiến bước. Trình tự giai đoạn chuẩn được định nghĩa trong `.claude/docs/workflow-catalog.yaml` và được đọc bởi `/help`.
+> Pipeline bao gồm 7 giai đoạn. Mỗi giai đoạn đều có một cổng kiểm soát chính thức (`/gate-check`) phải vượt qua trước khi tiến bước. Trình tự giai đoạn chuẩn được định nghĩa trong `docs/reference/workflow-catalog.yaml` và được đọc bởi `/help`.
 
 ---
 
@@ -71,7 +71,7 @@ Recent commits:
 ===================================
 ```
 
-Nếu bạn thấy thông điệp này, hooks đang hoạt động tốt. Nếu không, hãy kiểm tra `.claude/settings.json` để đảm bảo đường dẫn hook chính xác cho hệ điều hành của bạn.
+Nếu bạn thấy thông điệp này, hooks đang hoạt động tốt. Nếu không, hãy kiểm tra `.agents/hooks.json` để đảm bảo cấu hình hook chính xác.
 
 ### Bước 4: Nhận trợ giúp bất cứ lúc nào
 
@@ -214,7 +214,7 @@ Hoặc chỉ định engine cụ thể:
 
 **Những gì /setup-engine thực hiện:**
 
-- Điền thông tin vào `.claude/docs/technical-preferences.md` với quy ước đặt tên, giới hạn hiệu năng, và các mặc định theo engine
+- Điền thông tin vào `docs/reference/technical-preferences.md` với quy ước đặt tên, giới hạn hiệu năng, và các mặc định theo engine
 - Phát hiện khoảng trống kiến thức (phiên bản engine mới hơn dữ liệu huấn luyện của LLM) và khuyên bạn đối chiếu `docs/engine-reference/`
 - Tạo các tài liệu tham chiếu đã ghim phiên bản trong `docs/engine-reference/`
 
@@ -1046,7 +1046,7 @@ Bỏ qua các quy trình sprint thông thường kèm audit trail đầy đủ:
 
 ```
 Yêu cầu Claude tạo tài liệu post-mortem bằng cách sử dụng template tại
-.claude/docs/templates/post-mortem.md
+docs/reference/templates/post-mortem.md
 ```
 
 ---
@@ -1076,7 +1076,7 @@ Director gates là các agent chuyên gia đánh giá công việc của bạn t
 
 Cờ `--review` hoạt động trên tất cả các skill có dùng cổng kiểm duyệt. Thay đổi chế độ toàn cục bất cứ lúc nào bằng cách sửa trực tiếp `production/review-mode.txt` hoặc chạy lại `/start`.
 
-Chi tiết định nghĩa các cổng: `.claude/docs/director-gates.md`
+Chi tiết định nghĩa các cổng: `docs/reference/director-gates.md`
 
 ---
 
@@ -1147,7 +1147,7 @@ Hệ thống có 12 hook tự động chạy:
 | `validate-commit.sh` | Trước khi commit | Kiểm tra tham chiếu design doc, tính hợp lệ JSON, không hardcode |
 | `validate-push.sh` | Trước khi push | Cảnh báo khi push vào main/develop |
 | `validate-assets.sh` | Trước khi commit | Kiểm tra đặt tên và dung lượng asset |
-| `validate-skill-change.sh` | Ghi file skill | Khuyến nghị chạy `/skill-test` sau khi sửa `.claude/skills/` |
+| `validate-skill-change.sh` | Ghi file skill | Khuyến nghị chạy `/skill-test` sau khi sửa `.agents/skills/` |
 | `log-agent.sh` | Agent khởi động | Ghi log quá trình gọi agent phục vụ audit trail |
 | `log-agent-stop.sh` | Agent kết thúc | Hoàn tất audit trail của agent (bắt đầu + kết thúc) |
 | `session-stop.sh` | Đóng phiên | Ghi log phiên làm việc lần cuối |

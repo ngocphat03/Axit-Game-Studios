@@ -1,21 +1,17 @@
 <p align="center">
-  <h1 align="center">Claude Code Game Studios</h1>
+  <h1 align="center">Axit Game Studios</h1>
   <p align="center">
-    Biến một phiên làm việc Claude Code duy nhất thành một studio phát triển game hoàn chỉnh.
+    Biến Antigravity IDE và Gemini thành một Game Studio hoàn chỉnh.
     <br />
-    49 agents. 73 skills. Một đội ngũ AI phối hợp nhịp nhàng.
+    Hệ thống Agents & Skills điều phối nhịp nhàng trên nền tảng Google Antigravity.
   </p>
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
-  <a href=".claude/agents"><img src="https://img.shields.io/badge/agents-49-blueviolet" alt="49 Agents"></a>
-  <a href=".claude/skills"><img src="https://img.shields.io/badge/skills-73-green" alt="73 Skills"></a>
-  <a href=".claude/hooks"><img src="https://img.shields.io/badge/hooks-12-orange" alt="12 Hooks"></a>
-  <a href=".claude/rules"><img src="https://img.shields.io/badge/rules-11-red" alt="11 Rules"></a>
-  <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/built%20for-Claude%20Code-f5f5f5?logo=anthropic" alt="Built for Claude Code"></a>
-  <a href="https://www.buymeacoffee.com/donchitos3"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20this%20project-FFDD00?logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee"></a>
-  <a href="https://github.com/sponsors/Donchitos"><img src="https://img.shields.io/badge/GitHub%20Sponsors-Support%20this%20project-ea4aaa?logo=githubsponsors&logoColor=white" alt="GitHub Sponsors"></a>
+  <a href=".agents/skills"><img src="https://img.shields.io/badge/skills-73-green" alt="73 Skills"></a>
+  <a href=".agents/rules"><img src="https://img.shields.io/badge/rules-Antigravity-red" alt="Antigravity Rules"></a>
+  <a href="GEMINI.md"><img src="https://img.shields.io/badge/built%20for-Google%20Antigravity%20%26%20Gemini-blue?logo=google" alt="Built for Google Antigravity & Gemini"></a>
 </p>
 
 ---
@@ -169,21 +165,18 @@ Bạn đang sử dụng phiên bản cũ hơn của template này? Xem [UPGRADIN
 ## Cấu trúc dự án
 
 ```
-CLAUDE.md                           # Cấu hình tổng thể
-.claude/
-  settings.json                     # Hooks, quyền hạn (permissions), quy tắc an toàn
-  agents/                           # 49 định nghĩa agent (markdown + YAML frontmatter)
-  skills/                           # 73 slash commands (mỗi thư mục con tương ứng một skill)
-  hooks/                            # 12 hook scripts (bash, đa nền tảng)
-  rules/                            # 11 quy chuẩn code theo phạm vi đường dẫn
-  statusline.sh                     # Script hiển thị status line (context%, model, stage, epic breadcrumb)
-  docs/
-    workflow-catalog.yaml           # Định nghĩa pipeline 7 giai đoạn (được đọc bởi /help)
-    templates/                      # 41 document templates
-src/                                # Source code của game
+GEMINI.md                           # Cấu hình chính cho Google Antigravity & Gemini
+AGENTS.md                           # Quy tắc điều phối Orchestrator & Sub-agents
+.agents/
+  rules/                            # Các quy chuẩn code phân cấp theo đường dẫn
+  skills/                           # 73 skills (tự động phát hiện bởi Antigravity)
+  hooks.json                        # Cấu hình lifecycle hooks cho Antigravity
+  mcp_config.json                   # Cấu hình tích hợp Unity MCP bridge
+.axit/                              # Axit Framework chuẩn mực (Core, Capabilities, Bindings, Systems)
+src/                                # Source code của game (Unity Client, Backend, Services)
 assets/                             # Art, audio, VFX, shaders, data files
 design/                             # GDDs, narrative docs, level designs
-docs/                               # Tài liệu kỹ thuật và các quyết định kiến trúc ADR
+docs/                               # Tài liệu kỹ thuật, ADRs và tài liệu tham chiếu (docs/reference/)
 tests/                              # Bộ kiểm thử (unit, integration, performance, playtest)
 tools/                              # Công cụ build và pipeline
 prototypes/                         # Bản mẫu thử nghiệm (độc lập với src/)
@@ -231,7 +224,7 @@ Bạn luôn nắm quyền kiểm soát. Các agent cung cấp cấu trúc và ch
 | `session-stop.sh` | Đóng phiên (Session close) | Lưu trữ `active.md` vào session log và ghi lại hoạt động git |
 | `log-agent.sh` | Agent được khởi tạo | Bắt đầu audit trail — ghi log quá trình gọi subagent |
 | `log-agent-stop.sh` | Agent kết thúc | Kết thúc audit trail — hoàn tất bản ghi của subagent |
-| `validate-skill-change.sh` | PostToolUse (Write/Edit) | Khuyến nghị chạy `/skill-test` sau bất kỳ thay đổi nào trong `.claude/skills/` |
+| `validate-skill-change.sh` | PostToolUse (Write/Edit) | Khuyến nghị chạy `/skill-test` sau bất kỳ thay đổi nào trong `.agents/skills/` |
 
 > **Lưu ý**: `validate-commit.sh`, `validate-assets.sh`, và `validate-skill-change.sh` được kích hoạt trên mỗi lệnh Bash/Write tool và thoát ngay lập tức (exit 0) nếu câu lệnh hoặc đường dẫn file không liên quan. Đây là hành vi hook bình thường — không ảnh hưởng đến hiệu năng.
 

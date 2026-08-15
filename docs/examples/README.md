@@ -253,5 +253,5 @@ Hỏi (Question) → Lựa chọn (Options) → Quyết định (Decision) → B
 
 - **Tài liệu Nguyên tắc đầy đủ:** [docs/COLLABORATIVE-DESIGN-PRINCIPLE.md](../COLLABORATIVE-DESIGN-PRINCIPLE.md)
 - **Hướng dẫn Workflow:** [docs/WORKFLOW-GUIDE.md](../WORKFLOW-GUIDE.md)
-- **Danh sách Agent:** [.claude/docs/agent-roster.md](../../.claude/docs/agent-roster.md)
-- **CLAUDE.md (Giao thức cộng tác):** [CLAUDE.md](../../CLAUDE.md#collaboration-protocol)
+- **Danh sách Agent:** [docs/reference/agent-roster.md](../reference/agent-roster.md)
+- **Chỉ dẫn Antigravity & Gemini:** [GEMINI.md](../../GEMINI.md)
