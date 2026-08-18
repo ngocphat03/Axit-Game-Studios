@@ -31,10 +31,10 @@
 
 Trước khi bắt đầu, hãy đảm bảo bạn có:
 
-- **Claude Code** đã cài đặt và hoạt động tốt
-- **Git** với Git Bash (trên Windows) hoặc terminal tiêu chuẩn (trên Mac/Linux)
-- **jq** (tùy chọn nhưng khuyến nghị -- hook sẽ dùng `grep` dự phòng nếu thiếu)
-- **Python 3** (tùy chọn -- một số hook dùng để xác thực JSON)
+- **Google Antigravity (AGY IDE / CLI)** và model **Gemini** đã sẵn sàng
+- **Git** và terminal tiêu chuẩn
+- **Unity Editor** (Unity 6 / 2022+ LTS)
+- **Node.js** (nếu sử dụng Unity MCP bridge)
 
 ### Bước 1: Clone và Mở dự án
 
