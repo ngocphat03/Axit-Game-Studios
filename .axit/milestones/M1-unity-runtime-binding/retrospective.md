@@ -68,7 +68,7 @@ Observed:
 The primary session reported `gpt-5.6-sol / medium` while the repository intended a stronger reasoning setting.
 
 Root cause:
-The configured primary reasoning value did not produce the intended effective session value in the observed Codex run.
+The configured primary reasoning value did not produce the intended effective session value in the observed Antigravity run.
 
 Current decision:
 The user explicitly chose to prioritize M2 before repairing this mismatch.
@@ -114,7 +114,7 @@ Completed:
 
 Deferred:
 
-- repair/validate primary Codex reasoning configuration after M2 and before silently promoting beyond the M2 review gate.
+- repair/validate primary reasoning configuration after M2 and before silently promoting beyond the M2 review gate.
 
 Not justified:
 

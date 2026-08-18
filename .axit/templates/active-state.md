@@ -31,4 +31,4 @@
 
 ## Notes
 
-Keep this file compact. Record only information needed for another root Codex session to resume the current workspace task without relying on conversation history.
+Keep this file compact. Record only information needed for another root Antigravity session to resume the current workspace task without relying on conversation history.

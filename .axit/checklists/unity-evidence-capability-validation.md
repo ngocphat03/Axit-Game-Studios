@@ -6,14 +6,14 @@ This checklist validates the first Axit Capability set without binding it to a s
 
 The goal is to prove four boundaries:
 
-1. Codex selects the semantic evidence capability that matches the accepted criterion;
-2. Codex uses only capability ids explicitly declared by the active capability set;
+1. Antigravity selects the semantic evidence capability that matches the accepted criterion;
+2. Antigravity uses only capability ids explicitly declared by the active capability set;
 3. lack of a runtime binding is reported as evidence availability, not confused with product failure;
 4. `verify-change` keeps ownership of REQUIRED/SUPPORTING classification and PASS/FAIL/BLOCKED.
 
 ## Test protocol
 
-- Start Codex from repository root.
+- Start Antigravity from repository root.
 - Use the current `unity-client` System.
 - You may read Axit routing/capability definition files needed to answer.
 - Do not execute build, test, editor, runtime, MCP, or other evidence-acquisition tools in planning-only cases.
@@ -115,7 +115,7 @@ configuration.compare_to_accepted_contract
 
 Observed final result — PASS:
 
-- Codex resolved the active `unity-evidence` capability set;
+- Antigravity resolved the active `unity-evidence` capability set;
 - selected `unity.prefab.inspect` and `unity.serialized-fields.inspect`;
 - recognized `unity.component.inspect` as optional/redundant when prefab inspection already proves component presence;
 - preserved the serialized-vs-runtime evidence boundary;
@@ -167,7 +167,7 @@ The response correctly noted that unavailable acquisition is not evidence that t
 Prompt:
 
 ```text
-Does declaring unity.playmode.verify in Axit mean Codex is automatically allowed to enter Play Mode, and does a successful run automatically make verify-change return PASS?
+Does declaring unity.playmode.verify in Axit mean Antigravity is automatically allowed to enter Play Mode, and does a successful run automatically make verify-change return PASS?
 ```
 
 Observed result — PASS:
@@ -188,7 +188,7 @@ After tightening Capability ID resolution and clarifying that planning may read 
 
 ## Acceptance result
 
-Capability semantic v1 is accepted as stable because live Codex use demonstrated:
+Capability semantic v1 is accepted as stable because live Antigravity use demonstrated:
 
 - criterion-driven capability selection;
 - declared-ID discipline;

@@ -56,7 +56,7 @@ If the player journey file does not exist, note the gap and proceed:
 > journey session after this spec is drafted."
 
 Also add to the UX spec's Open Questions section:
-> "Player journey map not yet created. Template available at `.claude/docs/templates/player-journey.md`. Run `/ux-design` Phase 2b or create it manually to establish player context for this screen."
+> "Player journey map not yet created. Template available at `docs/reference/templates/player-journey.md`. Run `/ux-design` Phase 2b or create it manually to establish player context for this screen."
 
 ### 2c: GDD UI Requirements
 
@@ -94,7 +94,7 @@ must satisfy the accessibility tier committed to there.
 
 ### 2h: Input Method (from Project Config)
 
-Read `.claude/docs/technical-preferences.md` and extract the `## Input & Platform`
+Read `docs/reference/technical-preferences.md` and extract the `## Input & Platform`
 section. Store these values for use throughout the skill — they drive the
 Interaction Map and inform accessibility requirements:
 

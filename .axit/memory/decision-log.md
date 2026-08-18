@@ -43,7 +43,7 @@ Type: decision
 Status: active
 
 Context:
-The user normally opens Codex at repository root and keeps Unity/backend/CMS/services together under `src/` so cross-system debugging and tests can inspect both provider and consumer truth.
+The user normally opens Antigravity at repository root and keeps Unity/backend/CMS/services together under `src/` so cross-system debugging and tests can inspect both provider and consumer truth.
 
 Decision / Root cause:
 Treat repository root as Workspace/Product and `src/*` as Systems, not separate Axit projects by default.
@@ -195,7 +195,7 @@ Type: incident
 Status: active
 
 Context:
-M1 loaded the trusted project config, but the primary session resolved to `gpt-5.6-sol / medium` while `.codex/config.toml` requested `model_reasoning_effort = "max"`. Spawned sub-agents were observed at Sol/max.
+M1 loaded the trusted project config, but the primary session resolved to `gpt-5.6-sol / medium` while `.agents/mcp_config.json` requested `model_reasoning_effort = "max"`. Spawned sub-agents were observed at Sol/max.
 
 Decision / Root cause:
 Configured intent was incorrectly treated as sufficient until the live effective session exposed the mismatch.
@@ -398,7 +398,7 @@ Why:
 Most child work is bounded and checkable. Overall system quality depends more on decomposition, evidence, independence, recovery, and context discipline than on maximizing model size for every lane.
 
 Framework effect:
-`.axit/policies/model-routing.md` is canonical and is routed from `workspace.yaml` and root `AGENTS.md`. `.codex/config.toml` and the custom `axit-verifier` use Luna/medium for child execution.
+`.axit/policies/model-routing.md` is canonical and is routed from `workspace.yaml` and root `AGENTS.md`. `.agents/mcp_config.json` and the custom `axit-verifier` use Luna/medium for child execution.
 
 Regression / follow-up:
 No silent child escalation to Terra/Sol or above medium. Underperformance uses distilled context, steer/resume, fresh Luna/medium replacement, decomposition, and evidence reacquisition. Only an explicit current human instruction may authorize a bounded override, and milestone closure must audit overrides. This supersedes only the earlier sub-agent-max portion of the M3 reasoning decision; primary Sol/xhigh remains active.

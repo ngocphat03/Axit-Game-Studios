@@ -20,7 +20,7 @@
 
 Tự làm game solo với AI rất mạnh mẽ — nhưng một phiên chat đơn lẻ thường thiếu cấu trúc. Không có gì ngăn bạn hardcode các magic numbers, bỏ qua tài liệu thiết kế (design docs), hay viết code kiểu spaghetti. Không có khâu kiểm thử QA, không có đánh giá thiết kế (design review), và không ai đặt câu hỏi "điều này có thực sự phù hợp với tầm nhìn của trò chơi không?"
 
-**Claude Code Game Studios** giải quyết vấn đề này bằng cách mang đến cho phiên AI của bạn cấu trúc của một studio thực thụ. Thay vì chỉ có một trợ lý đa năng chung chung, bạn có 49 agent chuyên biệt được tổ chức theo cấp bậc studio — các giám đốc (directors) bảo vệ tầm nhìn, các trưởng bộ phận (leads) làm chủ lĩnh vực của mình, và các chuyên viên (specialists) trực tiếp thực thi. Mỗi agent đều có trách nhiệm rõ ràng, quy trình báo cáo/chuyển tiếp (escalation paths) và các cổng kiểm soát chất lượng (quality gates).
+**Axit Game Studios** giải quyết vấn đề này bằng cách mang đến cho phiên AI của bạn cấu trúc của một studio thực thụ trên nền tảng **Google Antigravity (AGY)** và model **Gemini**. Thay vì chỉ có một trợ lý đa năng chung chung, bạn có 49 agent chuyên biệt được tổ chức theo cấp bậc studio — các giám đốc (directors) bảo vệ tầm nhìn, các trưởng bộ phận (leads) làm chủ lĩnh vực của mình, và các chuyên viên (specialists) trực tiếp thực thi. Mỗi agent đều có trách nhiệm rõ ràng, quy trình báo cáo/chuyển tiếp (escalation paths) và các cổng kiểm soát chất lượng (quality gates).
 
 Kết quả: Bạn vẫn là người đưa ra mọi quyết định, nhưng giờ đây bạn có một đội ngũ biết đặt đúng câu hỏi, phát hiện sớm sai sót và giữ cho dự án của bạn luôn ngăn nắp từ bước brainstorm đầu tiên cho đến khi phát hành.
 
@@ -38,8 +38,6 @@ Kết quả: Bạn vẫn là người đưa ra mọi quyết định, nhưng gi�
 - [Triết lý thiết kế](#triết-lý-thiết-kế)
 - [Tùy biến](#tùy-biến)
 - [Hỗ trợ nền tảng](#hỗ-trợ-nền-tảng)
-- [Cộng đồng](#cộng-đồng)
-- [Ủng hộ dự án](#ủng-hộ-dự-án)
 - [Giấy phép (License)](#giấy-phép-license)
 
 ---
@@ -59,15 +57,15 @@ Kết quả: Bạn vẫn là người đưa ra mọi quyết định, nhưng gi�
 Các agent được tổ chức thành ba tầng (tiers), mô phỏng cách hoạt động của các studio ngoài đời thực:
 
 ```
-Tier 1 — Directors (Opus)
+Tier 1 — Directors (Gemini 2.5 Pro - High Reasoning)
   creative-director    technical-director    producer
 
-Tier 2 — Department Leads (Sonnet)
+Tier 2 — Department Leads (Gemini 2.5 Pro)
   game-designer        lead-programmer       art-director
   audio-director       narrative-director    qa-lead
   release-manager      localization-lead
 
-Tier 3 — Specialists (Sonnet/Haiku)
+Tier 3 — Specialists (Gemini 2.5 Flash / Pro)
   gameplay-programmer  engine-programmer     ai-programmer
   network-programmer   tools-programmer      ui-programmer
   systems-designer     level-designer        economy-designer
@@ -90,7 +88,7 @@ Template này bao gồm các bộ agent cho cả 3 engine phổ biến. Hãy s�
 
 ## Các lệnh Slash Commands
 
-Gõ `/` trong Claude Code để truy cập toàn bộ 73 skills:
+Gõ `/` trong Antigravity để truy cập toàn bộ 73 skills:
 
 **Onboarding & Điều hướng**
 `/start` `/help` `/project-stage-detect` `/setup-engine` `/adopt`
@@ -133,34 +131,28 @@ Gõ `/` trong Claude Code để truy cập toàn bộ 73 skills:
 ### Điều kiện tiên quyết
 
 - [Git](https://git-scm.com/)
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (`npm install -g @anthropic-ai/claude-code`)
+- **Google Antigravity CLI / IDE** (`agy`)
 - **Khuyến nghị**: [jq](https://jqlang.github.io/jq/) (để xác thực hook) và Python 3 (để xác thực JSON)
 
 Tất cả các hook đều tự động bỏ qua an toàn nếu thiếu công cụ tùy chọn — không có gì bị lỗi, bạn chỉ tạm thời không có tính năng xác thực đó.
 
 ### Thiết lập
 
-1. **Clone hoặc sử dụng làm template**:
+1. **Khởi động phiên làm việc**:
    ```bash
-   git clone https://github.com/Donchitos/Claude-Code-Game-Studios.git my-game
-   cd my-game
+   agy
    ```
 
-2. **Mở Claude Code** và khởi động một phiên làm việc:
-   ```bash
-   claude
-   ```
-
-3. **Chạy `/start`** — hệ thống sẽ hỏi tình trạng hiện tại của bạn (chưa có ý tưởng, khái niệm mơ hồ, thiết kế rõ ràng, hoặc dự án có sẵn) và hướng dẫn bạn tới đúng workflow. Không đưa ra suy đoán tùy tiện.
+2. **Chạy `/start`** — hệ thống sẽ hỏi tình trạng hiện tại của bạn (chưa có ý tưởng, khái niệm mơ hồ, thiết kế rõ ràng, hoặc dự án có sẵn) và hướng dẫn bạn tới đúng workflow. Không đưa ra suy đoán tùy tiện.
 
    Hoặc nhảy trực tiếp đến một skill cụ thể nếu bạn đã biết rõ nhu cầu:
    - `/brainstorm` — khám phá các ý tưởng game từ đầu
-   - `/setup-engine godot 4.6` — cấu hình game engine nếu bạn đã xác định
+   - `/setup-engine unity 6` — cấu hình game engine nếu bạn đã xác định
    - `/project-stage-detect` — phân tích dự án hiện có
 
 ## Nâng cấp
 
-Bạn đang sử dụng phiên bản cũ hơn của template này? Xem [UPGRADING.md](UPGRADING.md) để biết hướng dẫn migration từng bước, phân tích những thay đổi giữa các phiên bản và những file nào an toàn để ghi đè so với những file cần merge thủ công.
+Xem [UPGRADING.md](UPGRADING.md) để biết hướng dẫn migration từng bước, phân tích những thay đổi giữa các phiên bản và những file nào an toàn để ghi đè so với những file cần merge thủ công.
 
 ## Cấu trúc dự án
 
@@ -219,16 +211,16 @@ Bạn luôn nắm quyền kiểm soát. Các agent cung cấp cấu trúc và ch
 | `session-start.sh` | Mở phiên (Session open) | Hiển thị branch hiện tại và các commit gần đây để định hướng |
 | `detect-gaps.sh` | Mở phiên (Session open) | Phát hiện dự án mới (gợi ý `/start`) và phát hiện thiếu design doc khi đã có code hoặc prototype |
 | `pre-compact.sh` | Trước khi compact | Lưu lại các ghi chú tiến độ của phiên làm việc |
-| `post-compact.sh` | Sau khi compact | Nhắc nhở Claude khôi phục trạng thái phiên từ `active.md` |
-| `notify.sh` | Sự kiện thông báo (Notification) | Hiển thị thông báo Windows toast notification qua PowerShell |
+| `post-compact.sh` | Sau khi compact | Khôi phục ngữ cảnh phiên làm việc từ `active.md` |
+| `notify.sh` | Sự kiện thông báo (Notification) | Hiển thị thông báo toast notification |
 | `session-stop.sh` | Đóng phiên (Session close) | Lưu trữ `active.md` vào session log và ghi lại hoạt động git |
 | `log-agent.sh` | Agent được khởi tạo | Bắt đầu audit trail — ghi log quá trình gọi subagent |
 | `log-agent-stop.sh` | Agent kết thúc | Kết thúc audit trail — hoàn tất bản ghi của subagent |
 | `validate-skill-change.sh` | PostToolUse (Write/Edit) | Khuyến nghị chạy `/skill-test` sau bất kỳ thay đổi nào trong `.agents/skills/` |
 
-> **Lưu ý**: `validate-commit.sh`, `validate-assets.sh`, và `validate-skill-change.sh` được kích hoạt trên mỗi lệnh Bash/Write tool và thoát ngay lập tức (exit 0) nếu câu lệnh hoặc đường dẫn file không liên quan. Đây là hành vi hook bình thường — không ảnh hưởng đến hiệu năng.
+> **Lưu ý**: `validate-commit.sh`, `validate-assets.sh`, và `validate-skill-change.sh` được kích hoạt trên mỗi lệnh tool và thoát ngay lập tức (exit 0) nếu câu lệnh hoặc đường dẫn file không liên quan. Đây là hành vi hook bình thường — không ảnh hưởng đến hiệu năng.
 
-**Quy tắc phân quyền (Permission rules)** trong `settings.json` tự động cho phép các thao tác an toàn (git status, chạy test) và chặn các thao tác nguy hiểm (force push, `rm -rf`, đọc file `.env`).
+**Quy tắc phân quyền (Permission rules)** trong `.agents/` và `.axit/workspace.yaml` tự động cho phép các thao tác an toàn (git status, chạy test) và chặn các thao tác nguy hiểm (force push, `rm -rf`, đọc file `.env`).
 
 ### Quy tắc theo phạm vi đường dẫn (Path-Scoped Rules)
 
@@ -269,33 +261,11 @@ Template này được xây dựng dựa trên các phương pháp phát triển
 
 ## Hỗ trợ nền tảng
 
-Môi trường phát triển và kiểm thử chính là trên **Windows 10** với Git Bash. Tất cả các hook đều sử dụng cú pháp tương thích POSIX (`grep -E`, không dùng `grep -P`) và bao gồm cơ chế dự phòng khi thiếu công cụ, do đó chúng có thể chạy tốt trên macOS và Linux. Hook `notify.sh` sử dụng PowerShell cho thông báo toast trên Windows và không thực hiện thao tác gì trên các hệ điều hành khác — tính năng thông báo desktop trên macOS/Linux đang được hoàn thiện. Việc kiểm thử đa nền tảng đang tiếp tục diễn ra; vui lòng báo cáo issue nếu gặp bất kỳ lỗi nào liên quan đến nền tảng cụ thể.
-
-## Cộng đồng
-
-- **Thảo luận (Discussions)** — [GitHub Discussions](https://github.com/Donchitos/Claude-Code-Game-Studios/discussions) để đặt câu hỏi, chia sẻ ý tưởng và giới thiệu sản phẩm bạn đã tạo ra
-- **Issues** — [Báo cáo lỗi và yêu cầu tính năng](https://github.com/Donchitos/Claude-Code-Game-Studios/issues)
+Môi trường phát triển và kiểm thử hỗ trợ tốt trên macOS, Windows và Linux. Tất cả các hook và script đều sử dụng cú pháp tương thích POSIX và bao gồm cơ chế dự phòng an toàn khi thiếu công cụ.
 
 ---
 
-## Ủng hộ dự án
-
-Claude Code Game Studios là dự án miễn phí và mã nguồn mở. Nếu nó giúp bạn tiết kiệm thời gian hoặc hỗ trợ bạn phát hành trò chơi của mình, hãy cân nhắc ủng hộ để tiếp tục phát triển:
-
-<p>
-  <a href="https://www.buymeacoffee.com/donchitos3"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee"></a>
-  &nbsp;
-  <a href="https://github.com/sponsors/Donchitos"><img src="https://img.shields.io/badge/GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="GitHub Sponsors"></a>
-</p>
-
-- **[Buy Me a Coffee](https://www.buymeacoffee.com/donchitos3)** — Ủng hộ một lần
-- **[GitHub Sponsors](https://github.com/sponsors/Donchitos)** — Ủng hộ định kỳ qua GitHub
-
-Sự tài trợ giúp có thêm thời gian duy trì các skill, thêm các agent mới, cập nhật kịp thời theo các thay đổi API của Claude Code và game engine, cũng như hỗ trợ cộng đồng.
-
----
-
-*Được xây dựng cho Claude Code. Duy trì và mở rộng — luôn chào đón đóng góp qua [GitHub Discussions](https://github.com/Donchitos/Claude-Code-Game-Studios/discussions).*
+*Được xây dựng và tối ưu hóa cho **Google Antigravity** & **Gemini** kết hợp cùng **Axit Framework**.*
 
 ## Giấy phép (License)
 

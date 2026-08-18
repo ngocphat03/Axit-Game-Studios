@@ -3,11 +3,11 @@
 Status: passed-v1
 Validated: 2026-08-09
 
-This checklist validates the Axit root-first routing model. Codex starts from repository root, reads root `AGENTS.md`, and uses `.axit/workspace.yaml` to select only the System context relevant to the task.
+This checklist validates the Axit root-first routing model. Antigravity starts from repository root, reads root `AGENTS.md`, and uses `.axit/workspace.yaml` to select only the System context relevant to the task.
 
 ## Validation protocol
 
-The live validation used fresh root-level Codex requests without manually pointing the model at nested project metadata.
+The live validation used fresh root-level Antigravity requests without manually pointing the model at nested project metadata.
 
 The goals were:
 

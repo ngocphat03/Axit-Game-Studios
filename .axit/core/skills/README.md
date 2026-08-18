@@ -19,4 +19,4 @@ Implementation and verification remain separate procedures. `implement-change` m
 
 Legacy Game Studios skills are reference material only. They are not migrated by default.
 
-Only reviewed Core Skills are exposed through `.agents/skills/` for Codex discovery.
+Only reviewed Core Skills are exposed through `.agents/skills/` for Antigravity discovery.

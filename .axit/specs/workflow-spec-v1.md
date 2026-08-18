@@ -20,9 +20,9 @@ Một Workflow không sao chép quy trình bên trong Skill và không thay th�
 .axit/core/workflows/<workflow-id>/WORKFLOW.md
 ```
 
-Workflows là sản phẩm do Axit sở hữu. Chúng không phải là Codex Skill và không được hiển thị qua `.agents/skills/`.
+Workflows là sản phẩm do Axit sở hữu. Chúng không phải là Antigravity Skill và không được hiển thị qua `.agents/skills/`.
 
-Codex có thể được điều hướng tới một Workflow bởi `AGENTS.md`, yêu cầu của người dùng, hoặc một runtime Axit trong tương lai, nhưng workflow chuẩn mực vẫn nằm dưới `.axit/`.
+Antigravity có thể được điều hướng tới một Workflow bởi `AGENTS.md`, yêu cầu của người dùng, hoặc một runtime Axit trong tương lai, nhưng workflow chuẩn mực vẫn nằm dưới `.axit/`.
 
 ## Frontmatter bắt buộc (Required frontmatter)
 

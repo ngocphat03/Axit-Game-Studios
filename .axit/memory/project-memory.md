@@ -47,7 +47,7 @@ Core remains small. Add another Profile, Skill, or Workflow only when repeated l
 
 ### Workspace/System v1
 
-Codex is normally opened from repository root.
+Antigravity is normally opened from repository root.
 
 ```text
 repository root = product workspace

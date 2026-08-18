@@ -194,8 +194,8 @@ Status: **APPROVED_AND_FROZEN**
 - S1–S3 skipped full Unity/project builds: recurring SUPPORTING limitation. Consider an M3 compile binding only if future frozen acceptance makes compilation REQUIRED; do not expand the binding now.
 - Exact live primary/session metadata and service tier remain unavailable.
 - `DEFERRED_PRIMARY_REASONING_CONFIG`: `HUMAN_REVIEW` before M3.
-- Official documentation check: the [GPT-5.6 latest-model guide](https://developers.openai.com/api/docs/guides/latest-model) supports `max`, while the [Codex configuration reference](https://developers.openai.com/codex/config-reference/) lists only `minimal`, `low`, `medium`, `high`, and `xhigh` for `model_reasoning_effort` and redirects to official ChatGPT Learn content.
-- Configuration disposition: do not auto-edit `.codex/config.toml`. At human promotion review, either change the project setting from `max` to `xhigh` and start a fresh trusted task before M3, or explicitly re-decide the setting before M3.
+- Official documentation check: the [GPT-5.6 latest-model guide](https://developers.openai.com/api/docs/guides/latest-model) supports `max`, while the [Antigravity configuration reference](https://developers.openai.com/antigravity/config-reference/) lists only `minimal`, `low`, `medium`, `high`, and `xhigh` for `model_reasoning_effort` and redirects to official ChatGPT Learn content.
+- Configuration disposition: do not auto-edit `.agents/mcp_config.json`. At human promotion review, either change the project setting from `max` to `xhigh` and start a fresh trusted task before M3, or explicitly re-decide the setting before M3.
 - Decision log: no append, because no durable rule or configuration change was applied.
 - Promotion threshold: met; independent closure verification returned `PASS`.
 

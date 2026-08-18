@@ -18,6 +18,6 @@ Canonical form:
 
 Core Workflows compose reviewed Skills/responsibilities and define entry, transition, stop, loop, and completion semantics. They do not duplicate Skill procedures.
 
-Workflows are Axit-owned artifacts, not Codex Skills. They are not exposed through `.agents/skills/`.
+Workflows are Axit-owned artifacts, not Antigravity Skills. They are not exposed through `.agents/skills/`.
 
 Legacy Game Studios workflows are reference material only. They are not migrated by default.

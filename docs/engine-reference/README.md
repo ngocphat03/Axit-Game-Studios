@@ -4,7 +4,7 @@ Thư mục này chứa các ảnh chụp tài liệu (documentation snapshots) �
 
 ## Vì sao tài liệu này tồn tại
 
-Dữ liệu huấn luyện của Claude có giới hạn thời gian (knowledge cutoff). Các game engine như Godot, Unity, và Unreal thường xuyên phát hành các bản cập nhật gây ra các thay đổi API gây phá vỡ (breaking changes), tính năng mới và các mẫu thiết kế đã bị ngừng hỗ trợ (deprecated). Nếu không có các file tham chiếu này, agent sẽ đề xuất code lỗi thời.
+Dữ liệu huấn luyện của Gemini/LLM có giới hạn thời gian (knowledge cutoff). Các game engine như Godot, Unity, và Unreal thường xuyên phát hành các bản cập nhật gây ra các thay đổi API gây phá vỡ (breaking changes), tính năng mới và các mẫu thiết kế đã bị ngừng hỗ trợ (deprecated). Nếu không có các file tham chiếu này, agent sẽ đề xuất code lỗi thời.
 
 ## Cấu trúc
 

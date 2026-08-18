@@ -1,6 +1,6 @@
 # Danh sách Agent (Agent Roster)
 
-Các agent sau đây luôn sẵn sàng hoạt động. Mỗi agent có một file định nghĩa riêng trong `.claude/agents/`. Hãy sử dụng agent phù hợp nhất với nhiệm vụ cụ thể. Khi một tác vụ trải rộng qua nhiều lĩnh vực, agent điều phối (thường là `producer` hoặc lead của lĩnh vực đó) nên ủy quyền cho các chuyên viên (specialists).
+Các agent sau đây luôn sẵn sàng hoạt động. Mỗi agent có một file định nghĩa riêng trong `docs/reference/agent-roster.md`. Hãy sử dụng agent phù hợp nhất với nhiệm vụ cụ thể. Khi một tác vụ trải rộng qua nhiều lĩnh vực, agent điều phối (thường là `producer` hoặc lead của lĩnh vực đó) nên ủy quyền cho các chuyên viên (specialists).
 
 ## Phân tầng 1 -- Lãnh đạo cấp cao (Leadership Agents - Opus)
 | Agent | Lĩnh vực | Khi nào nên sử dụng |

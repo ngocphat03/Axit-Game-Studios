@@ -61,10 +61,10 @@ Quy trình onboarding có hướng dẫn này sẽ hỏi về tình trạng hi�
 
 ### Bước 3: Xác minh Hooks đang hoạt động
 
-Khởi động một phiên Claude Code mới. Bạn sẽ thấy output từ hook `session-start.sh`:
+Khởi động một phiên Antigravity mới. Bạn sẽ thấy output từ hook `session-start.sh`:
 
 ```
-=== Claude Code Game Studios -- Session Context ===
+=== Axit Game Studios -- Session Context ===
 Branch: main
 Recent commits:
   abc1234 Initial commit
@@ -1045,7 +1045,7 @@ Bỏ qua các quy trình sprint thông thường kèm audit trail đầy đủ:
 **Báo cáo tổng kết sau dự án (Post-mortem)** sau khi đợt ra mắt đã ổn định:
 
 ```
-Yêu cầu Claude tạo tài liệu post-mortem bằng cách sử dụng template tại
+Yêu cầu Antigravity tạo tài liệu post-mortem bằng cách sử dụng template tại
 docs/reference/templates/post-mortem.md
 ```
 
@@ -1142,7 +1142,7 @@ Hệ thống có 12 hook tự động chạy:
 | `session-start.sh` | Bắt đầu phiên | Hiển thị branch, các commit gần đây, phát hiện active.md để phục hồi |
 | `detect-gaps.sh` | Bắt đầu phiên | Phát hiện dự án mới (chưa có engine, chưa có concept) và gợi ý `/start` |
 | `pre-compact.sh` | Trước khi compact | Đưa trạng thái phiên vào hội thoại để tự động phục hồi |
-| `post-compact.sh` | Sau khi compact | Nhắc nhở Claude khôi phục trạng thái phiên từ `active.md` |
+| `post-compact.sh` | Sau khi compact | Nhắc nhở Antigravity khôi phục trạng thái phiên từ `active.md` |
 | `notify.sh` | Sự kiện thông báo | Hiển thị thông báo Windows toast qua PowerShell |
 | `validate-commit.sh` | Trước khi commit | Kiểm tra tham chiếu design doc, tính hợp lệ JSON, không hardcode |
 | `validate-push.sh` | Trước khi push | Cảnh báo khi push vào main/develop |

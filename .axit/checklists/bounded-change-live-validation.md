@@ -5,7 +5,7 @@ Status: PASS
 
 ## Purpose
 
-Record the live Codex evidence used to promote the first Axit Core Workflow from `validation` to `active`.
+Record the live Antigravity evidence used to promote the first Axit Core Workflow from `validation` to `active`.
 
 Workflow under test:
 
@@ -37,7 +37,7 @@ Required behavior included:
 
 ## Observed implementation
 
-Codex completed the Workflow against the existing QuickGun slice with a bounded three-file change:
+Antigravity completed the Workflow against the existing QuickGun slice with a bounded three-file change:
 
 - `DamageCalculator.cs`;
 - `BaseEntity.cs`;
@@ -61,7 +61,7 @@ Status: COMPLETE
 Verification: PASS
 ```
 
-Evidence reported by Codex:
+Evidence reported by Antigravity:
 
 - all 15 deterministic tests passed;
 - static damage-path assertions passed;
@@ -103,4 +103,4 @@ Do not add another Core Skill or Workflow merely to increase catalog coverage.
 
 Begin Project Layer / specialization design.
 
-The next design problem is not another Core procedure. It is how a real game project declares its own context, rules, architecture truth, domain knowledge, selected specialization, and Codex-visible capabilities while continuing to reuse the small Core without copying the legacy Game Studios catalog.
+The next design problem is not another Core procedure. It is how a real game project declares its own context, rules, architecture truth, domain knowledge, selected specialization, and Antigravity-visible capabilities while continuing to reuse the small Core without copying the legacy Game Studios catalog.

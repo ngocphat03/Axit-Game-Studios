@@ -1,6 +1,6 @@
 # Axit State
 
-This directory stores compact file-backed progress/recovery notes for root Codex sessions.
+This directory stores compact file-backed progress/recovery notes for root Antigravity sessions.
 
 `.axit/state/active.md` should record only the current workspace task, affected Systems, accepted decisions needed for continuation, material changes, verification state, blockers, and next action.
 

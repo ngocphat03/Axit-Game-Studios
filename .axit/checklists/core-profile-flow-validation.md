@@ -73,7 +73,7 @@ This procedure is distinct from the `quality-verifier` Profile:
 
 Therefore Core Skill #1 is `verify-change`.
 
-## Real Codex validation — verify-change — 2026-08-09
+## Real Antigravity validation — verify-change — 2026-08-09
 
 The first live use of `verify-change` exposed an important verdict-semantics gap.
 
@@ -128,7 +128,7 @@ Requested target cannot be identified reliably
 => BLOCKED / clarification
 ```
 
-The live Codex retest confirmed these semantics are now acceptable for Core v1.
+The live Antigravity retest confirmed these semantics are now acceptable for Core v1.
 
 ## Core Skill #2 — bounded implementation
 
@@ -166,9 +166,9 @@ verify-change
 
 Do not encode this pair as a Core Workflow yet. Some tasks only need verification; some tasks stop at design/architecture; and a future real project may demonstrate that another step is needed between implementation and verification.
 
-## implement-change Codex regression cases
+## implement-change Antigravity regression cases
 
-Before accepting a Core Workflow, test `implement-change` through Codex against at least these cases:
+Before accepting a Core Workflow, test `implement-change` through Antigravity against at least these cases:
 
 ### Case 1 — bounded bug fix
 
@@ -235,4 +235,4 @@ Two repeated, responsibility-independent procedures are now justified as Core Sk
 1. `implement-change` — bounded implementation and evidence handoff;
 2. `verify-change` — independent evidence-based completion judgment.
 
-Core Workflows remain empty until live Codex use demonstrates a stable composition that is valuable enough to encode rather than merely suggested.
+Core Workflows remain empty until live Antigravity use demonstrates a stable composition that is valuable enough to encode rather than merely suggested.

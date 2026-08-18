@@ -12,7 +12,7 @@ Trong bất kỳ skill nào, hãy thay thế prompt director trực tiếp bằn
 
 ```
 Gọi `creative-director` qua Task sử dụng cổng **CD-PILLARS** từ
-`.claude/docs/director-gates.md`.
+`docs/reference/director-gates.md`.
 ```
 
 Truyền ngữ cảnh được liệt kê trong mục **Context to pass** của cổng đó, sau đó xử lý kết luận bằng các quy tắc **Verdict handling** bên dưới.
@@ -73,7 +73,7 @@ Trước khi gọi cổng [GATE-ID]:
 ```
 # Áp dụng kiểm tra chế độ, sau đó:
 Gọi `[agent-name]` qua Task:
-- Cổng: [GATE-ID] (xem .claude/docs/director-gates.md)
+- Cổng: [GATE-ID] (xem docs/reference/director-gates.md)
 - Ngữ cảnh: [các trường liệt kê dưới cổng đó]
 - Chờ kết luận trước khi tiếp tục.
 ```

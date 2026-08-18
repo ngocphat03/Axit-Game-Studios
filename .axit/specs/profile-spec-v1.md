@@ -2,7 +2,7 @@
 
 ## Mục đích (Purpose)
 
-Một Profile là một **lăng kính quyết định và trách nhiệm** tinh gọn cho công việc trong Codex/Axit.
+Một Profile là một **lăng kính quyết định và trách nhiệm** tinh gọn cho công việc trong Antigravity/Axit.
 
 Một Profile trả lời các câu hỏi:
 
@@ -143,7 +143,7 @@ kết hợp đa bước                 -> Workflow
 lý thuyết/tham chiếu lĩnh vực   -> Knowledge
 ràng buộc đặc thù dự án         -> Project Rules / Registry
 cấp quyền runtime               -> Runtime/Harness policy
-metadata khám phá của Codex     -> Tầng tương thích Codex
+metadata khám phá của Antigravity     -> Tầng tương thích Antigravity
 ```
 
 ## Bài kiểm tra chất lượng Profile

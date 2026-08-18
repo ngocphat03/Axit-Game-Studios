@@ -25,11 +25,11 @@ primary = gpt-5.6-sol / xhigh
 children = gpt-5.6-luna / medium
 ```
 
-Project-scoped Codex model defaults must be present before the fresh target session starts. Writing them after expensive children have already spawned is not evidence that the run complied.
+Project-scoped Antigravity model defaults must be present before the fresh target session starts. Writing them after expensive children have already spawned is not evidence that the run complied.
 
-## Required target-local Codex defaults
+## Required target-local Antigravity defaults
 
-Before launching M5, the local Axit-Code checkout must have a project-scoped Codex configuration equivalent to:
+Before launching M5, the local Axit-Code checkout must have a project-scoped Antigravity configuration equivalent to:
 
 ```toml
 model = "gpt-5.6-sol"
@@ -58,9 +58,9 @@ default_subagent_reasoning_effort = "medium"
 interrupt_message = true
 ```
 
-If Axit-Code already has a project Codex config, merge only the accepted M5 routing/safety semantics; do not blindly overwrite unrelated trusted settings.
+If Axit-Code already has a project Antigravity config, merge only the accepted M5 routing/safety semantics; do not blindly overwrite unrelated trusted settings.
 
-Do not edit global/user Codex configuration to satisfy M5.
+Do not edit global/user Antigravity configuration to satisfy M5.
 
 ## Required independent verifier role
 
@@ -94,7 +94,7 @@ The transfer itself must not overwrite existing Axit-Code product truth. A tempo
 
 Before starting the long run, verify:
 
-- Codex is opened at the exact Axit-Code repository root;
+- Antigravity is opened at the exact Axit-Code repository root;
 - project-scoped model routing is present before session start;
 - primary configured Sol/xhigh;
 - child default configured Luna/medium;
@@ -111,7 +111,7 @@ HARD_BLOCKER: TARGET_WORKSPACE_NOT_READY
 
 ## Fresh-session launch prompt
 
-After the bootstrap is present, start a **fresh trusted Codex session at the Axit-Code repository root** and use:
+After the bootstrap is present, start a **fresh trusted Antigravity session at the Axit-Code repository root** and use:
 
 ```text
 Execute M5 Project Bootstrap & Knowledge Plane from the provided M5 runbook.

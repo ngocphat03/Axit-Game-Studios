@@ -2,7 +2,7 @@
 
 ## Đây là gì?
 
-Đây là một kiến trúc agent toàn diện của Claude Code dành cho phát triển game. Nó tổ chức 49 AI agent chuyên biệt thành một hệ thống phân cấp studio mô phỏng các đội ngũ làm game thực tế, với trách nhiệm được xác định rõ ràng, quy tắc ủy quyền và các giao thức điều phối. Hệ thống bao gồm các agent chuyên trách engine cho Godot, Unity, và Unreal — mỗi engine đều có các chuyên viên phụ trách các hệ thống con quan trọng. Tất cả các agent thiết kế và template đều được xây dựng dựa trên lý thuyết thiết kế game vững chắc (MDA Framework, Self-Determination Theory, Flow State, Bartle Player Types). Hãy sử dụng bộ engine phù hợp với dự án của bạn.
+Đây là một kiến trúc agent toàn diện của Antigravity dành cho phát triển game. Nó tổ chức 49 AI agent chuyên biệt thành một hệ thống phân cấp studio mô phỏng các đội ngũ làm game thực tế, với trách nhiệm được xác định rõ ràng, quy tắc ủy quyền và các giao thức điều phối. Hệ thống bao gồm các agent chuyên trách engine cho Godot, Unity, và Unreal — mỗi engine đều có các chuyên viên phụ trách các hệ thống con quan trọng. Tất cả các agent thiết kế và template đều được xây dựng dựa trên lý thuyết thiết kế game vững chắc (MDA Framework, Self-Determination Theory, Flow State, Bartle Player Types). Hãy sử dụng bộ engine phù hợp với dự án của bạn.
 
 ## Cách sử dụng
 
@@ -144,7 +144,7 @@ Hãy tự hỏi: "Bộ phận nào sẽ xử lý việc này trong một studio 
 
 ### 4. Sử dụng Template cho tài liệu mới
 
-Các template nằm trong `.claude/docs/templates/`:
+Các template nằm trong `docs/reference/templates/`:
 
 - `game-design-document.md` -- cho các cơ chế và hệ thống mới
 - `architecture-decision-record.md` -- cho các quyết định kỹ thuật
@@ -181,7 +181,7 @@ Các template nằm trong `.claude/docs/templates/`:
 - `difficulty-curve.md` -- cho các trục độ khó, đường dốc làm quen và tương tác đa hệ thống
 - `test-evidence.md` -- template ghi nhận bằng chứng kiểm thử thủ công
 
-Ngoài ra trong `.claude/docs/templates/collaborative-protocols/` (được sử dụng bởi các agent):
+Ngoài ra trong `docs/reference/templates/collaborative-protocols/` (được sử dụng bởi các agent):
 
 - `design-agent-protocol.md` -- chu kỳ hỏi-lựa chọn-bản thảo-phê duyệt cho agent thiết kế
 - `implementation-agent-protocol.md` -- chu kỳ nhận story đến /story-done cho agent lập trình
@@ -207,8 +207,8 @@ Nếu bạn đã biết mình cần gì, hãy chọn trực tiếp luồng tươ
    - Sinh ra 3 concept, giúp bạn chọn 1, xác định vòng lặp cốt lõi và các trụ cột
    - Tạo tài liệu concept game và khuyến nghị engine phù hợp
 2. **Thiết lập engine** — Chạy `/setup-engine` (dùng khuyến nghị từ brainstorm)
-   - Cấu hình CLAUDE.md, phát hiện khoảng trống kiến thức, điền tài liệu tham chiếu
-   - Tạo `.claude/docs/technical-preferences.md` với quy ước đặt tên, ngân sách hiệu năng
+   - Cấu hình GEMINI.md, phát hiện khoảng trống kiến thức, điền tài liệu tham chiếu
+   - Tạo `docs/reference/technical-preferences.md` với quy ước đặt tên, ngân sách hiệu năng
 3. **Xác thực concept** — Chạy `/design-review design/gdd/game-concept.md`
 4. **Phân rã thành các hệ thống** — Chạy `/map-systems` để lập bản đồ các hệ thống và phụ thuộc
 5. **Thiết kế từng hệ thống** — Chạy `/design-system [tên-hệ-thống]` (hoặc `/map-systems next`) để viết GDD theo thứ tự phụ thuộc
@@ -248,22 +248,25 @@ Nếu bạn đã có sẵn tài liệu thiết kế, prototype hoặc code:
 ## Cấu trúc file tham khảo
 
 ```
-CLAUDE.md                          -- Cấu hình chính (đọc file này đầu tiên, ~60 dòng)
-.claude/
-  settings.json                    -- Cấu hình Claude Code hooks và cài đặt dự án
-  agents/                          -- 49 định nghĩa agent (YAML frontmatter)
-  skills/                          -- 73 định nghĩa lệnh slash command (YAML frontmatter)
-  hooks/                           -- 12 script hook (.sh) được kết nối bởi settings.json
-  rules/                           -- 11 file quy tắc đặc thù theo đường dẫn
-  docs/
+GEMINI.md                          -- Cấu hình chính (đọc file này đầu tiên)
+.agents/
+  skills/                          -- 73 định nghĩa lệnh slash command / skills (YAML frontmatter)
+  rules/                           -- Các file quy tắc đặc thù theo đường dẫn
+  mcp_config.json                  -- Cấu hình kết nối Unity MCP
+.axit/
+  workspace.yaml                   -- Cấu hình workspace & mapping hệ thống
+  core/, capabilities/             -- Hồ sơ năng lực và vai trò
+  systems/, registry/              -- Danh mục hệ thống & kiến trúc
+  plans/, state/                   -- Kế hoạch & trạng thái hoạt động (active.md)
+docs/
+  reference/
     quick-start.md                 -- File hướng dẫn này
     technical-preferences.md       -- Tiêu chuẩn đặc thù dự án (điền bởi /setup-engine)
     coding-standards.md            -- Tiêu chuẩn code và tài liệu thiết kế
     coordination-rules.md          -- Quy tắc điều phối agent
-    context-management.md          -- Ngân sách ngữ cảnh và hướng dẫn nén context
+    director-gates.md              -- Tiêu chuẩn kiểm soát chất lượng qua các cổng (Gates)
     directory-structure.md         -- Bố cục thư mục dự án
     workflow-catalog.yaml          -- Định nghĩa pipeline 7 giai đoạn (được đọc bởi /help)
-    setup-requirements.md          -- Yêu cầu hệ thống tiên quyết (Git Bash, jq, Python)
-    settings-local-template.md     -- Hướng dẫn cấu hình settings.local.json cá nhân
-    templates/                     -- 41 template tài liệu
+    setup-requirements.md          -- Yêu cầu hệ thống tiên quyết
+    templates/                     -- Các template tài liệu (GDD, QA, ADR, v.v.)
 ```

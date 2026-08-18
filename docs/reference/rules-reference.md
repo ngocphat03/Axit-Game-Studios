@@ -1,6 +1,6 @@
 # Quy tắc theo đường dẫn (Path-Specific Rules)
 
-Các quy tắc trong `.claude/rules/` được tự động thực thi khi chỉnh sửa các file thuộc đường dẫn khớp:
+Các quy tắc trong `.agents/rules/` được tự động thực thi khi chỉnh sửa các file thuộc đường dẫn khớp:
 
 | File Quy tắc | Mẫu đường dẫn | Nội dung thực thi |
 |---|---|---|

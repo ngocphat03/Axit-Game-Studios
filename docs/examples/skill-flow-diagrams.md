@@ -11,7 +11,7 @@ Các sơ đồ này cho thấy những gì chạy trước và sau mỗi skill, 
 GIAI ĐOẠN 1: Ý TƯỞNG (PHASE 1: CONCEPT)
   /start ──────────────────────────────────────────────────────► điều hướng tới A/B/C/D
   /brainstorm ──────────────────────────────────────────────────► design/gdd/game-concept.md
-  /setup-engine ────────────────────────────────────────────────► CLAUDE.md + technical-preferences.md
+  /setup-engine ────────────────────────────────────────────────► GEMINI.md + technical-preferences.md
   /prototype [core-mechanic] ───────────────────────────────────► prototypes/[name]-concept/REPORT.md
         │ PROCEED                                                  (kiểm chứng ý tưởng TRƯỚC KHI viết GDD)
         ▼

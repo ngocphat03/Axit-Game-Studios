@@ -9,8 +9,10 @@
 Thumbs.db
 Desktop.ini
 
-# === Claude Code Local ===
+# === Agent / IDE Local ===
+.gemini/
 .claude/settings.local.json
+GEMINI.local.md
 CLAUDE.local.md
 production/session-logs/
 

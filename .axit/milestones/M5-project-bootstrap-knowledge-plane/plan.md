@@ -32,7 +32,7 @@ Before launching the long target run, apply the target bootstrap described in:
 .axit/milestones/M5-project-bootstrap-knowledge-plane/target-bootstrap.md
 ```
 
-The target bootstrap exists so the fresh Axit-Code Codex session starts with the accepted model/cost policy already active. Creating model config after the session has already spawned children is insufficient evidence of compliance.
+The target bootstrap exists so the fresh Axit-Code Antigravity session starts with the accepted model/cost policy already active. Creating model config after the session has already spawned children is insufficient evidence of compliance.
 
 If the target cannot be opened as a trusted writable workspace with the accepted bootstrap, stop before product work with:
 
@@ -40,7 +40,7 @@ If the target cannot be opened as a trusted writable workspace with the accepted
 HARD_BLOCKER: TARGET_WORKSPACE_NOT_READY
 ```
 
-This is a setup prerequisite, not authorization to change machine-wide Codex configuration.
+This is a setup prerequisite, not authorization to change machine-wide Antigravity configuration.
 
 ## Authoritative target sources
 

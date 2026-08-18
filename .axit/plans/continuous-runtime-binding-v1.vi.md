@@ -106,7 +106,7 @@ Không dừng lại chỉ vì một làn sub-agent thông thường thất bại
 - Không tự bịa ra tên transport/server/operation.
 - Định nghĩa Runtime Binding có thể chứa các tên đã xác minh theo từng transport; định nghĩa semantic Capability thì không được chứa.
 - Giữ bí mật, cổng tạm thời, token, và thông tin đăng nhập theo máy bên ngoài `.axit`.
-- Không chỉnh sửa việc cài đặt Unity MCP/CoplayDev, cấu hình bridge, hoặc cấu hình Codex MCP toàn cục/người dùng.
+- Không chỉnh sửa việc cài đặt Unity MCP/CoplayDev, cấu hình bridge, hoặc cấu hình Antigravity MCP toàn cục/người dùng.
 - Giữ các chỉnh sửa giới hạn trong trạng thái mã nguồn hiện tại; không bao giờ reset/hoàn tác nội dung không liên quan.
 - Giữ các thông tin tiến độ/checkpoint ngắn gọn.
 
@@ -120,7 +120,7 @@ Luôn xác nhận:
 
 - Định hướng trong `.axit/workspace.yaml` và giá trị `safety.check_git_status`;
 - Chính sách bộ điều phối trong `AGENTS.md` ở root đang hoạt động;
-- `.codex/config.toml` của dự án đang được sử dụng bởi repository đáng tin cậy;
+- `.agents/mcp_config.json` của dự án đang được sử dụng bởi repository đáng tin cậy;
 - Cấu hình mặc định về model và lập luận của primary/sub-agent giải quyết đúng cấu hình mong muốn;
 - Core v1 ổn định;
 - Workspace/System v1 ổn định;
@@ -153,7 +153,7 @@ Người dùng chịu trách nhiệm cài đặt/cấu hình/khởi chạy MCP c
 
 Sub-agent chỉ được kiểm tra trạng thái trực tiếp hiện tại:
 
-- Danh mục công cụ Codex/MCP hiện tại;
+- Danh mục công cụ Antigravity/MCP hiện tại;
 - Định danh thực tế của Unity MCP server/adapter;
 - Tên các operation trực tiếp chính xác do transport được cấu hình cung cấp;
 - Liệu dự án/editor QuickGun dự kiến có thể kết nối tới được không;

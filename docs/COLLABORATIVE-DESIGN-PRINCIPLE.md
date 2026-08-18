@@ -667,7 +667,7 @@ KHI triển khai code:
 
 Nguyên tắc này đã được nhúng hoàn toàn xuyên suốt dự án:
 
-- **CLAUDE.md** — Bổ sung phần giao thức cộng tác
+- **GEMINI.md** — Bổ sung phần giao thức cộng tác
 - **Toàn bộ 48 định nghĩa agent** — Đã cập nhật để thực thi việc đặt câu hỏi và xin phê duyệt
 - **Toàn bộ skills** — Đã cập nhật để yêu cầu phê duyệt trước khi ghi file
 - **WORKFLOW-GUIDE.md** — Được viết lại với các ví dụ cộng tác

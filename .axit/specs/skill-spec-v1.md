@@ -20,11 +20,11 @@ Một Skill không sở hữu một trách nhiệm bao quát. Trách nhiệm bao
 .axit/core/skills/<skill-id>/SKILL.md
 ```
 
-Một Core Skill cũng phải hợp lệ cho việc khám phá của Codex. File `SKILL.md` chuẩn mực là nguồn sự thật; `.agents/skills/` chỉ là tầng tương thích phục vụ khám phá.
+Một Core Skill cũng phải hợp lệ cho việc khám phá của Antigravity. File `SKILL.md` chuẩn mực là nguồn sự thật; `.agents/skills/` chỉ là tầng tương thích phục vụ khám phá.
 
 ## Frontmatter bắt buộc (Required frontmatter)
 
-Sử dụng mức tối thiểu tương thích với Codex:
+Sử dụng mức tối thiểu tương thích với Antigravity:
 
 ```yaml
 ---
@@ -38,7 +38,7 @@ Các trường bắt buộc:
 - `name` — định danh ổn định viết thường nối dấu gạch ngang kebab-case.
 - `description` — văn bản mô tả điều kiện kích hoạt và ranh giới súc tích. Nêu rõ cả khi nào Skill nên chạy và trường hợp quan trọng nhất mà nó không nên chạy.
 
-Không thêm các trường frontmatter chỉ dành riêng cho Axit trừ khi tính tương thích Codex đã được xác minh và có nhu cầu thực tế.
+Không thêm các trường frontmatter chỉ dành riêng cho Axit trừ khi tính tương thích Antigravity đã được xác minh và có nhu cầu thực tế.
 
 ## Các phần thân bài bắt buộc (Required body sections)
 
@@ -87,7 +87,7 @@ Registry    = chân lý kỹ thuật toàn dự án đã được chấp thuận
 Runtime     = thực thi cấp quyền và kiểm soát tác dụng phụ thực tế
 ```
 
-Một Skill có thể chỉ dẫn Codex tôn trọng quy tắc dự án; nó không được coi các chỉ dẫn prompt là biện pháp kiểm soát bảo mật runtime.
+Một Skill có thể chỉ dẫn Antigravity tôn trọng quy tắc dự án; nó không được coi các chỉ dẫn prompt là biện pháp kiểm soát bảo mật runtime.
 
 ## Bài kiểm tra chất lượng Core Skill
 
@@ -99,6 +99,6 @@ Trước khi một Skill được đưa vào Core, tất cả câu trả lời p
 4. Tính chuyên môn hóa theo engine/thể loại/network có thể được cung cấp bởi kiến thức dự án hoặc các Skill domain sau này không?
 5. Đầu vào, điều kiện dừng và đầu ra có rõ ràng không?
 6. Quy trình có đủ ngắn để nạp theo yêu cầu mà không trở thành nơi xả dữ liệu kiến thức khổng lồ không?
-7. Cùng một file `SKILL.md` có thể vừa là Axit Skill chuẩn mực vừa là một Codex Skill hợp lệ không?
+7. Cùng một file `SKILL.md` có thể vừa là Axit Skill chuẩn mực vừa là một Antigravity Skill hợp lệ không?
 
 Nếu không, hãy giữ nó dưới dạng hành vi Profile thông thường, hướng dẫn dự án, Knowledge, hoặc một Skill đặc thù domain trong tương lai.

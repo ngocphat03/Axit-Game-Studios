@@ -51,7 +51,7 @@ the same validation criteria are satisfied.
 
 ## Case 1 — real transport discovery before mapping
 
-Before creating a binding file, inspect the actual local runtime/Codex environment and answer:
+Before creating a binding file, inspect the actual local runtime/Antigravity environment and answer:
 
 - Which Unity transport/adapter is actually available?
 - What concrete operations does it expose?

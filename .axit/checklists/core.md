@@ -37,7 +37,7 @@ Domain-specific checks such as multiplayer, quests, puzzle solvability, procedur
 ## Working state
 
 - [ ] Current task and important decisions can be recovered from files rather than chat history alone.
-- [ ] Modified areas and unresolved blockers can be recovered after a new Codex session.
+- [ ] Modified areas and unresolved blockers can be recovered after a new Antigravity session.
 
 ## Core admission
 

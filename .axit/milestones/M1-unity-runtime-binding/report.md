@@ -61,7 +61,7 @@ Recovery iterations: 1.
 - transient Unity transport disconnects during asset refresh;
 - Roslyn unavailable; verified CodeDom execution path used instead;
 - stale binding/current-state documentation detected and repaired;
-- primary Codex session resolved to `medium` despite repository intent for strongest reasoning;
+- primary Antigravity session resolved to `medium` despite repository intent for strongest reasoning;
 - milestone closure artifacts were not emitted by the original execution plan itself.
 
 ## Remote-review scope

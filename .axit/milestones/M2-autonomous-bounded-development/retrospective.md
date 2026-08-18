@@ -108,10 +108,10 @@ Treat the gap as an accepted limitation. Human M3 review may consider a compile 
 ### Deferred primary reasoning configuration
 
 Observed:
-The project is configured for `gpt-5.6-sol / max` while the M2 plan and Codex configuration vocabulary expect `xhigh`; exact live primary/session metadata and service tier were unavailable.
+The project is configured for `gpt-5.6-sol / max` while the M2 plan and Antigravity configuration vocabulary expect `xhigh`; exact live primary/session metadata and service tier were unavailable.
 
 Root cause:
-Configured project intent, plan wording, and observable live metadata do not currently provide one trusted effective value. The [GPT-5.6 latest-model guide](https://developers.openai.com/api/docs/guides/latest-model) documents `max` support, while the [Codex configuration reference](https://developers.openai.com/codex/config-reference/) lists reasoning effort through `xhigh`.
+Configured project intent, plan wording, and observable live metadata do not currently provide one trusted effective value. The [GPT-5.6 latest-model guide](https://developers.openai.com/api/docs/guides/latest-model) documents `max` support, while the [Antigravity configuration reference](https://developers.openai.com/antigravity/config-reference/) lists reasoning effort through `xhigh`.
 
 Self-recovery:
 `DEFERRED_PRIMARY_REASONING_CONFIG` remained visible and non-blocking for M2 only. No effective value was invented.

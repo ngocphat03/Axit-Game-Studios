@@ -1,6 +1,6 @@
 # Axit Memory
 
-This directory preserves compact human/assistant alignment across long-running Codex sessions and future discussions.
+This directory preserves compact human/assistant alignment across long-running Antigravity sessions and future discussions.
 
 Memory is **not** a second source of runtime truth. It summarizes intent, rationale, operating agreements, and lessons that would otherwise be lost when conversation context disappears.
 
@@ -41,7 +41,7 @@ Good memory:
 
 - why a major architecture direction was chosen;
 - stable terminology and layer boundaries;
-- user/assistant/Codex operating agreements;
+- user/assistant/Antigravity operating agreements;
 - milestone review philosophy;
 - recurring incidents and the framework rule added to prevent recurrence;
 - unresolved strategic questions worth revisiting.

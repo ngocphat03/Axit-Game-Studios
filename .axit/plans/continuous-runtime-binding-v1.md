@@ -106,7 +106,7 @@ Do not stop simply because one ordinary sub-agent lane failed when a safe replac
 - Do not invent transport/server/operation names.
 - Runtime Binding definitions may contain verified transport-specific names; semantic Capability definitions may not.
 - Keep secrets, ephemeral ports, tokens, and machine-specific credentials out of `.axit`.
-- Do not modify Unity MCP/CoplayDev installation, bridge configuration, or user/global Codex MCP configuration.
+- Do not modify Unity MCP/CoplayDev installation, bridge configuration, or user/global Antigravity MCP configuration.
 - Keep edits bounded to current source state; never reset/revert unrelated content.
 - Keep progress/checkpoint messages concise.
 
@@ -120,7 +120,7 @@ Always confirm:
 
 - `.axit/workspace.yaml` routing and `safety.check_git_status` value;
 - root `AGENTS.md` orchestrator policy is active;
-- project `.codex/config.toml` is being used by the trusted repository;
+- project `.agents/mcp_config.json` is being used by the trusted repository;
 - primary/sub-agent model and reasoning defaults resolve to the intended configuration;
 - Core v1 stable;
 - Workspace/System v1 stable;
@@ -153,7 +153,7 @@ The user is responsible for installing/configuring/starting MCP for Unity and op
 
 The sub-agent may inspect only current live state:
 
-- current Codex/MCP tool inventory;
+- current Antigravity/MCP tool inventory;
 - actual Unity MCP server/adapter identity;
 - exact live operation names exposed by the configured transport;
 - whether the intended QuickGun project/editor is reachable;

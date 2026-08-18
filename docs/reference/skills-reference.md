@@ -1,6 +1,6 @@
 # Danh sách Skill khả dụng (Slash Commands)
 
-73 lệnh slash command được tổ chức theo từng giai đoạn. Gõ `/` trong Claude Code để truy cập bất kỳ lệnh nào.
+73 lệnh slash command được tổ chức theo từng giai đoạn. Gõ `/` trong Antigravity để truy cập bất kỳ lệnh nào.
 
 ## Khởi động & Điều hướng (Onboarding & Navigation)
 

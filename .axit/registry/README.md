@@ -7,4 +7,4 @@ This directory owns repository-level and cross-system routing truth.
 
 System-local architecture belongs under `.axit/systems/<system-id>/architecture.yaml`.
 
-Do not copy OpenAPI/protobuf/DTO/schema bodies into these registries. Point to the real executable contract source so Codex can compare provider and consumer against the same truth.
+Do not copy OpenAPI/protobuf/DTO/schema bodies into these registries. Point to the real executable contract source so Antigravity can compare provider and consumer against the same truth.

@@ -2,7 +2,7 @@
 
 ## Mục đích (Purpose)
 
-Axit coi thư mục gốc của repository là **product workspace** khi nhiều thành phần tương tác cùng tồn tại trong một repository và Codex thông thường được mở từ thư mục gốc đó.
+Axit coi thư mục gốc của repository là **product workspace** khi nhiều thành phần tương tác cùng tồn tại trong một repository và Antigravity thông thường được mở từ thư mục gốc đó.
 
 Workspace có thể chứa game client, backend, CMS, workers, công cụ, hoặc các services khác dưới `src/`. Đây là các **Systems**, không phải là các dự án Axit riêng biệt theo mặc định.
 
@@ -15,7 +15,7 @@ Axit Core
           -> Source + executable contracts + tests
 ```
 
-Bố cục này cho phép Codex truy vết hành vi xuyên suốt các ranh giới thực tế giữa provider và consumer thay vì suy luận từ một cây mã nguồn cô lập.
+Bố cục này cho phép Antigravity truy vết hành vi xuyên suốt các ranh giới thực tế giữa provider và consumer thay vì suy luận từ một cây mã nguồn cô lập.
 
 ## Bố cục chuẩn mực (Canonical layout)
 
@@ -24,7 +24,7 @@ AGENTS.md
 
 .agents/
 └── skills/
-    └── ... active Codex discovery entries
+    └── ... active Antigravity discovery entries
 
 .axit/
 ├── workspace.yaml
@@ -58,11 +58,11 @@ tests/
 
 Chỉ những thư mục thực sự cần thiết mới nên được tạo ra. Việc để danh mục mở rộng của system trống được ưu tiên hơn là tạo ra các agent/skill mang tính suy đoán.
 
-## Điều hướng Codex từ thư mục gốc (Root-first Codex routing)
+## Điều hướng Antigravity từ thư mục gốc (Root-first Antigravity routing)
 
 `AGENTS.md` là bộ điều hướng gốc tinh gọn.
 
-Khi một tác vụ nhắc đến hoặc chạm vào một đường dẫn mã nguồn, Codex nên:
+Khi một tác vụ nhắc đến hoặc chạm vào một đường dẫn mã nguồn, Antigravity nên:
 
 1. đọc `.axit/workspace.yaml`;
 2. ánh xạ đường dẫn nguồn bị ảnh hưởng tới một hoặc nhiều System đã đăng ký;
@@ -70,7 +70,7 @@ Khi một tác vụ nhắc đến hoặc chạm vào một đường dẫn mã n
 4. đọc các registry kiến trúc/tích hợp gốc khi tác vụ vượt qua ranh giới giữa các system;
 5. chỉ nạp Core Profiles/Skills/Workflows khi trách nhiệm/quy trình của chúng thực sự cần thiết.
 
-Không phụ thuộc vào việc thay đổi thư mục làm việc (working directory) của Codex để kích hoạt ngữ cảnh dự án lồng nhau.
+Không phụ thuộc vào việc thay đổi thư mục làm việc (working directory) của Antigravity để kích hoạt ngữ cảnh dự án lồng nhau.
 
 Không nạp trước đệ quy toàn bộ thư mục `.axit/`.
 

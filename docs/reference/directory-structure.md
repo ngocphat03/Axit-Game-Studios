@@ -2,12 +2,14 @@
 
 ```text
 /
-├── CLAUDE.md                    # Cấu hình chính của dự án
-├── .claude/                     # Định nghĩa Agent, skills, hooks, rules, tài liệu hướng dẫn
-├── src/                         # Mã nguồn game (core, gameplay, ai, networking, ui, tools)
+├── GEMINI.md                    # Cấu hình chính của dự án & chỉ dẫn điều phối Antigravity
+├── .agents/                     # Định nghĩa Skills, Rules, MCP config của Antigravity
+├── .axit/                       # Axit Framework (Core profiles, system registries, plans, active state)
+├── src/                         # Mã nguồn game (Unity client, backend, services, core, gameplay)
 ├── assets/                      # Tài nguyên game (art, audio, vfx, shaders, data)
-├── design/                      # Tài liệu thiết kế game (gdd, cốt truyện, màn chơi, cân bằng)
-├── docs/                        # Tài liệu kỹ thuật (kiến trúc, api, tổng kết sau dự án)
+├── design/                      # Tài liệu thiết kế game (GDD, cốt truyện, màn chơi, cân bằng)
+├── docs/                        # Tài liệu kỹ thuật & kiến trúc (ADRs, Master Architecture, reference)
+│   ├── reference/               # Tài liệu tham chiếu, director gates, technical preferences, templates
 │   └── engine-reference/        # Bản chụp nhanh API engine đã tuyển chọn (cố định theo phiên bản)
 ├── tests/                       # Bộ kiểm thử (unit, integration, performance, playtest)
 ├── tools/                       # Công cụ build và pipeline (ci, build, asset-pipeline)

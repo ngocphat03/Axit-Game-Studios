@@ -8,7 +8,7 @@ Tất cả các hook đều xử lý lỗi linh hoạt nếu thiếu công cụ 
 | Công cụ | Mục đích | Cài đặt |
 |---|---|---|
 | **Git** | Quản lý phiên bản, quản lý nhánh | [git-scm.com](https://git-scm.com/) |
-| **Claude Code** | AI agent CLI | `npm install -g @anthropic-ai/claude-code` |
+| **Antigravity (AGY)** | AI agent CLI / IDE | Google Antigravity CLI / IDE (`agy`) |
 
 ## Khuyến nghị
 
@@ -42,9 +42,9 @@ sudo pacman -S jq       # Arch
 ## Ghi chú theo nền tảng
 
 ### Windows
-- Git for Windows bao gồm **Git Bash**, cung cấp lệnh `bash` được sử dụng bởi tất cả các hook trong `settings.json`
+- Git for Windows bao gồm **Git Bash**, cung cấp lệnh `bash` được sử dụng bởi các hook trong `.agents/hooks.json`
 - Đảm bảo Git Bash nằm trong biến môi trường PATH của bạn (mặc định nếu cài qua trình cài đặt Git)
-- Các hook sử dụng `bash .claude/hooks/[name].sh` — hoạt động mượt mà trên Windows vì Claude Code gọi lệnh qua shell có thể tìm thấy `bash.exe`
+- Các hook sử dụng `bash .agents/hooks/[name].sh` — hoạt động mượt mà trên Windows
 
 ### macOS / Linux
 - Bash đã có sẵn theo mặc định
@@ -69,9 +69,9 @@ python3 --version      # Hiển thị phiên bản python (tùy chọn)
 | **Python 3** | Xác thực file dữ liệu JSON trong hook commit và asset bị bỏ qua. JSON không hợp lệ có thể bị commit mà không có cảnh báo. |
 | **Cả hai** | Tất cả các hook vẫn chạy mà không báo lỗi (exit 0) nhưng không cung cấp tính năng xác thực nào. Bạn đang hoạt động không có lưới bảo vệ an toàn. |
 
-## IDE Khuyến nghị
+## Môi trường Khuyến nghị
 
-Claude Code hoạt động với bất kỳ trình soạn thảo nào, nhưng template được tối ưu hóa cho:
-- **VS Code** kèm extension Claude Code
-- **Cursor** (tương thích Claude Code)
-- Giao diện dòng lệnh Terminal Claude Code CLI
+Template được tối ưu hóa cho:
+- **Google Antigravity IDE**
+- **Antigravity CLI** (`agy`)
+- **VS Code / Cursor** với Antigravity extension
