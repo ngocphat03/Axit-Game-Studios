@@ -1,4 +1,4 @@
-# Game World Entity Registry
+# Game World Entity Registry (Pure 3D Environment)
 #
 # PURPOSE: Single source of truth for all named game-world facts that appear
 # in more than one document. Skills check this before writing new content to
@@ -14,155 +14,430 @@
 #     Other GDDs that reference it list themselves in referenced_by.
 #   - When a new GDD references an existing entry, append its path to
 #     referenced_by. Do not create a duplicate entry.
-#
-# WRITTEN BY: /design-system (Phase 5 — after GDD sections are approved)
-#             /consistency-check (when resolving conflicts)
-# READ BY:    /design-system (Phase 2 — before authoring begins, and after
-#               Section C/D writes to conflict-check new entities/formulas)
-#             /consistency-check (primary input — grep-first, GDD-second)
-#             /review-all-gdds (Phase 1 — baseline for Phase 2 checks)
-#             /architecture-review (data structure and interface validation)
-#
-# SEARCH PATTERNS (for skills using Grep):
-#   All entity names:        Grep pattern="^  - name:" path="design/registry/entities.yaml"
-#   Specific entity:         Grep pattern="  - name: goblin" path="design/registry/entities.yaml"
-#   All items:               Grep pattern="^  - name:" path="design/registry/entities.yaml" (items section)
-#   What combat.md owns:     Grep pattern="source: design/gdd/combat.md"
-#   What inventory.md uses:  Grep pattern="referenced_by.*inventory"
-#   All gold values:          Grep pattern="value_gold:"
-#   Deprecated entries:      Grep pattern="status: deprecated"
-#
-# FORMAT: YAML. Consistent indentation is critical for grep reliability.
-#   Sections: entities | items | formulas | constants
-#   Each entry: name, status, source, referenced_by[], attributes{}, added, revised
 
-version: 1
-last_updated: ""
+version: 2
+dimension: "3D_PURE"
+platform: "PC"
+control_scheme: "Camera_Locked_Strafe_WASD_Mouse"
+art_style: "Vibrant_Stylized_Fantasy"
+last_updated: "2026-08-19"
 
-# ─── ENTITIES ────────────────────────────────────────────────────────────────
-# Named game-world objects: enemies, NPCs, characters, factions, bosses.
-# Register an entity here when it appears in more than one GDD — e.g., an
-# enemy defined in combat.md that also drops items listed in inventory.md.
-#
-# Required fields: name, status, source, referenced_by, added
-# Attribute fields: any key stats that could appear in another GDD
-#   (health, damage, drops, faction, etc.)
+# ─── ENTITIES (3D MESHES & MODELS) ──────────────────────────────────────────
+entities:
+  - name: player_character
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    category: player
+    dimension: 3d
+    height: 1.80
+    collider_radius: 0.40
+    facing_mode: camera_locked_yaw
+    health: 100
+    hearts: 10
+    added: 2026-08-18
+    revised: "2026-08-19"
 
-entities: []
+  - name: melee_swarmer
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    category: minion
+    dimension: 3d
+    height: 1.80
+    collider_radius: 0.40
+    health: 30
+    damage: 10
+    poise: 0
+    added: 2026-08-18
+    revised: "2026-08-19"
 
-# Example (remove when first real entry is added):
-#
-# entities:
-#   - name: goblin
-#     status: active              # active | deprecated
-#     source: design/gdd/combat.md
-#     referenced_by:
-#       - design/gdd/combat.md
-#       - design/gdd/inventory.md
-#     health: 40
-#     damage: 8
-#     drops:
-#       - item: goblin_arm        # must match an entry in items section
-#         qty: 1
-#         drop_rate: 0.8          # 0.0–1.0
-#     added: 2026-03-26
-#     revised: ""
+  - name: skeleton_archer
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    category: minion
+    dimension: 3d
+    height: 1.80
+    collider_radius: 0.40
+    health: 45
+    damage: 15
+    poise: 0
+    attack_range: 12.0
+    aim_duration: 1.2
+    projectile_type: 3d_physics_arrow
+    added: 2026-08-18
+    revised: "2026-08-19"
 
+  - name: heavy_meat_shield
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    category: minion
+    dimension: 3d
+    height: 3.00
+    collider_radius: 0.90
+    health: 160
+    damage: 8
+    poise: 0
+    added: 2026-08-18
+    revised: "2026-08-19"
 
-# ─── ITEMS ───────────────────────────────────────────────────────────────────
-# Named collectables, equipment, consumables, crafting materials, currency.
-# Register an item when its name or value appears in more than one GDD.
-#
-# Required fields: name, status, source, referenced_by, added
-# Attribute fields: value_gold, weight, stackable, category, and any stat
-#   modifiers that another system (e.g., economy, crafting) might reference.
+  - name: boss_goliath
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    category: boss
+    dimension: 3d
+    height: 5.00
+    collider_radius: 1.80
+    health: 1200
+    damage: 35
+    poise: 300
+    groggy_duration: 4.0
+    added: 2026-08-18
+    revised: "2026-08-19"
 
-items: []
+# ─── ITEMS (3D WEAPONS & PICKUPS) ────────────────────────────────────────────
+items:
+  - name: dual_daggers
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    base_damage: 25
+    category: weapon
+    dimension: 3d
+    archetype: fast_bleed
+    tiers:
+      standard:
+        damage_multiplier: 1.0
+        hitbox_scale: 1.0
+      mythic:
+        damage_multiplier: 2.5
+        hitbox_scale: 1.4
+    added: 2026-08-18
+    revised: "2026-08-19"
 
-# Example:
-#
-# items:
-#   - name: goblin_arm
-#     status: active
-#     source: design/gdd/combat.md   # drop defined in combat GDD
-#     referenced_by:
-#       - design/gdd/combat.md
-#       - design/gdd/inventory.md    # inventory GDD lists its weight/stack rules
-#       - design/gdd/economy.md      # economy GDD references its sell price
-#     value_gold: 5
-#     weight: 1
-#     stackable: true
-#     category: crafting_material
-#     added: 2026-03-26
-#     revised: ""
+  - name: greatsword
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    base_damage: 80
+    category: weapon
+    dimension: 3d
+    archetype: heavy_superarmor
+    tiers:
+      standard:
+        damage_multiplier: 1.0
+        hitbox_scale: 1.0
+      mythic:
+        damage_multiplier: 2.5
+        hitbox_scale: 1.4
+    added: 2026-08-18
+    revised: "2026-08-19"
 
+  - name: death_scythe
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    base_damage: 40
+    category: weapon
+    dimension: 3d
+    archetype: cc_vortex
+    tiers:
+      standard:
+        damage_multiplier: 1.0
+        hitbox_scale: 1.0
+      mythic:
+        damage_multiplier: 2.5
+        hitbox_scale: 1.4
+    added: 2026-08-18
+    revised: "2026-08-19"
+
+  - name: blood_orb
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    category: consumable
+    dimension: 3d
+    heal_amount_hearts: 1
+    heal_amount_hp: 10
+    added: 2026-08-18
+    revised: ""
 
 # ─── FORMULAS ────────────────────────────────────────────────────────────────
-# Named calculations with defined variables and output ranges.
-# Register a formula when its output feeds into another system's input,
-# or when another GDD references it by name.
-#
-# Required fields: name, status, source, referenced_by, variables[],
-#   output_range[min, max], added
-# Optional: expression (the actual formula), notes
+formulas:
+  - name: final_damage_formula
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    variables:
+      - base_weapon_damage
+      - tier_multiplier
+      - motion_value
+      - flat_bonus
+      - damage_reduction
+      - crit_multiplier
+      - groggy_multiplier
+    output_range: [1, 99999]
+    expression: "max(1, (base_weapon_damage * tier_multiplier * motion_value + flat_bonus) * (1 - damage_reduction) * crit_multiplier * groggy_multiplier)"
+    notes: "Owned by GDD-COMBAT-001. Calculates actual damage applied to 3D enemy hurtbox."
+    added: 2026-08-18
+    revised: "2026-08-19"
 
-formulas: []
+  - name: poise_damage_formula
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    variables:
+      - base_poise_damage
+      - poise_motion_value
+      - poise_bonus_rate
+    output_range: [0, 999]
+    expression: "base_poise_damage * poise_motion_value * (1 + poise_bonus_rate)"
+    notes: "Owned by GDD-COMBAT-001. Reduces enemy Poise gauge until Groggy state triggers."
+    added: 2026-08-18
+    revised: ""
 
-# Example:
-#
-# formulas:
-#   - name: damage_formula
-#     status: active
-#     source: design/gdd/combat.md
-#     referenced_by:
-#       - design/gdd/combat.md
-#       - design/gdd/progression.md   # progression GDD scales attack variable
-#     variables:
-#       - attack
-#       - defense
-#       - crit_chance
-#       - crit_multiplier
-#     output_range: [0, 999]
-#     expression: "max(0, attack - defense) * (1 + crit_chance * crit_multiplier)"
-#     notes: "Output feeds into health-system damage intake. Min is 0 (armour
-#       can absorb all damage). Max is uncapped in formula but tuning knob
-#       damage_cap in combat.md clamps at 999."
-#     added: 2026-03-26
-#     revised: ""
+# ─── CONSTANTS (3D SPATIAL & GAMEPLAY VALUES) ────────────────────────────────
+constants:
+  - name: arena_radius
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 25.00
+    unit: meters
+    added: 2026-08-18
+    revised: ""
 
+  - name: pillar_height
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 4.00
+    unit: meters
+    added: 2026-08-19
+    revised: ""
 
-# ─── CONSTANTS ───────────────────────────────────────────────────────────────
-# Named numerical values referenced across multiple systems.
-# Register a constant when it is defined in one GDD but another GDD must
-# agree with it (e.g., gold carry limit defined in economy but checked in
-# inventory, or base inventory slots defined in inventory but displayed in HUD).
-#
-# Required fields: name, status, source, referenced_by, value, unit, added
+  - name: pillar_radius
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 1.20
+    unit: meters
+    added: 2026-08-19
+    revised: ""
 
-constants: []
+  - name: finisher_lunge_distance
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 3.80
+    unit: meters
+    added: 2026-08-19
+    revised: ""
 
-# Example:
-#
-# constants:
-#   - name: gold_carry_limit
-#     status: active
-#     source: design/gdd/economy.md
-#     referenced_by:
-#       - design/gdd/economy.md
-#       - design/gdd/inventory.md   # inventory enforces the carry limit
-#       - design/gdd/ui.md          # HUD displays current gold vs limit
-#     value: 9999
-#     unit: gold
-#     added: 2026-03-26
-#     revised: ""
-#
-#   - name: base_inventory_slots
-#     status: active
-#     source: design/gdd/inventory.md
-#     referenced_by:
-#       - design/gdd/inventory.md
-#       - design/gdd/progression.md  # progression unlocks additional slots
-#     value: 20
-#     unit: slots
-#     added: 2026-03-26
-#     revised: ""
+  - name: finisher_shockwave_radius
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 3.00
+    unit: meters
+    added: 2026-08-19
+    revised: ""
+
+  - name: finisher_flash_rate
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 0.18
+    unit: seconds
+    added: 2026-08-19
+    revised: ""
+
+  - name: player_height
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 1.80
+    unit: meters
+    added: 2026-08-18
+    revised: ""
+
+  - name: shield_brute_height
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 3.00
+    unit: meters
+    added: 2026-08-18
+    revised: ""
+
+  - name: boss_goliath_height
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 5.00
+    unit: meters
+    added: 2026-08-18
+    revised: ""
+
+  - name: player_max_hearts
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 10
+    unit: hearts
+    added: 2026-08-18
+    revised: ""
+
+  - name: combo_pip_timeout
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 1.00
+    unit: seconds
+    added: 2026-08-18
+    revised: ""
+
+  - name: softlock_radius
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 5.00
+    unit: meters
+    added: 2026-08-18
+    revised: ""
+
+  - name: skeleton_aim_duration
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 1.20
+    unit: seconds
+    added: 2026-08-18
+    revised: ""
+
+  - name: dash_iframe_duration
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 0.15
+    unit: seconds
+    added: 2026-08-18
+    revised: ""
+
+  - name: dash_cooldown_buffer
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 0.10
+    unit: seconds
+    added: 2026-08-18
+    revised: ""
+
+  - name: boss_telegraph_duration
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 0.80
+    unit: seconds
+    added: 2026-08-18
+    revised: ""
+
+  - name: mythic_tier_damage_multiplier
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 2.50
+    unit: multiplier
+    added: 2026-08-18
+    revised: ""
+
+  - name: heavy_poise_multiplier
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 3.50
+    unit: multiplier
+    added: 2026-08-18
+    revised: ""
+
+  - name: cam_distance
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 5.80
+    unit: meters
+    added: 2026-08-18
+    revised: ""
+
+  - name: cam_height
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 2.40
+    unit: meters
+    added: 2026-08-18
+    revised: ""
+
+  - name: cam_pitch_angle
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 28.00
+    unit: degrees
+    added: 2026-08-18
+    revised: ""
+
+  - name: cam_base_fov
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 62.00
+    unit: degrees
+    added: 2026-08-18
+    revised: ""
+
+  - name: cam_sprint_fov
+    status: active
+    source: design/gdd/combat-system.md
+    referenced_by:
+      - design/gdd/combat-system.md
+    value: 78.00
+    unit: degrees
+    added: 2026-08-18
+    revised: ""
