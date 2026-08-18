@@ -51,7 +51,7 @@ local path: intentionally unresolved
 
 Do not guess the Axit-Code local path. Do not perform Axit-Code product edits from Axit-Game-Studios or through GitHub/cloud writes as a substitute for a writable target workspace.
 
-The long M5 target run must start from a fresh trusted Codex session at the Axit-Code root after target-local project model routing is present before session start.
+The long M5 target run must start from a fresh trusted Antigravity session at the Axit-Code root after target-local project model routing is present before session start.
 
 ## Model / cost policy
 
@@ -64,15 +64,15 @@ Canonical Game-Studios policy:
 M5 required allocation:
 
 ```text
-primary orchestrator = gpt-5.6-sol / xhigh
-all child lanes       = gpt-5.6-luna / medium
+primary orchestrator = gemini-2.5-pro / high
+all child lanes       = gemini-2.5-flash / medium (or gemini-2.5-pro for complex verification)
 ```
 
 This includes explorers, bootstrap authors, implementation workers, test/build lanes, recovery agents, independent verifiers, closure verifiers, and report authors.
 
 No silent child escalation. Only an explicit current human instruction may authorize a bounded override. M5 expected model override count is zero.
 
-Because project-scoped Codex defaults are loaded at session start, target model routing must be prepared before launching the long Axit-Code session; changing it after children have spawned does not prove compliance.
+Because project-scoped model defaults are loaded at session start, target model routing must be prepared before launching the long Axit-Code session; changing it after children have spawned does not prove compliance.
 
 ## M5 authoritative target anchors
 
@@ -117,6 +117,6 @@ The remaining five Unity capabilities stay unbound until demonstrated need. M5 m
 
 ## Next action
 
-Prepare the M5 target-local bootstrap in the user's Axit-Code checkout, then start a fresh trusted Codex session from the Axit-Code repository root and execute the transferred M5 runbook continuously.
+Prepare the M5 target-local bootstrap in the user's Axit-Code checkout, then start a fresh trusted Antigravity session from the Axit-Code repository root and execute the transferred M5 runbook continuously.
 
 Do not start M5 product work from the current Game-Studios root. Do not start M4 or M6 automatically.
