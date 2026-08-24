@@ -265,8 +265,13 @@
     </div>
   </div>
 
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"}}
+  </script>
+  <script src="./assets/animated-stickman-data.js"></script>
   <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.min.js';
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
     // --- GAME METRICS & CONSTANTS (10X SCALE) ---
     const METRICS = {
@@ -493,6 +498,12 @@
     const player = {
       mesh: null,
       weaponPivot: null,
+      animatedModel: null,
+      animationMixer: null,
+      animationActions: {},
+      currentAnimation: null,
+      bambooStaffBone: null,
+      fallbackVisuals: [],
       pos: new THREE.Vector3(0, 0, 0),
       vel: new THREE.Vector3(0, 0, 0),
       isGrounded: true,
@@ -789,7 +800,80 @@
 
       player.mesh = g;
       player.weaponPivot = wPivot;
+      player.fallbackVisuals = [torso, head, scarf];
       updatePlayerWeaponVisual();
+      loadAnimatedStickman();
+    }
+
+    function decodeBase64ArrayBuffer(base64) {
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return bytes.buffer;
+    }
+
+    function loadAnimatedStickman() {
+      const encodedModel = window.ANIMATED_STICKMAN_GLB_BASE64;
+      if (!encodedModel) return;
+      const loader = new GLTFLoader();
+      loader.parse(decodeBase64ArrayBuffer(encodedModel), '', (gltf) => {
+        const model = gltf.scene;
+        const initialBounds = new THREE.Box3().setFromObject(model);
+        const modelHeight = Math.max(0.001, initialBounds.max.y - initialBounds.min.y);
+        const modelScale = METRICS.playerHeight / modelHeight;
+        model.scale.setScalar(modelScale);
+        model.rotation.y = Math.PI;
+
+        const scaledBounds = new THREE.Box3().setFromObject(model);
+        const scaledCenter = scaledBounds.getCenter(new THREE.Vector3());
+        model.position.set(-scaledCenter.x, -scaledBounds.min.y, -scaledCenter.z);
+        model.traverse((object) => {
+          if (!object.isMesh) return;
+          object.castShadow = true;
+          object.receiveShadow = true;
+          object.material = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.72, metalness: 0.04 });
+        });
+
+        player.animatedModel = model;
+        player.mesh.add(model);
+        player.fallbackVisuals.forEach(object => object.visible = false);
+
+        const rightHand = model.getObjectByName('RightHand');
+        if (rightHand) {
+          const inverseModelScale = 1 / modelScale;
+          const staff = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.045 * inverseModelScale, 0.055 * inverseModelScale, 2.5 * inverseModelScale, 10),
+            new THREE.MeshStandardMaterial({ color: 0xb8874b, roughness: 0.8 })
+          );
+          staff.name = 'BambooStaff';
+          staff.position.set(0, 1.05 * inverseModelScale, 0);
+          staff.rotation.set(0.12, 0, 0.08);
+          staff.castShadow = true;
+          rightHand.add(staff);
+          player.bambooStaffBone = staff;
+        }
+
+        player.animationMixer = new THREE.AnimationMixer(model);
+        gltf.animations.forEach((clip) => {
+          const shortName = clip.name.split('|').pop();
+          player.animationActions[shortName] = player.animationMixer.clipAction(clip);
+        });
+        playPlayerAnimation('Idle');
+        updatePlayerWeaponVisual();
+      }, (error) => console.warn('Animated Stickman fallback active:', error));
+    }
+
+    function playPlayerAnimation(name, once = false) {
+      const next = player.animationActions[name];
+      if (!next || (player.currentAnimation === name && !once)) return;
+      const previous = player.animationActions[player.currentAnimation];
+      if (previous) previous.fadeOut(0.1);
+      const playbackRate = once ? next.getClip().duration / Math.max(0.1, player.attackDuration) : 1;
+      next.reset().setEffectiveTimeScale(playbackRate).setEffectiveWeight(1).fadeIn(0.1);
+      next.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, once ? 1 : Infinity);
+      next.clampWhenFinished = once;
+      next.play();
+      player.currentAnimation = name;
     }
 
     function updatePlayerWeaponVisual() {
@@ -799,6 +883,8 @@
       }
 
       const w = WEAPONS[STATE.activeWeapon];
+      if (player.bambooStaffBone) player.bambooStaffBone.visible = w.id === 'bamboo';
+      player.weaponPivot.visible = !player.animatedModel || w.id !== 'bamboo';
       if (w.id === 'bamboo') {
         const staff = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3.2, 8), M.basic(w.color));
         staff.rotation.x = Math.PI / 4;
@@ -1143,6 +1229,7 @@
 
       const w = WEAPONS[STATE.activeWeapon];
       const finisher = isFinisher || STATE.comboPips >= 3;
+      if (!finisher) playPlayerAnimation('Punch', true);
       player.attackDuration = finisher ? 0.52 : THREE.MathUtils.clamp(0.34 / w.speed, 0.18, 0.48);
       player.attackSide *= -1;
       let damage = w.damage;
@@ -1181,6 +1268,7 @@
       if (!impact) return;
       player.attackPhase = 'active';
       player.attackTimer = 0;
+      playPlayerAnimation('Punch', true);
       spawnAttackSlash(impact.color, true);
       spawnShockwave(player.pos, impact.range, impact.color);
       resolvePlayerAttackHits(player.pos, player.lungeDirection, impact.range, impact.arc, impact.damage, impact.element);
@@ -1662,6 +1750,14 @@
         player.weaponPivot.position.x = THREE.MathUtils.lerp(player.weaponPivot.position.x, 0.55, attackReturn);
         player.weaponPivot.position.y = THREE.MathUtils.lerp(player.weaponPivot.position.y, 1.15, attackReturn);
         player.weaponPivot.position.z = THREE.MathUtils.lerp(player.weaponPivot.position.z, 0.3, attackReturn);
+      }
+
+      if (player.animationMixer) {
+        if (!player.isAttacking) {
+          const horizontalSpeed = Math.hypot(player.vel.x, player.vel.z);
+          playPlayerAnimation(horizontalSpeed > 0.5 ? 'Run' : 'Idle');
+        }
+        player.animationMixer.update(dt);
       }
 
       player.facingYaw = camYaw;
