@@ -306,9 +306,14 @@
       finisherLunge: 14.0,         // Scaled lunge
       finisherRadius: 12.0,        // Scaled finisher radius
       comboTimeout: 1.5,
-      camDist: 9.5,
-      camHeight: 4.2,
-      camPitch: THREE.MathUtils.degToRad(-24)
+      // Wide over-the-shoulder framing: the signed lateral offset is tuned
+      // for this model's axis so the player sits slightly left of centre.
+      // Target vertical composition: 40% headroom, 40% character, 20% floor.
+      camDist: 4.0,
+      camHeight: 1.9,
+      camShoulderOffset: -1.0,
+      camTargetHeight: 1.65,
+      camPitch: THREE.MathUtils.degToRad(-11)
     };
 
     // Weapon Definitions
@@ -388,7 +393,7 @@
     scene.background = new THREE.Color(0x82d4ff);
     scene.fog = new THREE.FogExp2(0x9bd8ff, 0.0010); // Optimized for 1000m+ sightlines
 
-    const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.1, 4000);
+    const camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.1, 4000);
     const renderer = new THREE.WebGLRenderer({ 
       antialias: false, 
       powerPreference: 'high-performance',
@@ -2370,11 +2375,17 @@
       updateWeaponTrail();
       if (player.weaponTrailStopPending) stopWeaponTrail();
 
-      // 3. CAMERA FOLLOW (10x Perspective)
-      const camOffset = new THREE.Vector3(0, METRICS.camHeight, -METRICS.camDist);
+      // 3. CAMERA FOLLOW — offset over-the-shoulder framing. Camera and look
+      // target share the lateral offset so the character remains left of
+      // the reticle instead of being pulled back into the centre.
+      const camOffset = new THREE.Vector3(METRICS.camShoulderOffset, METRICS.camHeight, -METRICS.camDist);
       camOffset.applyAxisAngle(new THREE.Vector3(1, 0, 0), camPitch);
       camOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
-      const cameraAnchor = player.pos.clone().add(new THREE.Vector3(0, 1.8, 0));
+      const shoulderOffset = new THREE.Vector3(METRICS.camShoulderOffset, 0, 0)
+        .applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
+      const cameraAnchor = player.pos.clone()
+        .add(new THREE.Vector3(0, METRICS.camTargetHeight, 0))
+        .add(shoulderOffset);
       const desiredCameraPosition = player.pos.clone().add(camOffset);
       const cameraBlocked = resolveCameraCollision(cameraAnchor, desiredCameraPosition);
       const cameraFollowRate = player.lungeActive ? 8 : (cameraBlocked ? 30 : 12);
