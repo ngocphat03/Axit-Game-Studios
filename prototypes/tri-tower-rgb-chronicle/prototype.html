@@ -1162,17 +1162,29 @@
         player.lungeLastEase = 0;
         player.lungeDirection.copy(forward);
         player.pendingFinisherImpact = { damage, range, arc: w.arc, element: w.element, color: w.color };
+        player.attackPhase = 'lunge';
         addNotice('💥 MEGA FINISHER LƯỚT DẬM NỔ (14M)!');
       } else {
         STATE.comboPips++;
         Audio.swing();
       }
 
-      spawnAttackSlash(w.color, finisher);
+      if (!finisher) spawnAttackSlash(w.color, false);
 
       updatePipsUI();
 
       if (!finisher) resolvePlayerAttackHits(player.pos, player.lungeDirection.set(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), player.facingYaw), range, w.arc, damage, w.element);
+    }
+
+    function triggerPendingFinisherImpact() {
+      const impact = player.pendingFinisherImpact;
+      if (!impact) return;
+      player.attackPhase = 'active';
+      player.attackTimer = 0;
+      spawnAttackSlash(impact.color, true);
+      spawnShockwave(player.pos, impact.range, impact.color);
+      resolvePlayerAttackHits(player.pos, player.lungeDirection, impact.range, impact.arc, impact.damage, impact.element);
+      player.pendingFinisherImpact = null;
     }
 
     function resolvePlayerAttackHits(attackPos, forwardVec, range, arc, damage, element) {
@@ -1621,18 +1633,16 @@
         player.pos.addScaledVector(player.lungeDirection, lungeStep);
         player.lungeLastEase = easedLunge;
 
+        const distanceTravelled = easedLunge * METRICS.finisherLunge;
+        if (distanceTravelled >= METRICS.finisherLunge * 0.9) triggerPendingFinisherImpact();
+
         if (lungeProgress >= 1) {
           player.lungeActive = false;
-          const impact = player.pendingFinisherImpact;
-          if (impact) {
-            spawnShockwave(player.pos, impact.range, impact.color);
-            resolvePlayerAttackHits(player.pos, player.lungeDirection, impact.range, impact.arc, impact.damage, impact.element);
-            player.pendingFinisherImpact = null;
-          }
+          triggerPendingFinisherImpact();
         }
       }
 
-      if (player.isAttacking) {
+      if (player.isAttacking && player.attackPhase === 'active') {
         player.attackTimer += dt;
         const attackProgress = Math.min(1, player.attackTimer / player.attackDuration);
         const swing = Math.sin(attackProgress * Math.PI);
