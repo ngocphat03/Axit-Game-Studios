@@ -502,6 +502,7 @@
       attackPhase: 'none',
       attackTimer: 0,
       attackDuration: 0.35,
+      attackSide: 1,
       isHoldingJump: false,
       jumpHoldTimer: 0,
       facingYaw: 0,
@@ -1134,6 +1135,8 @@
       player.attackTimer = 0;
 
       const w = WEAPONS[STATE.activeWeapon];
+      player.attackDuration = isFinisher ? 0.52 : THREE.MathUtils.clamp(0.34 / w.speed, 0.18, 0.48);
+      player.attackSide *= -1;
       let damage = w.damage;
       let range = w.range;
 
@@ -1155,6 +1158,8 @@
         STATE.comboPips++;
         Audio.swing();
       }
+
+      spawnAttackSlash(w.color, isFinisher || STATE.comboPips === 0);
 
       updatePipsUI();
 
@@ -1403,6 +1408,23 @@
       particles.push(ring);
     }
 
+    function spawnAttackSlash(color, heavy) {
+      const forward = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), player.facingYaw);
+      const slash = new THREE.Mesh(
+        new THREE.TorusGeometry(heavy ? 2.8 : 2.1, heavy ? 0.18 : 0.11, 6, 28, Math.PI * 1.25),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false })
+      );
+      slash.position.copy(player.pos).addScaledVector(forward, heavy ? 2.4 : 1.8).setY(player.pos.y + 1.35);
+      slash.rotation.y = player.facingYaw;
+      slash.rotation.z = player.attackSide * 0.45;
+      slash.userData.life = heavy ? 0.32 : 0.2;
+      slash.userData.maxLife = slash.userData.life;
+      slash.userData.slash = true;
+      slash.userData.spin = player.attackSide * (heavy ? 8 : 12);
+      scene.add(slash);
+      particles.push(slash);
+    }
+
     // --- INPUT EVENT LISTENERS ---
     function requestGameplayPointerLock() {
       renderer.domElement.style.cursor = 'none';
@@ -1582,6 +1604,28 @@
         player.pos.y = Math.max(groundHeight, player.pos.y + player.vel.y * dt);
       }
 
+      if (player.isAttacking) {
+        player.attackTimer += dt;
+        const attackProgress = Math.min(1, player.attackTimer / player.attackDuration);
+        const swing = Math.sin(attackProgress * Math.PI);
+        player.weaponPivot.rotation.x = -0.35 * swing;
+        player.weaponPivot.rotation.y = player.attackSide * 0.55 * swing;
+        player.weaponPivot.rotation.z = player.attackSide * 1.9 * swing;
+        player.weaponPivot.position.set(0.55, 1.15 + 0.18 * swing, 0.3 + 0.35 * swing);
+        if (attackProgress >= 1) {
+          player.isAttacking = false;
+          player.attackPhase = 'none';
+        }
+      } else {
+        const attackReturn = 1 - Math.exp(-dt * 24);
+        player.weaponPivot.rotation.x = THREE.MathUtils.lerp(player.weaponPivot.rotation.x, 0, attackReturn);
+        player.weaponPivot.rotation.y = THREE.MathUtils.lerp(player.weaponPivot.rotation.y, 0, attackReturn);
+        player.weaponPivot.rotation.z = THREE.MathUtils.lerp(player.weaponPivot.rotation.z, 0, attackReturn);
+        player.weaponPivot.position.x = THREE.MathUtils.lerp(player.weaponPivot.position.x, 0.55, attackReturn);
+        player.weaponPivot.position.y = THREE.MathUtils.lerp(player.weaponPivot.position.y, 1.15, attackReturn);
+        player.weaponPivot.position.z = THREE.MathUtils.lerp(player.weaponPivot.position.z, 0.3, attackReturn);
+      }
+
       player.facingYaw = camYaw;
       player.mesh.position.copy(player.pos);
       player.mesh.rotation.y = player.facingYaw;
@@ -1688,6 +1732,10 @@
         p.userData.life -= dt;
         if (p.userData.maxLife) {
           p.material.opacity = (p.userData.life / p.userData.maxLife);
+        }
+        if (p.userData.slash) {
+          p.rotation.z += p.userData.spin * dt;
+          p.scale.multiplyScalar(1 + dt * 2.2);
         }
         if (p.userData.life <= 0) {
           scene.remove(p);
