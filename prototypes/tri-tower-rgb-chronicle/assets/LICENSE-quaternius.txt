@@ -1,6 +1,6 @@
-------------------------------------------------------
-Animated Human by Quaternius.
-Consider supporting me on Patreon, even $1 helps me a lot!
+-------------------------------------------------------
+Universal Animation Library 2 by Quaternius.
+Consider supporting the creator on Patreon.
 
 https://www.patreon.com/quaternius
 -------------------------------------------------------

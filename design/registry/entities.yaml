@@ -20,7 +20,7 @@ dimension: "3D_PURE"
 platform: "PC"
 control_scheme: "Camera_Locked_Strafe_WASD_Mouse"
 art_style: "Vibrant_Stylized_Fantasy"
-last_updated: "2026-08-19"
+last_updated: "2026-08-25"
 
 # ─── ENTITIES (3D MESHES & MODELS) ──────────────────────────────────────────
 entities:
@@ -29,6 +29,8 @@ entities:
     source: design/gdd/combat-system.md
     referenced_by:
       - design/gdd/combat-system.md
+      - design/gdd/jump-system.md
+      - design/levels/tri-tower-world-map.md
     category: player
     dimension: 3d
     height: 1.80
@@ -105,6 +107,27 @@ entities:
 
 # ─── ITEMS (3D WEAPONS & PICKUPS) ────────────────────────────────────────────
 items:
+  - name: bamboo_staff
+    status: active
+    source: design/narrative/world-and-story.md
+    referenced_by:
+      - design/narrative/world-and-story.md
+      - design/levels/tri-tower-world-map.md
+      - design/gdd/combat-system.md
+    base_damage: 25
+    category: weapon
+    dimension: 3d
+    archetype: neutral_balanced
+    tiers:
+      standard:
+        damage_multiplier: 1.0
+        hitbox_scale: 1.0
+      mythic:
+        damage_multiplier: 2.0
+        hitbox_scale: 1.2
+    added: 2026-08-22
+    revised: "2026-08-25" # Prototype runtime value; previously 15 in narrative registry.
+
   - name: dual_daggers
     status: active
     source: design/gdd/combat-system.md
@@ -343,23 +366,88 @@ constants:
     revised: ""
 
   - name: dash_iframe_duration
-    status: active
+    status: deprecated
     source: design/gdd/combat-system.md
     referenced_by:
       - design/gdd/combat-system.md
     value: 0.15
     unit: seconds
     added: 2026-08-18
-    revised: ""
+    revised: "2026-08-24 # Deprecated in favor of Jump System spatial evasion"
 
   - name: dash_cooldown_buffer
-    status: active
+    status: deprecated
     source: design/gdd/combat-system.md
     referenced_by:
       - design/gdd/combat-system.md
     value: 0.10
     unit: seconds
     added: 2026-08-18
+    revised: "2026-08-24 # Deprecated in favor of Jump System"
+
+  - name: jump_height
+    status: active
+    source: design/gdd/jump-system.md
+    referenced_by:
+      - design/gdd/jump-system.md
+      - design/gdd/combat-system.md
+    value: 1.50
+    unit: meters
+    added: 2026-08-24
+    revised: ""
+
+  - name: time_to_apex
+    status: active
+    source: design/gdd/jump-system.md
+    referenced_by:
+      - design/gdd/jump-system.md
+      - design/gdd/combat-system.md
+    value: 0.38
+    unit: seconds
+    added: 2026-08-24
+    revised: ""
+
+  - name: coyote_time
+    status: active
+    source: design/gdd/jump-system.md
+    referenced_by:
+      - design/gdd/jump-system.md
+      - design/gdd/combat-system.md
+    value: 0.12
+    unit: seconds
+    added: 2026-08-24
+    revised: ""
+
+  - name: jump_buffer_time
+    status: active
+    source: design/gdd/jump-system.md
+    referenced_by:
+      - design/gdd/jump-system.md
+      - design/gdd/combat-system.md
+    value: 0.12
+    unit: seconds
+    added: 2026-08-24
+    revised: ""
+
+  - name: air_control_rate
+    status: active
+    source: design/gdd/jump-system.md
+    referenced_by:
+      - design/gdd/jump-system.md
+      - design/gdd/combat-system.md
+    value: 0.70
+    unit: percentage
+    added: 2026-08-24
+    revised: ""
+
+  - name: step_height
+    status: active
+    source: design/gdd/jump-system.md
+    referenced_by:
+      - design/gdd/jump-system.md
+    value: 0.35
+    unit: meters
+    added: 2026-08-24
     revised: ""
 
   - name: boss_telegraph_duration

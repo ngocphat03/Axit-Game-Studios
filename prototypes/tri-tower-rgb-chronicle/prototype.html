@@ -78,6 +78,11 @@
     @keyframes noticeIn { from { opacity: 0; transform: translateX(25px); } }
     @keyframes noticeOut { to { opacity: 0; transform: translateX(25px); } }
 
+    #attackLab { position: fixed; z-index: 10; right: 24px; bottom: 118px; width: 230px; padding: 12px 15px; border-radius: 15px; background: var(--glass); border: 1px solid var(--glass-border); backdrop-filter: blur(14px); pointer-events: none; }
+    #attackLab small { display: block; color: var(--gold); font-size: 10px; font-weight: 900; letter-spacing: 0.16em; }
+    #attackLabName { margin: 5px 0 4px; font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; color: #fff; }
+    #attackLabHelp { color: #cbd5e1; font-size: 11px; font-weight: 700; line-height: 1.45; }
+
     /* HUD BOTTOM */
     #hud { position: fixed; z-index: 10; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(920px, calc(100vw - 32px)); display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
     #finisherAlert { height: 26px; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 15px; letter-spacing: 0.1em; color: #fff37a; opacity: 0; text-shadow: 0 0 16px #ff4757, 0 2px 4px #000; }
@@ -164,6 +169,11 @@
 
   <!-- COMBAT LOG -->
   <div id="combatNotice"></div>
+  <aside id="attackLab">
+    <small>ATTACK ANIMATION LAB</small>
+    <div id="attackLabName">ATTACK 1 / 11</div>
+    <div id="attackLabHelp">[B] Trước · [N] Sau · [P] Phát thử</div>
+  </aside>
 
   <!-- BOTTOM HUD -->
   <section id="hud">
@@ -268,10 +278,10 @@
   <script type="importmap">
     {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"}}
   </script>
-  <script src="./assets/animated-stickman-data.js"></script>
+  <script src="./assets/explosive-rpg-data.js"></script>
   <script type="module">
     import * as THREE from 'three';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 
     // --- GAME METRICS & CONSTANTS (10X SCALE) ---
     const METRICS = {
@@ -285,8 +295,11 @@
       playerRadius: 0.6,
       playerSpeed: 18.0,           // Fast base run speed for large map
       playerSprintSpeed: 32.0,     // Shift Sprint speed
+      strafeCadenceSpeed: 10.0,    // World speed represented by Strafe clips at 1x
+      runCadenceSpeed: 18.0,       // World speed represented by Run clips at 1x
       jumpVelocity: 13.5,
-      gravity: -30.0,
+      jumpGravity: 24.0,
+      fallGravity: 32.0,
       coyoteTime: 0.15,
       jumpBufferTime: 0.15,
       airControl: 0.75,
@@ -324,6 +337,7 @@
       twBlue: document.getElementById('twBlue'),
       twRed: document.getElementById('twRed'),
       combatNotice: document.getElementById('combatNotice'),
+      attackLabName: document.getElementById('attackLabName'),
       healthPanel: document.getElementById('healthPanel'),
       pipsPanel: document.getElementById('pipsPanel'),
       finisherAlert: document.getElementById('finisherAlert'),
@@ -405,6 +419,10 @@
       bridgeRail: new THREE.MeshLambertMaterial({ color: 0x94a3b8 }),
       pillar: new THREE.MeshLambertMaterial({ color: 0x64748b }),
       skyFloor: new THREE.MeshLambertMaterial({ color: 0xf8fafc }),
+      paperEdge: new THREE.MeshLambertMaterial({ color: 0xf1e7c7 }),
+      voidInk: new THREE.MeshLambertMaterial({ color: 0x171424 }),
+      voidGlow: new THREE.MeshBasicMaterial({ color: 0x6d28d9 }),
+      cloud: new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.72 }),
       elevator: new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, side: THREE.DoubleSide }),
       playerBody: new THREE.MeshLambertMaterial({ color: 0x0f172a }),
       playerHead: new THREE.MeshLambertMaterial({ color: 0xfff1e6 }),
@@ -499,10 +517,23 @@
       mesh: null,
       weaponPivot: null,
       animatedModel: null,
+      animatedModelBindPosition: new THREE.Vector3(),
       animationMixer: null,
       animationActions: {},
       currentAnimation: null,
+      locomotionRate: 1,
       bambooStaffBone: null,
+      staffTrailTip: null,
+      staffTrailInner: null,
+      weaponTrailActive: false,
+      weaponTrailHeavy: false,
+      weaponTrailColor: 0xffffff,
+      weaponTrailHasSample: false,
+      weaponTrailStopPending: false,
+      weaponTrailPreviousTip: new THREE.Vector3(),
+      weaponTrailPreviousInner: new THREE.Vector3(),
+      weaponTrailCurrentTip: new THREE.Vector3(),
+      weaponTrailCurrentInner: new THREE.Vector3(),
       fallbackVisuals: [],
       pos: new THREE.Vector3(0, 0, 0),
       vel: new THREE.Vector3(0, 0, 0),
@@ -523,6 +554,13 @@
       isHoldingJump: false,
       jumpHoldTimer: 0,
       facingYaw: 0,
+      visualYaw: 0,
+      moveInputX: 0,
+      moveInputZ: 0,
+      wasGroundedForAnimation: true,
+      landingTimer: 0,
+      jumpAnimationPhase: 'grounded',
+      attackPreviewIndex: 1,
       invulnerableTimer: 0
     };
 
@@ -565,6 +603,69 @@
       return collided;
     }
 
+    function addPaperTree(parent, x, z, scale = 1) {
+      const tree = new THREE.Group();
+      tree.position.set(x, 0, z);
+      tree.scale.setScalar(scale);
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1.2, 7, 5), M.lambert(0x8b5a2b));
+      trunk.position.y = 3.5;
+      const crownLow = new THREE.Mesh(new THREE.ConeGeometry(5.2, 8, 5), M.lambert(0x2ed573));
+      crownLow.position.y = 8;
+      const crownHigh = new THREE.Mesh(new THREE.ConeGeometry(3.8, 7, 5), M.lambert(0x7bed9f));
+      crownHigh.position.y = 12.5;
+      tree.add(trunk, crownLow, crownHigh);
+      parent.add(tree);
+    }
+
+    function addCrystalCluster(parent, x, z, scale = 1) {
+      const cluster = new THREE.Group();
+      cluster.position.set(x, 0, z);
+      cluster.scale.setScalar(scale);
+      [[0, 4.5, 0, 2.3], [-2.4, 2.8, 0.8, 1.45], [2.2, 3.2, -0.4, 1.7]].forEach(([px, py, pz, s]) => {
+        const crystal = new THREE.Mesh(new THREE.OctahedronGeometry(s, 0), M.lambert(py > 4 ? 0x70a1ff : 0xb9e7ff));
+        crystal.position.set(px, py, pz);
+        crystal.scale.y = 2.2;
+        crystal.rotation.z = px * 0.08;
+        cluster.add(crystal);
+      });
+      parent.add(cluster);
+    }
+
+    function addLavaVent(parent, x, z, scale = 1) {
+      const vent = new THREE.Group();
+      vent.position.set(x, 0, z);
+      vent.scale.setScalar(scale);
+      const rock = new THREE.Mesh(new THREE.ConeGeometry(5, 8, 6, 1, true), M.lambert(0x4a1f22));
+      rock.position.y = 3;
+      const core = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 2.4, 6, 8), M.basic(0xff7b00));
+      core.position.y = 3.5;
+      vent.add(rock, core);
+      parent.add(vent);
+    }
+
+    function addRgbGateway(parent, angle, color) {
+      const gateway = new THREE.Group();
+      const radius = METRICS.plazaRadius - 8;
+      gateway.position.set(Math.sin(angle) * radius, 0, Math.cos(angle) * radius);
+      gateway.rotation.y = angle;
+      for (const side of [-1, 1]) {
+        const pillar = new THREE.Mesh(new THREE.BoxGeometry(4.5, 18, 4.5), MatPool.paperEdge);
+        pillar.position.set(side * 13.5, 9, 0);
+        pillar.castShadow = true;
+        gateway.add(pillar);
+        const gem = new THREE.Mesh(new THREE.OctahedronGeometry(3.2, 0), M.basic(color));
+        gem.position.set(side * 13.5, 19.5, 0);
+        gateway.add(gem);
+      }
+      const lintel = new THREE.Mesh(new THREE.BoxGeometry(33, 4, 4.5), MatPool.paperEdge);
+      lintel.position.y = 18;
+      gateway.add(lintel);
+      const sigil = new THREE.Mesh(new THREE.TorusGeometry(5.5, 1.1, 6, 18), M.basic(color));
+      sigil.position.set(0, 18, -2.4);
+      gateway.add(sigil);
+      parent.add(gateway);
+    }
+
     // --- WORLD GEOMETRY SCENERY SCULPTING (OPTIMIZED GEOMETRY) ---
     function buildWorld() {
       // Lighting
@@ -605,6 +706,17 @@
       plazaGroup.add(plazaFloor);
       cameraColliders.push(plazaFloor);
 
+      // Layered torn-paper silhouette beneath the hub.
+      for (let layer = 0; layer < 3; layer++) {
+        const paperLayer = new THREE.Mesh(
+          new THREE.CylinderGeometry(106 + layer * 6, 111 + layer * 7, 2.2, 12),
+          layer % 2 === 0 ? MatPool.paperEdge : M.lambert(0xd8caa4)
+        );
+        paperLayer.position.y = -4.2 - layer * 2.1;
+        paperLayer.rotation.y = layer * 0.22;
+        plazaGroup.add(paperLayer);
+      }
+
       // Plaza Outer Gold Ring
       const plazaRing = new THREE.Mesh(
         new THREE.TorusGeometry(METRICS.plazaRadius, 1.8, 8, 48),
@@ -618,7 +730,7 @@
       const matrixGeo = new THREE.CircleGeometry(25, 24);
       const matrix = new THREE.Mesh(matrixGeo, MatPool.matrix);
       matrix.rotation.x = -Math.PI / 2;
-      matrix.position.y = 0.15;
+      matrix.position.y = 0.01;
       plazaGroup.add(matrix);
 
       // 3 Matrix Sockets for RGB
@@ -636,6 +748,84 @@
       plazaGroup.add(socketRed);
 
       plazaGroup.userData = { socketGreen, socketBlue, socketRed };
+
+      // Ink fissures show the Void draining colour from the central canvas.
+      for (let i = 0; i < 12; i++) {
+        const fissureAngle = (i / 12) * Math.PI * 2 + (i % 2) * 0.09;
+        const fissure = new THREE.Mesh(
+          new THREE.BoxGeometry(i % 3 === 0 ? 1.8 : 0.9, 0.12, 24 + (i % 4) * 6),
+          i % 3 === 0 ? MatPool.voidGlow : MatPool.voidInk
+        );
+        fissure.position.set(Math.sin(fissureAngle) * 42, 0.025, Math.cos(fissureAngle) * 42);
+        fissure.rotation.y = fissureAngle;
+        plazaGroup.add(fissure);
+      }
+
+      Object.values(TOWERS).forEach((tw) => addRgbGateway(plazaGroup, tw.bridgeAngle, tw.color));
+
+      // Hero landmark: the dormant Tri-Colour Pen Engine.
+      // It stays open at ground level so spawn, combat and the elevator remain unobstructed.
+      const hubMonument = new THREE.Group();
+      plazaGroup.add(hubMonument);
+      [43, 35, 28].forEach((radius, index) => {
+        const stepRing = new THREE.Mesh(
+          new THREE.TorusGeometry(radius, 0.22, 4, 48),
+          index === 1 ? MatPool.goldGlow : MatPool.paperEdge
+        );
+        stepRing.rotation.x = Math.PI / 2;
+        stepRing.position.y = -0.17 + index * 0.01;
+        hubMonument.add(stepRing);
+      });
+
+      const rgbColors = [TOWERS.green.color, TOWERS.blue.color, TOWERS.red.color];
+      rgbColors.forEach((color, index) => {
+        const sector = new THREE.Mesh(
+          new THREE.CircleGeometry(23, 20, index * Math.PI * 2 / 3 + 0.05, Math.PI * 2 / 3 - 0.1),
+          M.basic(color, true, 0.72)
+        );
+        sector.rotation.x = -Math.PI / 2;
+        sector.position.y = 0.025;
+        hubMonument.add(sector);
+
+        const guardianPen = new THREE.Group();
+        const penAngle = index * Math.PI * 2 / 3;
+        guardianPen.position.set(Math.sin(penAngle) * 48, 0, Math.cos(penAngle) * 48);
+        guardianPen.rotation.y = penAngle;
+        guardianPen.rotation.z = index % 2 === 0 ? -0.12 : 0.12;
+        const shaft = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 2.1, 21, 8), MatPool.paperEdge);
+        shaft.position.y = 10.5;
+        const nib = new THREE.Mesh(new THREE.ConeGeometry(3.2, 8, 4), M.basic(color));
+        nib.position.y = 24;
+        guardianPen.add(shaft, nib);
+        hubMonument.add(guardianPen);
+      });
+
+      const core = new THREE.Mesh(new THREE.OctahedronGeometry(6.5, 1), M.basic(0xffffff));
+      core.position.y = 20;
+      hubMonument.add(core);
+      const coreLight = new THREE.PointLight(0xffffff, 2.2, 90, 2);
+      coreLight.position.y = 20;
+      hubMonument.add(coreLight);
+
+      const hubHalos = [];
+      [11, 15, 19].forEach((radius, index) => {
+        const halo = new THREE.Mesh(
+          new THREE.TorusGeometry(radius, 0.72, 5, 40),
+          M.basic(rgbColors[index])
+        );
+        halo.position.y = 20;
+        halo.rotation.set(index === 0 ? Math.PI / 2 : Math.PI / 3, index * Math.PI / 3, index * 0.7);
+        hubMonument.add(halo);
+        hubHalos.push(halo);
+      });
+
+      const hubOrbiters = [];
+      for (let i = 0; i < 12; i++) {
+        const orbiter = new THREE.Mesh(new THREE.OctahedronGeometry(0.8 + (i % 3) * 0.25, 0), M.basic(rgbColors[i % 3]));
+        hubMonument.add(orbiter);
+        hubOrbiters.push(orbiter);
+      }
+      scene.userData.hubMonument = { core, coreLight, halos: hubHalos, orbiters: hubOrbiters };
 
       // --- 2. 3 BRIDGES (300m x 35m) & 3 TOWER ARENAS (D = 250m) ---
       Object.values(TOWERS).forEach(tw => {
@@ -661,6 +851,16 @@
         bridgeGroup.add(bridgeFloor);
         cameraColliders.push(bridgeFloor);
 
+        // A coloured brush stroke guides the player toward each RGB tower.
+        const colorInlay = new THREE.Mesh(
+          new THREE.BoxGeometry(2.4, 0.25, bridgeLen - 8),
+          M.basic(tw.color)
+        );
+        colorInlay.position.copy(bridgeCenter);
+        colorInlay.y = 0.12;
+        colorInlay.rotation.y = angle;
+        bridgeGroup.add(colorInlay);
+
         // Bridge Railings
         for (let side of [-1, 1]) {
           const rail = new THREE.Mesh(
@@ -674,6 +874,21 @@
           rail.position.y += 2.8;
           bridgeGroup.add(rail);
           cameraColliders.push(rail);
+        }
+
+        // Floating page-runes make the long 300m routes readable at a glance.
+        for (let marker = 0; marker < 5; marker++) {
+          const markerRadius = METRICS.plazaRadius + 35 + marker * 52;
+          for (const side of [-1, 1]) {
+            const rune = new THREE.Mesh(new THREE.OctahedronGeometry(2.1, 0), M.basic(tw.color));
+            rune.position.set(
+              Math.sin(angle) * markerRadius + Math.cos(angle) * 15 * side,
+              5.5 + (marker % 2) * 1.5,
+              Math.cos(angle) * markerRadius - Math.sin(angle) * 15 * side
+            );
+            rune.rotation.y = marker * 0.7;
+            bridgeGroup.add(rune);
+          }
         }
 
         // Bridge 140m Elevated Stone Pillars (H = 3.5m)
@@ -710,6 +925,14 @@
         arenaGroup.add(arenaFloor);
         cameraColliders.push(arenaFloor);
 
+        const arenaCanvas = new THREE.Mesh(
+          new THREE.CylinderGeometry(112, 116, 1.2, 18),
+          tw.id === 'green' ? M.lambert(0xa7e8b3) : tw.id === 'blue' ? M.lambert(0xb9e7ff) : M.lambert(0xffb199)
+        );
+        arenaCanvas.position.y = 0.05;
+        arenaCanvas.receiveShadow = true;
+        arenaGroup.add(arenaCanvas);
+
         // Tower Boundary Runes
         const arenaBorder = new THREE.Mesh(
           new THREE.TorusGeometry(METRICS.towerArenaRadius, 2.5, 8, 48),
@@ -718,6 +941,17 @@
         arenaBorder.rotation.x = Math.PI / 2;
         arenaBorder.position.y = 0.2;
         arenaGroup.add(arenaBorder);
+
+        // Each tower arena carries a distinct biome silhouette near its rim.
+        for (let propIndex = 0; propIndex < 12; propIndex++) {
+          const propAngle = (propIndex / 12) * Math.PI * 2 + 0.18;
+          const propRadius = 92 + (propIndex % 3) * 7;
+          const px = Math.sin(propAngle) * propRadius;
+          const pz = Math.cos(propAngle) * propRadius;
+          if (tw.id === 'green') addPaperTree(arenaGroup, px, pz, 0.75 + (propIndex % 3) * 0.16);
+          if (tw.id === 'blue') addCrystalCluster(arenaGroup, px, pz, 0.7 + (propIndex % 2) * 0.2);
+          if (tw.id === 'red') addLavaVent(arenaGroup, px, pz, 0.65 + (propIndex % 3) * 0.12);
+        }
 
         // Tower Monument / Spire in the back
         const spire = new THREE.Mesh(
@@ -728,6 +962,26 @@
         spire.castShadow = true;
         arenaGroup.add(spire);
         cameraColliders.push(spire);
+
+        const towerBase = new THREE.Mesh(new THREE.CylinderGeometry(31, 39, 16, 8), MatPool.voidInk);
+        towerBase.position.set(Math.sin(angle) * 75, 8, Math.cos(angle) * 75);
+        towerBase.castShadow = true;
+        arenaGroup.add(towerBase);
+
+        for (let crown = 0; crown < 3; crown++) {
+          const crownRing = new THREE.Mesh(
+            new THREE.TorusGeometry(22 - crown * 4.5, 1.4, 6, 20),
+            M.basic(tw.color)
+          );
+          crownRing.position.set(Math.sin(angle) * 75, 28 + crown * 18, Math.cos(angle) * 75);
+          crownRing.rotation.x = Math.PI / 2;
+          arenaGroup.add(crownRing);
+        }
+
+        const coreGem = new THREE.Mesh(new THREE.OctahedronGeometry(8, 0), M.basic(tw.color));
+        coreGem.position.set(Math.sin(angle) * 75, 82, Math.cos(angle) * 75);
+        coreGem.scale.y = 1.8;
+        arenaGroup.add(coreGem);
 
         tw.spireTip = new THREE.Vector3().copy(tw.pos).add(spire.position).add(new THREE.Vector3(0, 45, 0));
       });
@@ -746,12 +1000,57 @@
       skyGroup.add(skyFloor);
       cameraColliders.push(skyFloor);
 
+      const islandUnderside = new THREE.Mesh(
+        new THREE.ConeGeometry(METRICS.skyIsleRadius + 10, 95, 18),
+        MatPool.paperEdge
+      );
+      islandUnderside.position.y = -58;
+      islandUnderside.rotation.x = Math.PI;
+      islandUnderside.rotation.y = Math.PI / 18;
+      skyGroup.add(islandUnderside);
+
       const skyRing = new THREE.Mesh(
         new THREE.TorusGeometry(METRICS.skyIsleRadius, 3.2, 8, 48),
         MatPool.goldGlow
       );
       skyRing.rotation.x = Math.PI / 2;
       skyGroup.add(skyRing);
+
+      // White temple of the Divine Pen at the RGB convergence point.
+      const templeDais = new THREE.Mesh(new THREE.CylinderGeometry(48, 56, 5, 12), MatPool.paperEdge);
+      templeDais.position.y = 2.5;
+      skyGroup.add(templeDais);
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2;
+        const column = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 3, 24, 8), MatPool.skyFloor);
+        column.position.set(Math.sin(a) * 38, 15, Math.cos(a) * 38);
+        column.castShadow = true;
+        skyGroup.add(column);
+      }
+      const divinePen = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 4.2, 42, 10), MatPool.goldGlow);
+      divinePen.position.y = 28;
+      divinePen.rotation.z = -0.18;
+      skyGroup.add(divinePen);
+      const penNib = new THREE.Mesh(new THREE.ConeGeometry(5, 14, 4), MatPool.voidInk);
+      penNib.position.set(3.75, 6.5, 0);
+      penNib.rotation.z = Math.PI + 0.18;
+      skyGroup.add(penNib);
+
+      // Cloud wreath and loose paper fragments sell the floating scale.
+      for (let i = 0; i < 18; i++) {
+        const a = (i / 18) * Math.PI * 2;
+        const cloud = new THREE.Mesh(new THREE.SphereGeometry(16 + (i % 3) * 5, 8, 6), MatPool.cloud);
+        cloud.position.set(Math.sin(a) * (225 + (i % 2) * 22), -30 + (i % 4) * 6, Math.cos(a) * (225 + (i % 2) * 22));
+        cloud.scale.y = 0.42;
+        skyGroup.add(cloud);
+      }
+      for (let i = 0; i < 14; i++) {
+        const a = (i / 14) * Math.PI * 2 + 0.2;
+        const shard = new THREE.Mesh(new THREE.TetrahedronGeometry(5 + (i % 3) * 2), MatPool.paperEdge);
+        shard.position.set(Math.sin(a) * (150 + (i % 4) * 18), -45 - (i % 5) * 12, Math.cos(a) * (150 + (i % 4) * 18));
+        shard.rotation.set(i * 0.3, i * 0.5, i * 0.2);
+        skyGroup.add(shard);
+      }
 
       // 3 Energy Beam Receiver Crystals on Sky Isle
       Object.values(TOWERS).forEach(tw => {
@@ -802,7 +1101,7 @@
       player.weaponPivot = wPivot;
       player.fallbackVisuals = [torso, head, scarf];
       updatePlayerWeaponVisual();
-      loadAnimatedStickman();
+      loadExplosiveRpgCharacter();
     }
 
     function decodeBase64ArrayBuffer(base64) {
@@ -812,64 +1111,168 @@
       return bytes.buffer;
     }
 
-    function loadAnimatedStickman() {
-      const encodedModel = window.ANIMATED_STICKMAN_GLB_BASE64;
-      if (!encodedModel) return;
-      const loader = new GLTFLoader();
-      loader.parse(decodeBase64ArrayBuffer(encodedModel), '', (gltf) => {
-        const model = gltf.scene;
+    function loadExplosiveRpgCharacter() {
+      const assets = window.EXPLOSIVE_RPG_FBX_BASE64;
+      if (!assets?.model) return;
+      try {
+        const loader = new FBXLoader();
+        const model = loader.parse(decodeBase64ArrayBuffer(assets.model), '');
         const initialBounds = new THREE.Box3().setFromObject(model);
         const modelHeight = Math.max(0.001, initialBounds.max.y - initialBounds.min.y);
         const modelScale = METRICS.playerHeight / modelHeight;
         model.scale.setScalar(modelScale);
-        model.rotation.y = Math.PI;
+        model.rotation.y = 0;
 
         const scaledBounds = new THREE.Box3().setFromObject(model);
         const scaledCenter = scaledBounds.getCenter(new THREE.Vector3());
         model.position.set(-scaledCenter.x, -scaledBounds.min.y, -scaledCenter.z);
+        player.animatedModelBindPosition.copy(model.position);
         model.traverse((object) => {
           if (!object.isMesh) return;
+          if (/AK47|USP|Chaingun|MissileLauncher/i.test(object.name)) {
+            object.visible = false;
+            return;
+          }
           object.castShadow = true;
           object.receiveShadow = true;
-          object.material = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.72, metalness: 0.04 });
+          object.material = new THREE.MeshStandardMaterial({ color: 0xd6a62e, roughness: 0.76, metalness: 0.02 });
         });
 
         player.animatedModel = model;
         player.mesh.add(model);
         player.fallbackVisuals.forEach(object => object.visible = false);
 
-        const rightHand = model.getObjectByName('RightHand');
+        const rightHand = model.getObjectByName('B_R_Hand');
         if (rightHand) {
           const inverseModelScale = 1 / modelScale;
           const staff = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.045 * inverseModelScale, 0.055 * inverseModelScale, 2.5 * inverseModelScale, 10),
-            new THREE.MeshStandardMaterial({ color: 0xb8874b, roughness: 0.8 })
+            new THREE.CylinderGeometry(0.038 * inverseModelScale, 0.045 * inverseModelScale, 2.8 * inverseModelScale, 10),
+            new THREE.MeshStandardMaterial({ color: 0xb8874b, roughness: 0.82 })
           );
           staff.name = 'BambooStaff';
-          staff.position.set(0, 1.05 * inverseModelScale, 0);
-          staff.rotation.set(0.12, 0, 0.08);
+          // Match the authored 2Hand-Sword socket. Its imported mesh center is
+          // offset from B_R_Hand and its long axis is tilted ~3.6 degrees from Y.
+          staff.position.set(
+            -0.0953 * inverseModelScale,
+            0.9114 * inverseModelScale,
+            0.1666 * inverseModelScale
+          );
+          staff.quaternion.setFromUnitVectors(
+            new THREE.Vector3(0, 1, 0),
+            new THREE.Vector3(0.049665, 0.998033, 0.038249).normalize()
+          );
           staff.castShadow = true;
           rightHand.add(staff);
           player.bambooStaffBone = staff;
+
+          // Track the striking half of the staff so attack VFX follows the
+          // animated weapon instead of being drawn at a fixed world position.
+          const trailTip = new THREE.Object3D();
+          trailTip.name = 'BambooStaffTrailTip';
+          trailTip.position.set(0, 1.4 * inverseModelScale, 0);
+          staff.add(trailTip);
+          player.staffTrailTip = trailTip;
+
+          const trailInner = new THREE.Object3D();
+          trailInner.name = 'BambooStaffTrailInner';
+          trailInner.position.set(0, 0.3 * inverseModelScale, 0);
+          staff.add(trailInner);
+          player.staffTrailInner = trailInner;
         }
 
         player.animationMixer = new THREE.AnimationMixer(model);
-        gltf.animations.forEach((clip) => {
-          const shortName = clip.name.split('|').pop();
-          player.animationActions[shortName] = player.animationMixer.clipAction(clip);
+        Object.entries(assets).forEach(([name, encodedFbx]) => {
+          if (name === 'model') return;
+          const animationSource = loader.parse(decodeBase64ArrayBuffer(encodedFbx), '');
+          const sourceClip = animationSource.animations[0];
+          if (!sourceClip) return;
+          const clip = extractExplosiveClipRange(name, sourceClip);
+          makeAnimationClipInPlace(clip, model);
+          player.animationActions[name] = player.animationMixer.clipAction(clip);
         });
-        playPlayerAnimation('Idle');
+        playPlayerAnimation('idle');
         updatePlayerWeaponVisual();
-      }, (error) => console.warn('Animated Stickman fallback active:', error));
+      } catch (error) {
+        console.warn('ExplosiveLLC RPG character fallback active:', error);
+      }
     }
 
-    function playPlayerAnimation(name, once = false) {
+    function extractExplosiveClipRange(name, sourceClip) {
+      // Unity imports these Takes using frame ranges stored in each FBX.meta.
+      // Three.js does not read Unity metadata, so reproduce those ranges here.
+      const ranges = {
+        // Half-frame boundaries avoid floating-point samples on 30 fps edges.
+        jump: [0, 18.5],     // Unity firstFrame 0, lastFrame 18 (inclusive)
+        land: [20.5, 34.5]   // Unity firstFrame 21, lastFrame 34 (inclusive)
+      };
+      const range = ranges[name];
+      if (!range) {
+        sourceClip.name = name;
+        return sourceClip;
+      }
+      return THREE.AnimationUtils.subclip(sourceClip, name, range[0], range[1], 30);
+    }
+
+    function makeAnimationClipInPlace(clip, model) {
+      const pelvis = model.getObjectByName('B_Pelvis');
+      clip.tracks.forEach((track) => {
+        if (!track.name.endsWith('.position') || track.values.length < 6) return;
+        const targetName = track.name.slice(0, -'.position'.length).split(/[|/:]/).pop();
+        const target = model.getObjectByName(targetName);
+        let isSkeletonRoot = /^(B_Pelvis|B_Root|Root|Armature|Hips)$/i.test(targetName);
+        if (target && pelvis) {
+          let ancestor = pelvis;
+          while (ancestor) {
+            if (ancestor === target) {
+              isSkeletonRoot = true;
+              break;
+            }
+            if (ancestor === model) break;
+            ancestor = ancestor.parent;
+          }
+        }
+        if (!isSkeletonRoot) return;
+
+        const values = track.values;
+        const sampleCount = values.length / 3;
+        const bindX = target?.position.x ?? values[0];
+        const bindZ = target?.position.z ?? values[2];
+
+        // Root translation from these FBX clips must never move the rendered
+        // character away from its gameplay capsule. Own X/Z exclusively through
+        // player.pos/player.vel while keeping authored skeletal Y motion.
+        for (let sample = 0; sample < sampleCount; sample++) {
+          const offset = sample * 3;
+          values[offset] = bindX;
+          values[offset + 2] = bindZ;
+        }
+      });
+    }
+
+    function playPlayerAnimation(name, once = false, timeScale = 1, targetDuration = null) {
       const next = player.animationActions[name];
-      if (!next || (player.currentAnimation === name && !once)) return;
+      if (!next) return;
+      if (player.currentAnimation === name && !once) {
+        next.setEffectiveTimeScale(timeScale);
+        return;
+      }
       const previous = player.animationActions[player.currentAnimation];
-      if (previous) previous.fadeOut(0.1);
-      const playbackRate = once ? next.getClip().duration / Math.max(0.1, player.attackDuration) : 1;
-      next.reset().setEffectiveTimeScale(playbackRate).setEffectiveWeight(1).fadeIn(0.1);
+      const previousName = player.currentAnimation || '';
+      const transitionDuration = previousName === 'jump' && name === 'fall'
+        ? 0.08
+        : name === 'land' ? 0.1 : 0.16;
+      const preserveLocomotionPhase = /^(strafe|run)_/.test(previousName) && /^(strafe|run)_/.test(name);
+      const previousClipDuration = previous?.getClip().duration || 1;
+      const locomotionPhase = preserveLocomotionPhase
+        ? (previous.time % previousClipDuration) / previousClipDuration
+        : 0;
+      if (previous) previous.fadeOut(transitionDuration);
+      const playbackRate = once
+        ? next.getClip().duration / Math.max(0.1, targetDuration ?? player.attackDuration)
+        : timeScale;
+      next.reset();
+      if (preserveLocomotionPhase) next.time = locomotionPhase * next.getClip().duration;
+      next.setEffectiveTimeScale(playbackRate).setEffectiveWeight(1).fadeIn(transitionDuration);
       next.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, once ? 1 : Infinity);
       next.clampWhenFinished = once;
       next.play();
@@ -1229,8 +1632,15 @@
 
       const w = WEAPONS[STATE.activeWeapon];
       const finisher = isFinisher || STATE.comboPips >= 3;
-      if (!finisher) playPlayerAnimation('Punch', true);
-      player.attackDuration = finisher ? 0.52 : THREE.MathUtils.clamp(0.34 / w.speed, 0.18, 0.48);
+      player.attackDuration = finisher ? 0.52 : 0.55;
+      if (!finisher) {
+        const comboAnimations = ['attack6', 'attack8', 'attack9'];
+        const comboAnimation = comboAnimations[STATE.comboPips % comboAnimations.length];
+        const clipDuration = player.animationActions[comboAnimation]?.getClip().duration ?? 0.7;
+        player.attackDuration = THREE.MathUtils.clamp(clipDuration / (1.2 * w.speed), 0.48, 0.95);
+        playPlayerAnimation(comboAnimation, true, 1, player.attackDuration);
+        beginAttackVfx(w.color, false);
+      }
       player.attackSide *= -1;
       let damage = w.damage;
       let range = w.range;
@@ -1256,8 +1666,6 @@
         Audio.swing();
       }
 
-      if (!finisher) spawnAttackSlash(w.color, false);
-
       updatePipsUI();
 
       if (!finisher) resolvePlayerAttackHits(player.pos, player.lungeDirection.set(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), player.facingYaw), range, w.arc, damage, w.element);
@@ -1268,8 +1676,10 @@
       if (!impact) return;
       player.attackPhase = 'active';
       player.attackTimer = 0;
-      playPlayerAnimation('Punch', true);
-      spawnAttackSlash(impact.color, true);
+      const finisherClipDuration = player.animationActions.attack11?.getClip().duration ?? 0.9;
+      player.attackDuration = THREE.MathUtils.clamp(finisherClipDuration / 1.15, 0.62, 1.1);
+      playPlayerAnimation('attack11', true, 1, player.attackDuration);
+      beginAttackVfx(impact.color, true);
       spawnShockwave(player.pos, impact.range, impact.color);
       resolvePlayerAttackHits(player.pos, player.lungeDirection, impact.range, impact.arc, impact.damage, impact.element);
       player.pendingFinisherImpact = null;
@@ -1534,6 +1944,104 @@
       particles.push(slash);
     }
 
+    function beginAttackVfx(color, heavy) {
+      if (STATE.activeWeapon !== 'bamboo' || !player.staffTrailTip || !player.staffTrailInner) {
+        stopWeaponTrail();
+        spawnAttackSlash(color, heavy);
+        return;
+      }
+      player.weaponTrailActive = true;
+      player.weaponTrailHeavy = heavy;
+      player.weaponTrailColor = color;
+      player.weaponTrailHasSample = false;
+      player.weaponTrailStopPending = false;
+    }
+
+    function stopWeaponTrail() {
+      player.weaponTrailActive = false;
+      player.weaponTrailHasSample = false;
+      player.weaponTrailStopPending = false;
+    }
+
+    function updateWeaponTrail() {
+      if (!player.weaponTrailActive || !player.staffTrailTip || !player.staffTrailInner) return;
+
+      const currentTip = player.weaponTrailCurrentTip;
+      const currentInner = player.weaponTrailCurrentInner;
+      player.staffTrailTip.getWorldPosition(currentTip);
+      player.staffTrailInner.getWorldPosition(currentInner);
+
+      if (!player.weaponTrailHasSample) {
+        player.weaponTrailPreviousTip.copy(currentTip);
+        player.weaponTrailPreviousInner.copy(currentInner);
+        player.weaponTrailHasSample = true;
+        return;
+      }
+
+      // Ignore near-identical samples so idle bone jitter does not create blobs.
+      if (currentTip.distanceToSquared(player.weaponTrailPreviousTip) < 0.0009) return;
+
+      const positions = new Float32Array([
+        player.weaponTrailPreviousInner.x, player.weaponTrailPreviousInner.y, player.weaponTrailPreviousInner.z,
+        player.weaponTrailPreviousTip.x, player.weaponTrailPreviousTip.y, player.weaponTrailPreviousTip.z,
+        currentInner.x, currentInner.y, currentInner.z,
+        player.weaponTrailPreviousTip.x, player.weaponTrailPreviousTip.y, player.weaponTrailPreviousTip.z,
+        currentTip.x, currentTip.y, currentTip.z,
+        currentInner.x, currentInner.y, currentInner.z
+      ]);
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.computeVertexNormals();
+
+      const baseOpacity = player.weaponTrailHeavy ? 0.86 : 0.66;
+      const trail = new THREE.Mesh(
+        geometry,
+        new THREE.MeshBasicMaterial({
+          color: player.weaponTrailColor,
+          transparent: true,
+          opacity: baseOpacity,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending
+        })
+      );
+      trail.userData.life = player.weaponTrailHeavy ? 0.3 : 0.2;
+      trail.userData.maxLife = trail.userData.life;
+      trail.userData.baseOpacity = baseOpacity;
+      trail.userData.weaponTrail = true;
+      scene.add(trail);
+      particles.push(trail);
+
+      player.weaponTrailPreviousTip.copy(currentTip);
+      player.weaponTrailPreviousInner.copy(currentInner);
+    }
+
+    function selectAttackPreview(step) {
+      player.attackPreviewIndex = ((player.attackPreviewIndex - 1 + step + 11) % 11) + 1;
+      ui.attackLabName.textContent = `ATTACK ${player.attackPreviewIndex} / 11`;
+      addNotice(`🎬 ĐÃ CHỌN ATTACK ${player.attackPreviewIndex} · NHẤN P ĐỂ XEM`);
+    }
+
+    function playAttackPreview() {
+      if (!STATE.started || player.isAttacking || player.lungeActive) return;
+      const animationName = `attack${player.attackPreviewIndex}`;
+      const action = player.animationActions[animationName];
+      if (!action) {
+        addNotice(`⚠️ KHÔNG NẠP ĐƯỢC ATTACK ${player.attackPreviewIndex}`);
+        return;
+      }
+
+      player.isAttacking = true;
+      player.attackPhase = 'active';
+      player.attackTimer = 0;
+      player.attackDuration = action.getClip().duration;
+      player.attackSide *= -1;
+      playPlayerAnimation(animationName, true, 1, player.attackDuration);
+      beginAttackVfx(WEAPONS[STATE.activeWeapon].color, player.attackPreviewIndex >= 10);
+      Audio.swing();
+      addNotice(`▶ ĐANG XEM ATTACK ${player.attackPreviewIndex}`);
+    }
+
     // --- INPUT EVENT LISTENERS ---
     function requestGameplayPointerLock() {
       renderer.domElement.style.cursor = 'none';
@@ -1557,8 +2065,11 @@
       if (e.code === 'Digit2') switchWeapon('greatsword');
       if (e.code === 'Digit3') switchWeapon('scythe');
       if (e.code === 'Digit4') switchWeapon('daggers');
+      if (e.code === 'KeyB' && !e.repeat) selectAttackPreview(-1);
+      if (e.code === 'KeyN' && !e.repeat) selectAttackPreview(1);
+      if (e.code === 'KeyP' && !e.repeat) playAttackPreview();
 
-      if (e.code === 'Space') {
+      if (e.code === 'Space' && !e.repeat) {
         player.isHoldingJump = true;
         player.jumpBufferTimer = METRICS.jumpBufferTime;
       }
@@ -1616,10 +2127,36 @@
     // --- GAME LOOP & PHYSICS UPDATE ---
     let lastTime = performance.now();
 
+    function updateWorldVistas(dt, elapsedSeconds) {
+      const monument = scene.userData.hubMonument;
+      if (!monument) return;
+      monument.core.position.y = 20 + Math.sin(elapsedSeconds * 1.6) * 1.4;
+      monument.core.rotation.y += dt * 0.75;
+      monument.core.rotation.x += dt * 0.28;
+      monument.coreLight.position.y = monument.core.position.y;
+      monument.coreLight.intensity = 2.0 + Math.sin(elapsedSeconds * 2.4) * 0.35;
+      monument.halos.forEach((halo, index) => {
+        halo.position.y = monument.core.position.y;
+        halo.rotation.y += dt * (0.18 + index * 0.13) * (index % 2 === 0 ? 1 : -1);
+        halo.rotation.z += dt * (0.08 + index * 0.05);
+      });
+      monument.orbiters.forEach((orbiter, index) => {
+        const orbitAngle = elapsedSeconds * (0.42 + (index % 3) * 0.11) + index * Math.PI * 2 / monument.orbiters.length;
+        const orbitRadius = 23 + (index % 4) * 3.5;
+        orbiter.position.set(
+          Math.sin(orbitAngle) * orbitRadius,
+          13 + (index % 3) * 5 + Math.sin(orbitAngle * 2) * 2,
+          Math.cos(orbitAngle) * orbitRadius
+        );
+        orbiter.rotation.y += dt * 1.4;
+      });
+    }
+
     function gameLoop(now) {
       requestAnimationFrame(gameLoop);
       const dt = Math.min((now - lastTime) / 1000, 0.08);
       lastTime = now;
+      updateWorldVistas(dt, now / 1000);
 
       if (!STATE.started) {
         // Continuous live camera rotation behind intro modal
@@ -1654,10 +2191,13 @@
       // 2. PLAYER MOVEMENT & JUMP SYSTEM
       if (!STATE.elevating) {
         const moveDir = new THREE.Vector3(0, 0, 0);
-        if (keys['KeyW'] || keys['ArrowUp']) moveDir.z += 1;
-        if (keys['KeyS'] || keys['ArrowDown']) moveDir.z -= 1;
-        if (keys['KeyA'] || keys['ArrowLeft']) moveDir.x += 1;
-        if (keys['KeyD'] || keys['ArrowRight']) moveDir.x -= 1;
+        const inputForward = (keys['KeyW'] || keys['ArrowUp']) ? 1 : 0;
+        const inputBackward = (keys['KeyS'] || keys['ArrowDown']) ? 1 : 0;
+        const inputLeft = (keys['KeyA'] || keys['ArrowLeft']) ? 1 : 0;
+        const inputRight = (keys['KeyD'] || keys['ArrowRight']) ? 1 : 0;
+        player.moveInputX = inputRight - inputLeft;
+        player.moveInputZ = inputForward - inputBackward;
+        moveDir.set(-player.moveInputX, 0, player.moveInputZ);
 
         if (moveDir.lengthSq() > 0) {
           moveDir.normalize();
@@ -1670,6 +2210,12 @@
         
         player.vel.x = moveDir.x * currentSpeed;
         player.vel.z = moveDir.z * currentSpeed;
+        const horizontalVelocity = Math.hypot(player.vel.x, player.vel.z);
+        if (horizontalVelocity > currentSpeed && horizontalVelocity > 0) {
+          const speedLimitScale = currentSpeed / horizontalVelocity;
+          player.vel.x *= speedLimitScale;
+          player.vel.z *= speedLimitScale;
+        }
 
         // Ground detection (Ground plane Y = 0 or Stone Pillars or Sky Isle Y = 250)
         let groundHeight = 0;
@@ -1691,10 +2237,23 @@
           player.pos.y = groundHeight;
           player.vel.y = 0;
           player.coyoteTimer = METRICS.coyoteTime;
-          if (!wasGrounded) Audio.land();
+          if (!wasGrounded) {
+            Audio.land();
+            const landClipDuration = player.animationActions.land?.getClip().duration ?? 0.35;
+            player.landingTimer = THREE.MathUtils.clamp(landClipDuration, 0.3, 0.55);
+            player.jumpAnimationPhase = 'landing';
+            playPlayerAnimation('land', true, 1, player.landingTimer);
+          }
         } else {
           player.coyoteTimer -= dt;
-          player.vel.y += METRICS.gravity * dt;
+          // Match ExplosiveLLC's controller: releasing jump early caps the
+          // ascent, then falling uses stronger gravity than rising.
+          const jumpReleaseSpeed = METRICS.jumpVelocity * 0.25;
+          if (!player.isHoldingJump && player.vel.y > jumpReleaseSpeed) {
+            player.vel.y = Math.max(jumpReleaseSpeed, player.vel.y - METRICS.fallGravity * dt);
+          }
+          const verticalGravity = player.vel.y > 0 ? METRICS.jumpGravity : METRICS.fallGravity;
+          player.vel.y -= verticalGravity * dt;
         }
 
         // Jump Trigger
@@ -1705,6 +2264,9 @@
           player.coyoteTimer = 0;
           player.jumpBufferTimer = 0;
           Audio.jump();
+          player.jumpAnimationPhase = 'rising';
+          const jumpClipDuration = player.animationActions.jump?.getClip().duration ?? 0.5;
+          playPlayerAnimation('jump', true, 1, jumpClipDuration);
         }
 
         // Apply position delta
@@ -1741,6 +2303,7 @@
         if (attackProgress >= 1) {
           player.isAttacking = false;
           player.attackPhase = 'none';
+          player.weaponTrailStopPending = true;
         }
       } else {
         const attackReturn = 1 - Math.exp(-dt * 24);
@@ -1753,16 +2316,59 @@
       }
 
       if (player.animationMixer) {
+        player.landingTimer = Math.max(0, player.landingTimer - dt);
         if (!player.isAttacking) {
           const horizontalSpeed = Math.hypot(player.vel.x, player.vel.z);
-          playPlayerAnimation(horizontalSpeed > 0.5 ? 'Run' : 'Idle');
+          if (!player.isGrounded) {
+            if (player.vel.y < 0 && player.jumpAnimationPhase !== 'falling') {
+              player.jumpAnimationPhase = 'falling';
+              playPlayerAnimation('fall');
+            }
+          } else if (player.landingTimer > 0) {
+            // Let the one-shot landing recovery finish before locomotion resumes.
+          } else if (horizontalSpeed > 0.5) {
+            player.jumpAnimationPhase = 'grounded';
+            const isSprinting = keys['ShiftLeft'] || keys['ShiftRight'];
+            const family = isSprinting ? 'run' : 'strafe';
+            const horizontal = player.moveInputX < 0 ? 'left' : player.moveInputX > 0 ? 'right' : '';
+            const vertical = player.moveInputZ < 0 ? 'backward' : player.moveInputZ > 0 ? 'forward' : '';
+            const direction = vertical && horizontal ? `${vertical}_${horizontal}` : vertical || horizontal;
+            // All ExplosiveLLC locomotion clips are 0.8-second cycles. Drive
+            // their cadence from actual planar velocity instead of normalizing
+            // by max speed (which always produced ~1x and visible foot sliding).
+            const cadenceSpeed = isSprinting ? METRICS.runCadenceSpeed : METRICS.strafeCadenceSpeed;
+            const targetRate = THREE.MathUtils.clamp(horizontalSpeed / cadenceSpeed, 0.75, 2.2);
+            player.locomotionRate = THREE.MathUtils.lerp(
+              player.locomotionRate,
+              targetRate,
+              1 - Math.exp(-dt * 10)
+            );
+            playPlayerAnimation(`${family}_${direction}`, false, player.locomotionRate);
+          } else {
+            player.jumpAnimationPhase = 'grounded';
+            player.locomotionRate = 1;
+            playPlayerAnimation('idle');
+          }
         }
         player.animationMixer.update(dt);
+        // Defensive root lock: some FBX clips animate their scene root in
+        // addition to the pelvis track. The gameplay parent owns all world
+        // translation, so the imported visual root must remain at bind pose.
+        player.animatedModel.position.copy(player.animatedModelBindPosition);
       }
 
       player.facingYaw = camYaw;
       player.mesh.position.copy(player.pos);
-      player.mesh.rotation.y = player.facingYaw;
+      const targetVisualYaw = player.facingYaw;
+      const visualYawDelta = Math.atan2(
+        Math.sin(targetVisualYaw - player.visualYaw),
+        Math.cos(targetVisualYaw - player.visualYaw)
+      );
+      const visualTurnRate = player.isAttacking ? 18 : 12;
+      player.visualYaw += visualYawDelta * (1 - Math.exp(-dt * visualTurnRate));
+      player.mesh.rotation.y = player.visualYaw;
+      updateWeaponTrail();
+      if (player.weaponTrailStopPending) stopWeaponTrail();
 
       // 3. CAMERA FOLLOW (10x Perspective)
       const camOffset = new THREE.Vector3(0, METRICS.camHeight, -METRICS.camDist);
@@ -1865,7 +2471,7 @@
         }
         p.userData.life -= dt;
         if (p.userData.maxLife) {
-          p.material.opacity = (p.userData.life / p.userData.maxLife);
+          p.material.opacity = (p.userData.baseOpacity ?? 1) * Math.max(0, p.userData.life / p.userData.maxLife);
         }
         if (p.userData.slash) {
           p.rotation.z += p.userData.spin * dt;
@@ -1873,6 +2479,10 @@
         }
         if (p.userData.life <= 0) {
           scene.remove(p);
+          if (p.userData.weaponTrail) {
+            p.geometry.dispose();
+            p.material.dispose();
+          }
           particles.splice(idx, 1);
         }
       });

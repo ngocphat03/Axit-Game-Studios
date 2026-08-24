@@ -3,11 +3,34 @@
 - **Mã tài liệu**: `GDD-COMBAT-001`
 - **Hệ thống**: Combat System (Chiến đấu 3D Tươi Sáng, Chuyển đổi Song Vũ khí, Camera Nightfall 3D, Hướng Mặt Khóa Theo Camera & Đấu trường 4 Đợt)
 - **Tác giả**: Game Designer (Axit Framework)
-- **Trạng thái**: Approved Master Specification
-- **Phiên bản**: 2.1.0
-- **Ngày cập nhật**: 2026-08-19
+- **Trạng thái**: Approved Design + Reverse-documented Prototype Snapshot
+- **Phiên bản**: 2.2.0
+- **Ngày cập nhật**: 2026-08-25
 - **Định dạng Không gian**: **100% Pure 3D (Không gian 3 chiều thực thể, Nhân vật 3D Model, Camera 3D TPV, Tuyệt đối KHÔNG phải 2D)**
 - **Nền tảng Mục tiêu**: **PC (Bàn phím & Chuột / Keyboard & Mouse)**
+
+---
+
+## 0. Trạng thái prototype hiện tại (2026-08-25)
+
+> Phần này được đối chiếu trực tiếp từ `prototypes/tri-tower-rgb-chronicle/prototype.html`. Các mục bên dưới mô tả **build đang chơi được**; những phần còn lại của GDD là định hướng thiết kế và có thể chưa được triển khai đầy đủ.
+
+### Đã triển khai và kiểm chứng trong prototype
+
+- Điều khiển `WASD` theo camera, chuẩn hóa vector chéo; tốc độ đi/chạy nhanh lần lượt `18 m/s` và `32 m/s` (`Shift`).
+- Pointer Lock khi click vào cửa sổ; chuột xoay tự do trái/phải và gần `±90°` theo trục dọc. Camera tự kéo gần/trượt lên khi gặp tường hoặc nền.
+- Model và locomotion từ **ExplosiveLLC RPG Character Mecanim Animation Pack FREE**: Strafe 8 hướng khi đi, Run 8 hướng khi chạy nhanh. Tốc độ phát animation bám vận tốc thực tế để giảm trượt chân.
+- Root motion X/Z bị loại khỏi locomotion; model root được khóa tại bind pose để animation không kéo lệch tâm gameplay.
+- Gậy tre gắn vào xương `B_R_Hand`, căn theo socket vũ khí hai tay của model. Vệt VFX lấy trực tiếp vị trí hai điểm trên gậy trong suốt animation thay vì nằm cố định trong thế giới.
+- Combo thử nghiệm: `Attack6 → Attack8 → Attack9`; Finisher lướt mượt `14 m`, bắt đầu `Attack11` và gây hit khi đạt `90%` quãng đường (xấp xỉ còn `1 m`). Bán kính Finisher hiện là `12 m`.
+- Có Attack Lab tạm thời: `B`/`N` chọn `Attack1–11`, `P` xem trước animation mà không gây sát thương hay thay đổi combo.
+
+### Đang thử nghiệm, chưa phải quyết định thiết kế cuối
+
+- Bộ animation đánh hiện tại vốn dành cho vũ khí hai tay; độ hợp với gậy tre và vị trí tay trái chưa đạt chất lượng mong muốn. Combo `6 → 8 → 9 → 11` chỉ là mốc tạm để playtest.
+- Gậy chưa có IK tay trái chuyên biệt. Cần chọn lại animation/moveset trước khi khóa socket và thời điểm hit cuối cùng.
+- Quaternius Universal Animation Library 2 vẫn được lưu làm nguồn tham khảo/khả năng dự phòng, nhưng **không còn là nguồn animation runtime chính**.
+- Soft-lock, đầy đủ roster RGB, boss/wave progression và các luật production bên dưới vẫn là mục tiêu thiết kế; không nên suy ra rằng tất cả đã hoàn thiện chỉ từ prototype hiện tại.
 
 ---
 
@@ -55,7 +78,7 @@ Hệ thống Chiến đấu (Combat System) là vòng lặp hành vi trọng tâ
 | **Di chuyển Strafe (3D Movement)** | `W - A - S - D` | 4 Phím Mũi tên (`↑ ↓ ← →`) | Di chuyển 360 độ khóa mặt theo hướng Camera |
 | **Đánh Thường (Light Attack `L`)** | **Chuột Trái (`LMB`)** | Phím `J` | Spam liên tục, ngắt chiêu quái ở `Windup` |
 | **Đánh Mạnh / Finisher (`H`)** | **Chuột Phải (`RMB`)** | Phím `K` | Lướt tới phá chiêu tuyệt đối (`Hyper Interrupt`) |
-| **Lướt Né đòn (3D Dash)** | **Phím Cách (`Spacebar`)** | Phím `Shift Trái` | Lướt không tốn thể lực, có `0.15s` bất tử |
+| **Nhảy 3D (3D Jump & Evasion)** | **Phím Cách (`Spacebar`)** | — | Nhảy biến thiên độ cao ($1.5\text{m}$), né đòn sát đất/shockwave, coyote time |
 | **Đổi Vũ khí (Switch Strike)** | **Phím `Q` / `Tab`** | Cuộn chuột (`Scroll`) / Phím `E` | Kích hoạt đòn đánh chuyển đổi trong Cancel Window |
 | **Xoay Camera & Hướng Nhìn Nhân Vật** | **Di chuyển Chuột (Mouse Move)** | — | **Xoay camera đồng thời xoay mặt nhân vật nhìn theo** |
 
@@ -85,13 +108,18 @@ Hệ thống Chiến đấu (Combat System) là vòng lặp hành vi trọng tâ
 
 ---
 
-### 3.2. Hệ thống Né đòn Vô tận & Hủy Động tác (Stamina-less 3D Dash & I-Frames)
-- **Không tốn Thể lực (Stamina-free)**: Người chơi có thể tự do Dash 3D liên tục theo hướng di chuyển phím bấm ($X, Z$) bằng phím `Spacebar`.
-- **Thông số Dash 3D**:
-  - **Thời gian lướt**: `0.3s`.
-  - **Cooldown đệm giữa 2 lần Dash**: `0.1s` (ngăn xung đột animation 3D).
-  - **Khung bất tử (I-frames)**: `0.15s` đầu tiên kể từ lúc bắt đầu Dash, nhân vật miễn nhiễm hoàn toàn với mọi sát thương và khống chế.
-- **Dash Recovery Cancel**: Cú Dash có thể hủy tức thì giai đoạn `Recovery` của mọi đòn đánh thường, đòn gồng (Hold) hay Switch Strike.
+### 3.2. Hệ thống Nhảy 3D & Né Đòn Không Gian (3D Jump & Spatial Evasion)
+- **Cơ chế Nhảy 3D (`Spacebar`)**: Nhấn `Spacebar` để thực hiện cú nhảy 3D đưa nhân vật lên không trung. Chi tiết thông số tuân thủ theo [jump-system.md](jump-system.md).
+- **Độ cao biến thiên (Variable Jump Height)**:
+  - Nhấp nhả phím: Cú nhảy thấp nhanh để vượt vật cản nhỏ ($H \approx 0.8\text{m}$).
+  - Giữ phím (`0.18s`): Đạt độ cao cực đại chuẩn $H = 1.5\text{m}$ (thời gian lên đỉnh $t = 0.38\text{s}$).
+- **Hỗ trợ Input (Coyote Time & Buffer)**:
+  - `CoyoteTime = 0.12s`: Vẫn cho phép nhảy sau khi vừa rời khỏi rìa mép đất/cầu.
+  - `JumpBufferTime = 0.12s`: Nhận trước lệnh nhảy trước khi tiếp đất để tiếp tục nhảy mượt mà.
+  - `AirControlRate = 70%`: Giữ $70\%$ khả năng bẻ hướng di chuyển trên không bằng `WASD`.
+- **Né đòn Không gian (Spatial Evasion — Zero I-Frames)**:
+  - Nhảy không có khung bất tử ảo (I-frames); việc né đòn hoàn toàn dựa vào tương quan va chạm thực tế trong không gian 3D (`Hurtbox` nhân vật rời khỏi `Hitbox` đòn đánh sát đất hoặc sóng chấn động shockwave).
+- **Jump Recovery Cancel**: Nhảy có thể hủy tức thì giai đoạn `Recovery` của các đòn đánh thường và Switch Strike để giữ nhịp độ chiến đấu liên tục.
 
 ---
 
@@ -286,12 +314,12 @@ $$\text{PoiseDamage} = \text{BasePoiseDamage} \times \text{PoiseMotionValue} \ti
 
 | Mã ngoại lệ | Tình huống phát sinh | Cách xử lý hệ thống (3D Design Resolution) |
 | :--- | :--- | :--- |
-| `EC-01` | Người chơi nhấn Spacebar Dash trong khi đang bị Choáng hoặc hất tung trên không ($Y > 0$). | **Khóa Dash**: Trạng thái khống chế cứng vô hiệu hóa Input di chuyển. |
-| `EC-02` | Người chơi bấm Spacebar Dash liên tục (Spamming Dash 3D). | **Hàng đợi mượt mà (Input Buffer)**: Nhận lệnh Dash tiếp theo và thực hiện ngay sau khi kết thúc khoảng đệm `0.1s`. |
+| `EC-01` | Người chơi nhấn Spacebar Jump trong khi đang bị Choáng hoặc hất tung trên không ($Y > 0$). | **Khóa Jump**: Trạng thái khống chế cứng vô hiệu hóa Input Nhảy. |
+| `EC-02` | Người chơi bấm Spacebar Jump liên tục trong không trung. | **Input Buffer**: Nhận tối đa 1 lệnh nhảy đệm trong `0.12s` trước khi tiếp đất; không tạo nhảy đôi (Double Jump). |
 | `EC-03` | Người chơi bấm `LMB`/`RMB` khi không có quái trong tầm 3D Soft-Lock. | **Đánh theo hướng Camera / Tâm ngắm**: Nhân vật tấn công thẳng theo vector hướng nhìn Camera trên mặt phẳng $(X, Z)$. |
 | `EC-04` | Quái thường đang ở phase `Active` bị đánh trúng bởi đòn `Heavy Finisher (RMB)`. | **Hyper Interrupt Ưu tiên**: Đòn `RMB` phá vỡ tức thì phase `Active` của quái thường, hủy sát thương mà quái chuẩn bị gây ra. |
-| `EC-05` | Quái thường đang ở phase `Active` bị đánh trúng bởi đòn `Light Attack (LMB)`. | **Không ngắt đòn**: Quái tiếp tục hoàn thành cú chém gây sát thương; nhân vật nhận sát thương trừ khi kích hoạt I-frame của Dash. |
-| `EC-06` | Boss $5.0\text{m}$ đang vung đòn cố định thì người chơi Dash 3D ra sau lưng Boss. | **Duy trì Khóa Hướng**: Boss tiếp tục đánh vào vùng báo nguy hiểm cũ trước mặt; Collider 3D chỉ gây sát thương phía trước, không gây sát thương sau lưng. |
+| `EC-05` | Quái thường đang ở phase `Active` bị đánh trúng bởi đòn `Light Attack (LMB)`. | **Không ngắt đòn**: Quái tiếp tục hoàn thành cú chém gây sát thương; nhân vật nhận sát thương trừ khi di chuyển né ra ngoài tầm hoặc nhảy lên không trung. |
+| `EC-06` | Boss $5.0\text{m}$ đang vung đòn cố định thì người chơi Nhảy hoặc Strafe ra sau lưng Boss. | **Duy trì Khóa Hướng**: Boss tiếp tục đánh vào vùng báo nguy hiểm cũ trước mặt; Collider 3D chỉ gây sát thương phía trước, không gây sát thương sau lưng. |
 | `EC-07` | Camera 3D chạm sát vào Cột Đá Đấu Trường. | **Spherecast Collision 3D**: Camera tự động trượt dọc theo mặt phẳng góc cột và kích hoạt Dither Fade cho bề mặt cột đá 3D. |
 | `EC-08` | Lỗi mạng / Không tải được quảng cáo khi mở Bệ thờ Thần Khí. | **Fallback Graceful**: Tự động cấp phiên bản vũ khí Thần Khí miễn phí hoặc bùa lợi tạm thời để không làm gián đoạn trải nghiệm. |
 | `EC-09` | Người chơi mở Modal giao diện trong khi chuột đang bị khóa. | **Auto Pointer Unlock**: Ngay lập tức thoát trạng thái Pointer Lock, hiện con trỏ chuột hệ thống để tương tác UI. |
@@ -302,16 +330,16 @@ $$\text{PoiseDamage} = \text{BasePoiseDamage} \times \text{PoiseMotionValue} \ti
 
 | Hệ thống phụ thuộc | Chiều tương tác | Dữ liệu & Sự kiện trao đổi |
 | :--- | :--- | :--- |
-| **PC Input & PointerLock Manager** | 2 chiều | Xử lý `WASD` Strafe theo Camera, `LMB`, `RMB`, `Spacebar`, `Q`, đồng bộ góc xoay nhân vật theo Camera. |
+| **PC Input & PointerLock Manager** | 2 chiều | Xử lý `WASD` Strafe theo Camera, `LMB`, `RMB`, `Spacebar` (Jump), `Q`, đồng bộ góc xoay nhân vật theo Camera. |
 | **Cinemachine 3D Camera Manager** | 2 chiều | Quản lý FOV Lerp, Screen Offsets 3D, Follow Target 3D, Damping, Camera Shake Impulse. |
 | **Combat HUD & Combo Pipeline UI** | 2 chiều | Hiển thị 10 Tim Máu, Tâm ngắm Crosshair, 4-Pip Combo Meter nhấp nháy, 8-Corner Reticle. |
-| **3D Animation Controller (Mecanim)** | 2 chiều | Quản lý 3D Animation Events (`CancelWindowOpen`, `IFrameStart`, `IFrameEnd`, `HitboxOpen`, `HyperInterruptTrigger`). |
+| **3D Animation Controller (Mecanim)** | 2 chiều | Quản lý 3D Animation Events (`CancelWindowOpen`, `JumpRising`, `Falling`, `Landed`, `HitboxOpen`, `HyperInterruptTrigger`). |
 | **3D VFX Particle Manager** | Gửi | Kích hoạt Tip Splash VFX cho `LMB`, Mega Shockwave Splash VFX cho `RMB` ($R=3.0\text{m}$), vệt chém Slash Trails. |
-| **3D Wave Spawner & Arena Manager** | 2 chiều | Quản lý tiến trình 4 Wave quái 3D, kích hoạt Bệ thờ Thần Khí 3D tại Wave 3, kích hoạt Ceasefire khi thua. |
+| **3D Wave Spawner & Arena Manager** | 2 chiều | Quản lý tiến trình các Wave quái 3D, kích hoạt Bệ thờ Thần Khí 3D tại Wave 3, kích hoạt Ceasefire khi thua. |
 | **Boss 3D Decal Projector & Telegraph** | Gửi | Kích hoạt Decal 3D vùng đỏ trên mặt đất ($0.8\text{s}$), khóa góc xoay (`LockRotationEvent`), kích hoạt Hitbox 3D. |
-| **3D Hitbox & Hurtbox System** | 2 chiều | Tính toán va chạm 3D (`Physics.OverlapSphere/Box`), kiểm tra I-frames và kích hoạt Ngắt chiêu quái thường. |
+| **3D Hitbox & Hurtbox System** | 2 chiều | Tính toán va chạm 3D (`Physics.OverlapSphere/Box`), kiểm tra né không gian khi Hurtbox trên không và ngắt chiêu quái thường. |
 | **Ad Mediation & Monetization** | 2 chiều | Gửi yêu cầu hiển thị Rewarded Ad, nhận callback `OnAdRewarded` để mở khóa Mythic Weapon 3D vào Slot 2. |
-| **Audio Manager (Web Audio / FMOD)** | Gửi | Phát Upbeat Anime Action BGM 130 BPM, Procedural SFX chém kiếm, dậm đất, nhặt tim. |
+| **Audio Manager (Web Audio / FMOD)** | Gửi | Phát Upbeat Anime Action BGM 130 BPM, Procedural SFX chém kiếm, nhảy, tiếp đất, dậm đất, nhặt tim. |
 
 ---
 
@@ -336,9 +364,11 @@ $$\text{PoiseDamage} = \text{BasePoiseDamage} \times \text{PoiseMotionValue} \ti
 | `Cam_Pitch_Angle` | Góc nghiêng 3D chúc xuống của Camera | `28.0°` | `20.0° - 35.0°` |
 | `Cam_Base_FOV` | FOV cơ bản ở trạng thái nghỉ / combat | `62.0°` | `55.0° - 65.0°` |
 | `Cam_Sprint_FOV` | FOV mở rộng khi chạy nhanh | `78.0°` | `70.0° - 85.0°` |
-| `Dash_Duration` | Thời gian lướt của một cú Dash 3D | `0.3s` | `0.2s - 0.45s` |
-| `Dash_IFrame_Duration` | Thời gian bất tử trong cú Dash | `0.15s` | `0.1s - 0.25s` |
-| `Dash_Cooldown_Buffer` | Khoảng thời gian đệm giữa 2 cú Dash | `0.1s` | `0.05s - 0.2s` |
+| `Jump_Height` | Độ cao nhảy tối đa khi giữ Spacebar | `1.5m` | `1.2m - 1.8m` |
+| `Time_To_Apex` | Thời gian đạt đỉnh cú nhảy | `0.38s` | `0.32s - 0.45s` |
+| `Coyote_Time` | Thời gian ân hạn nhảy sau khi rời mép vực | `0.12s` | `0.08s - 0.15s` |
+| `Jump_Buffer_Time` | Thời gian đệm lệnh nhảy trước khi tiếp đất | `0.12s` | `0.08s - 0.15s` |
+| `Air_Control_Rate` | Tỉ lệ kiểm soát hướng bay trên không | `70%` | `55% - 85%` |
 | `Mythic_Damage_Multiplier` | Hệ số sát thương của Vũ khí Thần Thoại | `2.5x` | `2.0x - 3.5x` |
 | `Mythic_Hitbox_Scale` | Tỉ lệ mở rộng vùng đánh 3D của Vũ khí Thần Thoại | `1.4x` | `1.2x - 1.8x` |
 | `Boss_Telegraph_Duration` | Thời gian hiển thị cảnh báo Decal đỏ của Boss | `0.8s` | `0.5s - 1.5s` |
@@ -357,13 +387,13 @@ $$\text{PoiseDamage} = \text{BasePoiseDamage} \times \text{PoiseMotionValue} \ti
 - [ ] **AC-04 (Attack Alignment & Center-Forward Slash)**: Đòn đánh vung ra chuẩn xác vào hướng Camera/Tâm ngắm; vệt chém $180^\circ$ và Tip Splash quét chính diện trước ngực nhân vật.
 - [ ] **AC-05 (4-Pip Combo Pipeline & Flashing Finisher)**: Đánh `LMB` tích sáng Pip 1 $\to$ 2 $\to$ 3; đạt 3 nhát Pip 4 nhấp nháy dồn dập `0.18s` báo hiệu `⚡ ĐÒN KẾ: FINISHER! (3/4)`.
 - [ ] **AC-06 (4th Finisher Air Execution)**: Nhát đánh thứ 4 lướt vọt $3.8\text{m}$ tung Mega Shockwave Splash $R = 3.0\text{m}$ dậm đất chấn động, phá đòn quái 100% — thi triển trọn vẹn ngay cả khi chém vào không khí.
-- [ ] **AC-07 (Continuous Flow & 3D Dash)**: Spacebar Dash liên tục không tốn thể lực; `0.15s` đầu né được mọi sát thương; hủy được động tác khựng Recovery.
+- [ ] **AC-07 (Continuous Flow & 3D Jump System)**: Spacebar kích hoạt Nhảy 3D với độ cao biến thiên $1.5\text{m}$, Air Control $70\%$, Coyote Time và Input Buffer $0.12\text{s}$; né đòn bằng cách đưa Hurtbox lên trên Hitbox sát đất; hủy được Recovery.
 - [ ] **AC-08 (Light Attack Soft Interrupt)**: Đòn đánh thường `LMB` đánh trúng quái thường khi quái đang ở phase `Windup` lập tức hủy hoạt ảnh tấn công của quái; đánh trúng khi quái đang ở phase `Active` không làm ngắt đòn đánh của quái.
 - [ ] **AC-09 (3D Soft-Lock & 8-Corner Reticle)**: Khi tấn công gần quái trong phạm vi $5\text{m}$, nhân vật tự động bám dính mục tiêu và hiển thị khung ngắm 8 góc ôm quanh thân quái.
 - [ ] **AC-10 (Execution Health Recovery)**: Tiêu diệt quái bằng đòn Finisher `RMB` hoặc `Switch Strike` rơi ra Ngọc Máu 3D tự động bay về người chơi hồi ngay $+1$ Tim Máu.
 - [ ] **AC-11 (Defeat Ceasefire)**: Khi hết 10 Tim Máu, toàn bộ quái và Trùm lập tức ngừng đánh, tắt tia laser ngắm bắn và dọn sạch mũi tên trên không.
-- [ ] **AC-12 (Skeleton Archer 3D Behavior)**: Skeleton Archer ($1.8\text{m}$) đứng từ xa giương cung ngắm bắn tia đỏ trong `1.2s` trước khi phóng tên vật lý 3D; người chơi có thể dùng Dash né tên hoặc áp sát ngắt đòn.
-- [ ] **AC-13 (Heavy Meat Shield 3D Behavior)**: Quái Hộ Vệ ($3.0\text{m}$) có kích thước mô hình 3D to lớn, máu dày, đóng vai trò cản đường che chắn cho Skeleton Archer phía sau.
+- [ ] **AC-12 (Skeleton Archer 3D Behavior & Jump Counters)**: Skeleton Archer ($1.8\text{m}$) đứng từ xa trên trụ đá cao $1.5\text{m}$ giương cung ngắm bắn tia đỏ trong `1.2s` trước khi phóng tên vật lý 3D; người chơi có thể dùng Jump nhảy lên trụ để áp sát triệt hạ hoặc strafe né tên.
+- [ ] **AC-13 (Heavy Meat Shield 3D Behavior)**: Quái Hộ Vệ ($3.0\text{m}$) có kích thước mô hình 3D to lớn, máu dày, dậm đất shockwave sát đất buộc người chơi phải Jump né đòn.
 - [ ] **AC-14 (4-Wave 3D Arena Flow & Win/Defeat)**: Đấu trường 3D lần lượt vượt qua 3 đợt quái, mở Bệ thờ Thần Khí 3D tại Wave 3, và spawn Boss Trùm 3D Goliath ($5.0\text{m}$) tại Wave 4.
 - [ ] **AC-15 (Boss 3D Rotation Lock & Decal Telegraph)**: Khi Boss $5.0\text{m}$ bắt đầu phase `Windup`, góc xoay của Boss bị khóa cố định và hiển thị Decal 3D cảnh báo đỏ trên mặt đất trong $0.8\text{s}$ khớp với phạm vi Collider 3D sát thương.
 - [ ] **AC-16 (Nightfall 3D Camera Framing)**: Nhân vật ($1.8\text{m}$) luôn nằm ở góc Dưới - Trái màn hình (`Viewport X = 0.40, Y = 0.30`), toàn bộ cơ thể và bàn chân mô hình 3D chạm đất hiển thị đầy đủ, không gian phía Trên - Phải thông thoáng để quan sát bầy quái 3D và Boss $5.0\text{m}$.
