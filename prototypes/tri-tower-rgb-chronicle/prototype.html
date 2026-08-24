@@ -503,6 +503,12 @@
       attackTimer: 0,
       attackDuration: 0.35,
       attackSide: 1,
+      lungeActive: false,
+      lungeTimer: 0,
+      lungeDuration: 0.32,
+      lungeLastEase: 0,
+      lungeDirection: new THREE.Vector3(),
+      pendingFinisherImpact: null,
       isHoldingJump: false,
       jumpHoldTimer: 0,
       facingYaw: 0,
@@ -1121,6 +1127,7 @@
 
     // --- COMBAT & DAMAGE RESOLVER ---
     function triggerPlayerAttack(isFinisher = false) {
+      if (player.lungeActive) return;
       if (player.isAttacking && !isFinisher) return;
       Audio.init();
 
@@ -1135,45 +1142,47 @@
       player.attackTimer = 0;
 
       const w = WEAPONS[STATE.activeWeapon];
-      player.attackDuration = isFinisher ? 0.52 : THREE.MathUtils.clamp(0.34 / w.speed, 0.18, 0.48);
+      const finisher = isFinisher || STATE.comboPips >= 3;
+      player.attackDuration = finisher ? 0.52 : THREE.MathUtils.clamp(0.34 / w.speed, 0.18, 0.48);
       player.attackSide *= -1;
       let damage = w.damage;
       let range = w.range;
 
-      if (isFinisher || STATE.comboPips >= 3) {
+      if (finisher) {
         // 4th Finisher Execution
         STATE.comboPips = 0;
         damage *= 2.6;
         range = METRICS.finisherRadius;
         Audio.finisher();
 
-        // Lunge Forward 14m on 10x scale!
+        // Smooth 14m lunge; impact resolves at the end instead of teleporting.
         const forward = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), player.facingYaw);
-        player.pos.addScaledVector(forward, METRICS.finisherLunge);
-
-        // Mega Shockwave Particle
-        spawnShockwave(player.pos, range, w.color);
+        player.lungeActive = true;
+        player.lungeTimer = 0;
+        player.lungeLastEase = 0;
+        player.lungeDirection.copy(forward);
+        player.pendingFinisherImpact = { damage, range, arc: w.arc, element: w.element, color: w.color };
         addNotice('💥 MEGA FINISHER LƯỚT DẬM NỔ (14M)!');
       } else {
         STATE.comboPips++;
         Audio.swing();
       }
 
-      spawnAttackSlash(w.color, isFinisher || STATE.comboPips === 0);
+      spawnAttackSlash(w.color, finisher);
 
       updatePipsUI();
 
-      // Hit detection in arc/range
-      const attackPos = player.pos.clone();
-      const forwardVec = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), player.facingYaw);
+      if (!finisher) resolvePlayerAttackHits(player.pos, player.lungeDirection.set(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), player.facingYaw), range, w.arc, damage, w.element);
+    }
 
+    function resolvePlayerAttackHits(attackPos, forwardVec, range, arc, damage, element) {
       enemies.forEach((enemy) => {
         const d = attackPos.distanceTo(enemy.mesh.position);
         if (d <= range + enemy.radius) {
           const toEnemy = enemy.mesh.position.clone().sub(attackPos).normalize();
           const angleDiff = forwardVec.angleTo(toEnemy);
-          if (w.arc >= Math.PI * 1.9 || angleDiff <= w.arc / 2) {
-            applyDamageToEnemy(enemy, damage, w.element);
+          if (arc >= Math.PI * 1.9 || angleDiff <= arc / 2) {
+            applyDamageToEnemy(enemy, damage, element);
           }
         }
       });
@@ -1557,7 +1566,7 @@
 
         const isSprinting = keys['ShiftLeft'] || keys['ShiftRight'];
         const baseSpeed = isSprinting ? METRICS.playerSprintSpeed : METRICS.playerSpeed;
-        const currentSpeed = baseSpeed * (player.isGrounded ? 1.0 : METRICS.airControl);
+        const currentSpeed = player.lungeActive ? 0 : baseSpeed * (player.isGrounded ? 1.0 : METRICS.airControl);
         
         player.vel.x = moveDir.x * currentSpeed;
         player.vel.z = moveDir.z * currentSpeed;
@@ -1604,6 +1613,25 @@
         player.pos.y = Math.max(groundHeight, player.pos.y + player.vel.y * dt);
       }
 
+      if (player.lungeActive) {
+        player.lungeTimer = Math.min(player.lungeDuration, player.lungeTimer + dt);
+        const lungeProgress = player.lungeTimer / player.lungeDuration;
+        const easedLunge = lungeProgress * lungeProgress * (3 - 2 * lungeProgress);
+        const lungeStep = (easedLunge - player.lungeLastEase) * METRICS.finisherLunge;
+        player.pos.addScaledVector(player.lungeDirection, lungeStep);
+        player.lungeLastEase = easedLunge;
+
+        if (lungeProgress >= 1) {
+          player.lungeActive = false;
+          const impact = player.pendingFinisherImpact;
+          if (impact) {
+            spawnShockwave(player.pos, impact.range, impact.color);
+            resolvePlayerAttackHits(player.pos, player.lungeDirection, impact.range, impact.arc, impact.damage, impact.element);
+            player.pendingFinisherImpact = null;
+          }
+        }
+      }
+
       if (player.isAttacking) {
         player.attackTimer += dt;
         const attackProgress = Math.min(1, player.attackTimer / player.attackDuration);
@@ -1637,8 +1665,8 @@
       const cameraAnchor = player.pos.clone().add(new THREE.Vector3(0, 1.8, 0));
       const desiredCameraPosition = player.pos.clone().add(camOffset);
       const cameraBlocked = resolveCameraCollision(cameraAnchor, desiredCameraPosition);
-      if (cameraBlocked) camera.position.copy(cameraResolvedPosition);
-      else camera.position.lerp(cameraResolvedPosition, 1 - Math.exp(-dt * 12));
+      const cameraFollowRate = player.lungeActive ? 8 : (cameraBlocked ? 30 : 12);
+      camera.position.lerp(cameraResolvedPosition, 1 - Math.exp(-dt * cameraFollowRate));
       camera.lookAt(cameraAnchor);
 
       // 4. ZONE & WAVE CHECKS
